@@ -1,0 +1,4 @@
+interface:
+  display_name: "Configure Google Tag Manager"
+  short_description: "Build client-side GTM configurations"
+  default_prompt: "Use $configure-gtm to implement an approved client-side tracking requirement in Google Tag Manager."
