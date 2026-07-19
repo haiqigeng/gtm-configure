@@ -1,67 +1,128 @@
 # Media tags
 
-## Configure from the vendor schema, not by analogy
+## Contents
 
-Media platforms differ in browser tag templates, event names, required fields, accepted formats, matching rules, and consent/vendor identity. For every vendor:
+- [Treat the media brief as the primary business input](#treat-the-media-brief-as-the-primary-business-input)
+- [Normalize the media brief](#normalize-the-media-brief)
+- [Use a four-authority model](#use-a-four-authority-model)
+- [Build a field-level implementation map](#build-a-field-level-implementation-map)
+- [Choose standard versus custom events](#choose-standard-versus-custom-events)
+- [Separate base/configuration and event behavior](#separate-baseconfiguration-and-event-behavior)
+- [Transform only for the documented schema](#transform-only-for-the-documented-schema)
+- [Preserve ecommerce cardinality](#preserve-ecommerce-cardinality)
+- [Govern first-party user data](#govern-first-party-user-data)
+- [Apply consent](#apply-consent)
+- [Handle an undocumented vendor](#handle-an-undocumented-vendor)
+- [Current client-side boundary](#current-client-side-boundary)
 
-1. Retrieve the current official browser/pixel/tag documentation and the installed GTM template's field definitions.
-2. Establish the official event and parameter schema for the requested business action.
-3. Map the vendor-neutral dataLayer event to that schema.
-4. Use a normal business trigger and the verified vendor gate.
-5. Validate the resolved browser payload with representative data.
+## Treat the media brief as the primary business input
 
-Do not copy GA4 names, types, or transformations into a media tag unless that vendor's official documentation requires the same shape.
+Expect media implementation requests to arrive directly from a media team rather than from an analytics tracking plan. Treat the brief as the authority for platform, business action, optimization/conversion use, audience use, and destination account.
 
-## Build a vendor mapping sheet
+Use any tracking plan only to discover reusable business events and source fields. Do not require the requested media event to appear in that plan, and do not assume that a media event should use a GA4 name or schema.
 
-Capture these decisions before configuration:
+## Normalize the media brief
+
+Derive or request only what the selected feature needs:
+
+- vendor, browser product, account/pixel/tag/dataset identity, and environment;
+- requested business action and exact success moment;
+- optimization, conversion reporting, remarketing, catalog, or audience purpose;
+- requested standard event, custom event, or conversion action when already decided;
+- conversion ID/label, UET tag ID, pixel ID, feed/business vertical, or catalog identity as applicable;
+- value, currency, transaction/order ID, product identifiers, and item details when applicable;
+- first-party user-data or advanced-matching request, if any;
+- client-approved CMP and consent model;
+- existing dataLayer event and representative payload.
+
+Do not create a tag from an informal label such as "purchase pixel" or "lead conversion" alone. Establish the destination identity and official event contract first.
+
+## Use a four-authority model
+
+1. Use the media brief for business intent and requested destination use.
+2. Use current official vendor documentation for the destination event and parameter schema.
+3. Use the existing dataLayer, tracking plan, and runtime evidence for source availability and timing.
+4. Use the installed GTM template/version for actual UI fields and execution behavior.
+
+Never configure one media platform by analogy with GA4 or another media vendor.
+
+## Build a field-level implementation map
+
+Record before mutation:
 
 | Field | Record |
 | --- | --- |
-| Vendor and browser tag/template | Exact product and template version. |
-| Official event | Exact vendor event name and classification. |
-| Parameter schema | Required/optional status, type, enum, and shape. |
-| Source | dataLayer key, existing variable, or constant. |
-| Transformation | Exact logic, null behavior, and representative output. |
-| Consent | CMP vendor identity and the shared blocking trigger. |
-| Validation | Expected payload for zero, one, and many items where applicable. |
+| Business action | Human-readable action and exact success moment. |
+| Destination | Vendor, browser product, account/pixel/tag ID, and conversion action where applicable. |
+| Official event | Exact name and standard, custom, reserved, or deprecated status. |
+| Vendor parameter | Exact destination name. |
+| Requirement | Required, recommended, optional, or conditionally required. |
+| Contract | Type, format, enum, item/event scope, and cardinality. |
+| Source | dataLayer key, existing GTM variable, constant, or approved fallback. |
+| Transformation | Exact logic, null behavior, and zero/one/many output. |
+| Template UI field | Visible field in the installed template/version. |
+| Consent | CMP vendor identity, strict/basic block or explicitly approved native advanced behavior. |
+| Evidence | Official URL, title, access date, and representative resolved payload. |
 
-## Transform only when the schema requires it
+Do not conflate a dataLayer key, GTM variable, template UI field, and network parameter even when they share a label.
 
-Prefer a DLV, constant, lookup table, or regex lookup table when it produces the documented result clearly. Use Custom JavaScript only when the vendor requires a data shape or logic that the built-in variables cannot express cleanly.
+## Choose standard versus custom events
 
-Write Custom JavaScript to be:
+Prefer a current official standard event when its documented meaning matches the business action. Use a custom event only when:
 
-- deterministic and null-safe;
-- limited to one well-defined transformation;
-- free of invented fallback values;
-- validated with representative dataLayer input;
-- named for its vendor-specific output.
+- no standard event represents the action;
+- the media team explicitly needs a separate custom event and the vendor permits it; or
+- a documented product requirement needs a custom name.
 
-For example, name a Meta contents transformation "CJS - Meta - contents", not a generic or ambiguous name.
+Check reserved names, naming limits, reporting/optimization eligibility, and platform-side configuration requirements. Do not assume that sending a browser event automatically creates or configures a conversion action in the advertising platform.
 
-## Ecommerce and multi-item payloads
+## Separate base/configuration and event behavior
 
-Preserve every line item. When vendor documentation requires arrays:
+Configure base or initialization tags only for documented initialization and shared settings. Do not make a base/configuration tag send a page view by default.
 
-- return an array even for a single item;
-- map every eligible item, not only the first one;
-- produce the vendor's required object keys and numeric/string types;
-- decide documented behavior for missing item IDs, quantities, prices, or currency;
-- test empty, one-item, and multi-item inputs.
+First establish whether a compatible GTM tag, hard-coded implementation, partner integration, or template behavior already supplies initialization. Create a GTM base/configuration tag only when initialization is in scope and no compatible path exists.
 
-For Meta-style ecommerce mappings, "content_ids" and "contents" are different fields with different shapes. When the official schema requires them, ensure "content_ids" is an array of strings and "contents" is an array of objects. Do not flatten the array, stringify it, or select only item zero.
+Create page-view and business-event tags separately unless the current official template requires an inseparable documented base event. Where a base tag inherently emits a page-load event, document that exception and prevent any duplicate manual page-view tag.
 
-## V1 implementation boundary
+Inspect automatic event detection, Event Builder rules, CMS plugins, hard-coded pixels, and existing templates before adding manual events.
 
-This V1 configures browser/client-side tags only. Server-side GTM, Conversions API, browser/server deduplication, transport URL, and related routing are deferred capabilities of this same skill. When requested in V1, record them as deferred and do not add a server-specific parameter or event-ID variable.
+## Transform only for the documented schema
 
-## Naming examples
+Prefer a direct DLV, constant, lookup table, or regex table when it yields the exact required output. Use Custom JavaScript only when built-in variables cannot express the required array/object structure or deterministic transformation cleanly.
 
-| Object | Example |
-| --- | --- |
-| Media event tag | "Meta - Event - purchase" |
-| Vendor transformation | "CJS - Meta - contents" |
-| Vendor constant | "CST - Meta pixel_id" |
-| Shared Custom Event trigger | "CE - purchase" |
-| Vendor consent exception | "Block - Didomi - Meta denied" |
+Make each Custom JavaScript variable deterministic, null-safe, narrowly scoped, free of invented fallbacks, and tested with representative source data. Name it for the vendor and output, for example `CJS - Meta - contents`.
+
+## Preserve ecommerce cardinality
+
+When the vendor requires an array:
+
+- return an array even for one item when the schema requires it;
+- map every eligible item rather than selecting item zero;
+- preserve the required object keys and exact number/string types;
+- handle missing IDs, quantities, prices, and currency according to documentation;
+- test empty, one-item, and multi-item payloads.
+
+Treat similarly named fields such as `content_id`, `content_ids`, `contents`, `items`, and product arrays as separate vendor contracts. Never flatten, stringify, or reshape them by analogy.
+
+## Govern first-party user data
+
+Do not enable enhanced conversions, advanced matching, automatic matching, DOM scanning, or user-provided data merely because the template offers it. Require explicit request/approval, verify current vendor policy and accepted fields, verify consent, and follow the first-party-data reference.
+
+## Apply consent
+
+Use strict/basic CMP gating by default for both base and event tags. Prefer one shared block per vendor/platform. Configure a native advanced consent mode only when the media team/analyst explicitly requests it, the vendor officially supports it, and its denied-state transmission is understood and approved.
+
+## Handle an undocumented vendor
+
+If no dedicated playbook exists:
+
+1. Locate the current official browser implementation, event reference, parameter reference, consent, matching, and GTM/template documentation.
+2. Apply this generic mapping contract.
+3. Inspect template identity, version, permissions, and field definitions.
+4. Block any critical field or behavior that official documentation does not establish.
+
+Lack of a dedicated skill file never permits memory-based configuration.
+
+## Current client-side boundary
+
+Do not add event IDs or deduplication logic for a browser-only request. Record server-side GTM, Conversions API, and browser/server deduplication as deferred when encountered.

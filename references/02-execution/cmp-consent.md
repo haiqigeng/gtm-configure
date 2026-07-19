@@ -1,74 +1,123 @@
 # CMP and consent gating
 
-## Establish what actually gates a tag
+## Contents
 
-Classify each relevant tag using its final GTM firing logic:
+- [Default to strict/basic gating](#default-to-strictbasic-gating)
+- [Distinguish observation from gating](#distinguish-observation-from-gating)
+- [Research the installed CMP](#research-the-installed-cmp)
+- [Build a safe vendor block](#build-a-safe-vendor-block)
+- [Select advanced/native consent only explicitly](#select-advancednative-consent-only-explicitly)
+- [Handle page-view timing](#handle-page-view-timing)
+- [Handle revocation without overclaiming](#handle-revocation-without-overclaiming)
+- [Validate the final decision](#validate-the-final-decision)
+
+## Default to strict/basic gating
+
+Unless the analyst explicitly requests and approves advanced/native consent behavior, prevent every analytics and media vendor tag from loading or firing before the required consent is granted.
+
+Prefer one reusable CMP blocking/exception trigger per vendor/platform. Apply it to the vendor's base/configuration and event tags in scope. Make unknown, undefined, uninitialized, and denied state block.
+
+Use a normal Custom Event trigger for the business action and a separate vendor block, for example:
+
+- `CE - purchase`
+- `Block - Didomi - Meta denied`
+
+Do not repeat consent conditions inside every business trigger when a shared vendor block expresses the approved policy safely.
+
+Design the normal-trigger lifecycle separately from the block. A page-load trigger that is blocked while consent is unknown or denied does not retry automatically. When a base/configuration tag must initialize after consent, use verified CMP readiness/grant events and an appropriate once-per-page control so both an initial grant and a later grant have a valid firing opportunity. Keep any page-view event and late-consent page-view policy separate from initialization.
+
+## Distinguish observation from gating
+
+Classify the final GTM logic:
 
 | Mechanism | Counts as a gate only when |
 | --- | --- |
-| Built-in consent requirement | The tag explicitly requires the relevant consent type and GTM demonstrably prevents firing when it is denied. |
-| Firing-trigger condition | The condition is part of the firing trigger and evaluates false under denied/unknown consent. |
-| Blocking or exception trigger | The exception evaluates true under denied/unknown consent and prevents the tag from firing. |
-| Observation only | A variable, event parameter, log, or informational check reads consent but does not prevent firing. This is not a gate. |
+| Built-in consent requirement | It prevents the tag from firing under the selected model, rather than only changing tag behavior. |
+| Firing-trigger condition | It evaluates false for every denied and unknown firing path. |
+| Blocking/exception trigger | It evaluates true for every denied and unknown firing path and wins over the normal trigger. |
+| Consent-aware/native advanced behavior | It intentionally allows documented limited or cookieless execution under denied state; describe it as advanced consent behavior, not strict blocking. |
+| Observation only | It reads, displays, logs, or transmits consent state without preventing firing. This is not a gate. |
 
-Never call a tag consent-gated merely because it evaluates, reports, or transmits consent state.
+Never report a tag as strictly gated merely because its template lists built-in checks or a consent variable resolves in Preview.
 
-## Choose the implementation mechanism
+## Research the installed CMP
 
-Do not make a legal/privacy decision. Identify the client-approved policy and implement it accurately:
+Before creating a condition:
 
-- If the project uses strict vendor blocking, prefer one reusable blocking trigger per vendor/platform.
-- If the project uses Google built-in Consent Mode, inspect the exact tag settings and policy before adding exception triggers; do not silently mix mechanisms that change intended behavior.
-- If the project uses a consent condition in a firing trigger, confirm it blocks every relevant firing path.
+1. Open the current official CMP documentation for the installed product/version and GTM integration.
+2. Identify separately the CMP initialization/readiness events, consent-change events, state variables/cookies/APIs, vendor identifiers, and value format.
+3. Inspect the live dataLayer and state before initialization, after denial, and after grant.
+4. Confirm event frequency and ordering.
+5. Confirm the exact vendor identity used by this site.
+6. Verify that undefined state remains blocked. Treat a value outside the CMP's documented format as an integration defect and block the affected design until the source contract is corrected or authoritatively clarified.
 
-When strict vendor blocking is the agreed approach, ordinary business-event tags should normally use:
+Do not infer that similarly named CMP events and variables have the same role. For Didomi, for example, verify readiness/change events independently from enabled-vendor state. Use the exact vendor identity documented and observed for the site. Do not append a delimiter to the identity by convention; when the CMP serializes a delimited list, match the exact token format established by its documentation and runtime value.
 
-1. a normal Custom Event trigger for the business action; and
-2. a vendor-specific blocking/exception trigger that is true when the vendor is not enabled.
+## Build a safe vendor block
 
-Name the latter clearly, for example "Block - Didomi - Meta denied". Do not add "CE" to a blocking trigger name just because the tag's normal trigger is a Custom Event.
+Define the exception's event scope before its consent-state condition. A shared block must be able to activate on every GTM event used by each consumer tag; a condition that reads the right CMP value is ineffective on an event the trigger does not match. In a Custom Event-first design, use a verified Custom Event regex that covers every relevant event name (often `.*` when the target container proves it matches the required events), rather than a CMP-only event name. If a consumer uses an event type the shared block cannot cover, stop and redesign the exception scope before claiming strict gating.
 
-## Verify CMP semantics first
+Inspect tag sequencing separately. GTM tags invoked as setup or cleanup tags ignore their own firing and blocking triggers. Do not rely on the sequenced tag's exception: make the initiating tag's vendor block prevent the entire sequence under unknown or denied consent, and prove that no setup/cleanup tag loads the vendor on that path.
 
-Before creating a condition or exception:
+Use the documented CMP state variable directly in the blocking trigger whenever a native GTM filter can express the policy safely. For a vendor-enabled list, the default pattern is one negative condition:
 
-1. Read the CMP's current official GTM/dataLayer documentation.
-2. Identify the correct CMP dataLayer event(s), dataLayer variable(s), cookies, or API state for the installed CMP/version.
-3. Inspect the live dataLayer to confirm event order, values, types, and state before/after consent.
-4. Identify the exact vendor ID or consent key required for the platform.
-5. Design the condition so unknown, undefined, and denied state behave according to the approved strictness.
+    {{DLV - <CMP enabled vendors>}} does not contain <exact documented vendor token>
 
-Do not infer a vendor ID, delimiter, matching rule, or event frequency from a remembered example. In particular, distinguish a Didomi event such as readiness/consent change from a variable such as an enabled-vendors value: they serve different purposes. Use the documented and observed value format for the actual site. Do not append a delimiter to a sample vendor value by convention.
+Derive the DLV key, operator, vendor token, delimiter, case, and value type from current CMP documentation and observed runtime values. For a CMP that exposes a documented Boolean or keyed vendor state, test that source directly. Avoid substring collisions by matching the exact documented token format.
 
-## Blocking-trigger design
+GTM combines multiple filter rows inside one trigger with logical AND. Do not add separate mutually exclusive rows for denied and unknown states. Use one documented native condition whose negative result covers every non-granted state, and verify its behavior when the CMP value is undefined. Do not create a Custom JavaScript, JavaScript, lookup-table, or Boolean consent helper when the documented CMP variable can be tested directly.
 
-For a vendor such as Meta, a strict blocking trigger may conceptually mean:
+If the official CMP contract cannot be represented safely with a native GTM condition, mark the affected consent design `Blocked` and request an authoritative CMP signal or approved architecture. Do not invent a parser or helper variable to compensate for an undocumented source shape.
 
-    Block when the CMP's verified enabled-vendors state does not contain the exact, verified Meta vendor identity.
+Test the block against similar vendor IDs and another-vendor-only consent. Do not combine different platforms in one block. If one platform is represented by multiple verified CMP identities, document their exact Boolean logic inside that platform's block.
 
-Implement the actual GTM condition only after confirming the CMP's documented value format and the live value. Avoid substring collisions and undefined-state loopholes. Reuse that blocking trigger for the vendor's relevant tags unless the vendor's policy or identity differs.
+## Select advanced/native consent only explicitly
 
-Use a normal trigger condition only when it is more precise or is required by the selected consent model. Do not duplicate separate consent conditions on every event trigger when one shared vendor block expresses the policy safely.
+Treat advanced consent as an architecture change because tags may execute and transmit limited data under denied consent.
 
-## Page-view timing
+Do not treat this as a Google-only decision. Load the vendor consent-mode capability reference and classify the exact browser product. Google tag/GA4, Google Ads, Floodlight, Conversion Linker, Microsoft Advertising UET, Microsoft Clarity, and vendor-native adaptive analytics can have materially different supported behavior. A shared parent company or CMP category does not make the products equivalent.
 
-Page-view dataLayer events commonly occur before CMP state is available. Handle this separately:
+Before using it:
 
-1. Inspect the CMP's official event lifecycle and identify an event with the needed one-time page semantics.
-2. Verify its actual firing order in the target site.
-3. Attach the page-view logic to that event only with a verified consent decision.
-4. Define whether a later consent change should create a page view and how duplicate sends are prevented.
+1. Obtain an explicit request and approved client policy.
+2. Verify current official product, installed-template, and CMP support.
+3. Document denied-state tag loading, request fields, storage, transmission, data use, and modeling or reporting behavior.
+4. Configure consent defaults before affected tags and updates immediately after the user's choice.
+5. Avoid additional consent checks or exception triggers that defeat the intended advanced behavior.
+6. Validate denied, granted, update, and revocation states.
 
-Do not assume a generic consent-changed event is safe for a page view; it may fire multiple times. Do not claim that a tag is gated because a CMP variable exists in the container.
+If a non-Google vendor offers consent mode, native cookie control, anonymous collection, or another limited-data feature, follow that vendor's current documentation; do not assume Google Consent Mode semantics apply. Cookie suppression alone does not prove advanced denied-state measurement.
 
-## Consent validation matrix
+## Handle page-view timing
 
-Validate each vendor tag against at least:
+Page-view source events often occur before CMP state is initialized. Under strict/basic gating:
 
-| State | Expected result under strict blocking |
+1. Identify an official CMP event with the required one-time readiness semantics.
+2. Verify that it occurs after the state is readable.
+3. Trigger the separate page-view tag from that event with the vendor block.
+4. Revalidate that every page-view source value is current and available on that CMP event; do not assume an earlier event-scoped payload persists.
+5. Define whether a later grant sends a page view.
+6. Prevent duplicate initial and consent-change page views.
+
+Do not attach a page-view tag to a generic repeatable consent-change event without an explicit state and duplicate policy.
+
+## Handle revocation without overclaiming
+
+A GTM exception can stop later tag invocations, but it does not unload a vendor script that already loaded after an earlier grant or erase data already sent. Inspect current vendor documentation and template behavior for native disable/revoke controls, automatic events, storage, and whether a page reload or site-level action is required. If the approved policy requires all vendor execution to stop immediately and the available browser implementation cannot establish that behavior, mark the affected requirement `Blocked` and report the limitation. Never describe a loaded script as unloaded merely because subsequent GTM tags are blocked.
+
+## Validate the final decision
+
+For each vendor tag, prove:
+
+| State | Strict/basic expected result |
 | --- | --- |
-| Unknown or CMP not initialized | Vendor tag does not fire. |
-| Vendor denied | Vendor tag does not fire. |
-| Vendor enabled and business event occurs | Tag may fire once if all non-consent conditions pass. |
-| Different vendor enabled only | This vendor's tag does not fire. |
-| Consent changes after initial page load | Behavior matches the documented page-view policy without duplicates. |
+| CMP not initialized or value undefined | Does not fire. |
+| Vendor denied | Does not fire. |
+| Different vendor granted only | Does not fire. |
+| Vendor granted and normal trigger occurs | May fire once. |
+| Consent revoked | Subsequent GTM tags/sequences do not run; any already-loaded script and automatic behavior follow a separately verified vendor revocation design. |
+| Consent granted after initial denial | Matches the documented late-consent/page-view policy without duplicates. |
+
+For a base/configuration tag, also prove that an initial grant and a later grant each provide a valid initialization opportunity without repeated initialization.
+
+For explicitly approved advanced behavior, replace the strict non-fire assertion with the exact officially documented limited-data assertion and label it clearly.

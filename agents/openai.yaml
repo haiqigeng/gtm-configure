@@ -1,4 +1,4 @@
 interface:
   display_name: "Configure Google Tag Manager"
-  short_description: "Build client-side GTM configurations"
-  default_prompt: "Use $configure-gtm to implement an approved client-side tracking requirement in Google Tag Manager."
+  short_description: "Build consent-controlled client-side GTM configurations"
+  default_prompt: "Use $configure-gtm to implement an approved analytics requirement or media-team brief in a dedicated client-side GTM workspace using current official documentation and strict/basic consent gating by default."

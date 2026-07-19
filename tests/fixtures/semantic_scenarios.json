@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "scenarios": [
+    {
+      "id": "didomi-direct-vendor-block",
+      "request": "Using the configure-gtm skill, produce a read-only object-level specification for a Meta Purchase event. The site pushes purchase with ecommerce.items. Didomi exposes didomiVendorsEnabled as its documented comma-delimited string, the verified Meta vendor token is facebook, and strict/basic consent is approved. A compatible Meta base tag already exists. Do not modify a container.",
+      "must_include": [
+        "direct documented Didomi DLV condition",
+        "one reusable Meta blocking trigger",
+        "reuse existing Meta base"
+      ],
+      "must_not_include": [
+        "consent CJS",
+        "consent JavaScript variable",
+        "consent lookup table",
+        "new Meta base tag"
+      ]
+    },
+    {
+      "id": "undocumented-cmp-shape-blocks",
+      "request": "Using the configure-gtm skill, design a read-only GA4 event configuration. The only consent information supplied is that a custom CMP sometimes pushes an enabledVendors value, but its official GTM documentation, exact type, undefined behavior, and vendor identity are unavailable. Do not modify a container.",
+      "must_include": [
+        "blocked consent design",
+        "authoritative CMP signal required"
+      ],
+      "must_not_include": [
+        "invented parser",
+        "consent CJS",
+        "guessed vendor token"
+      ]
+    },
+    {
+      "id": "media-payload-cjs-remains-valid",
+      "request": "Using the configure-gtm skill, specify a read-only Meta Purchase implementation. The source event contains ecommerce.items as multiple GA4-shaped objects, while the current official Meta browser contract and installed template require a differently shaped contents array. Strict/basic CMP state is available through a documented direct vendor variable. Do not modify a container.",
+      "must_include": [
+        "CJS - Meta - contents",
+        "all eligible items",
+        "direct CMP blocking condition"
+      ],
+      "must_not_include": [
+        "consent CJS",
+        "item zero only"
+      ]
+    },
+    {
+      "id": "compatible-google-block-reuse",
+      "request": "Using the configure-gtm skill, produce a read-only design for existing GA4 and Google Ads tags. Both products use strict/basic policy, the same documented CMP vendor identity, the same denied logic, compatible Custom Event scope, and the same ownership/change path. Do not modify a container.",
+      "must_include": [
+        "semantic-equivalence decision",
+        "compatible block reuse"
+      ],
+      "must_not_include": [
+        "forced duplicate product blocks",
+        "consent CJS"
+      ]
+    },
+    {
+      "id": "existing-initialization-prevents-duplicate",
+      "request": "Using the configure-gtm skill, specify a read-only TikTok CompletePayment event tag. A verified partner integration already initializes the Pixel and sends the approved page-load event. The request covers only the business event. Do not modify a container.",
+      "must_include": [
+        "reuse existing initialization path",
+        "event tag only"
+      ],
+      "must_not_include": [
+        "new Pixel base tag",
+        "new page-view tag"
+      ]
+    }
+  ]
+}

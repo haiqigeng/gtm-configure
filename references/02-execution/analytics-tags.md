@@ -1,70 +1,116 @@
 # Analytics tags
 
-## Map the tracking plan to the destination schema
+## Contents
 
-For each analytics destination, make a field-level map:
+- [Use the analytics requirement as the business contract](#use-the-analytics-requirement-as-the-business-contract)
+- [Configure the Google tag deliberately](#configure-the-google-tag-deliberately)
+- [Keep page view separate by default](#keep-page-view-separate-by-default)
+- [Configure events from the official schema](#configure-events-from-the-official-schema)
+- [Govern user properties and identifiers](#govern-user-properties-and-identifiers)
+- [Apply consent](#apply-consent)
+- [Naming examples](#naming-examples)
 
-| Tracking-plan item | Destination decision |
+## Use the analytics requirement as the business contract
+
+Treat an approved tracking plan or direct analytics requirement as the primary analytics input. Resolve destination semantics from current official documentation.
+
+For each event, map:
+
+| Requirement layer | Required decision |
 | --- | --- |
-| Business action | Use the current official event when one exists; use a custom event only when no suitable official event applies. |
-| dataLayer event | Use it as the normal Custom Event trigger by default. Keep it vendor-neutral. |
-| Source field | Create or reuse the appropriate DLV, constant, lookup, or transformation. |
-| Destination parameter | Use the exact official platform parameter name and documented type. |
-| Common value | Consider a shared configuration/event settings variable only when it is genuinely shared and reduces complexity. |
-| Consent | Attach the verified vendor/platform gate; do not place consent status in a payload field and call it gating. |
+| Business action | Confirm the exact success moment and intended analysis. |
+| Source event | Use the vendor-neutral dataLayer Custom Event by default. |
+| Source values | Verify key, event timing, type, cardinality, and sample output. |
+| GA4 event | Prefer the current automatic, enhanced-measurement, recommended, or ecommerce event when applicable; use custom only when none fits. |
+| GA4 parameters | Use exact official names, types, and item/event scope. |
+| GTM variables | Reuse or create DLVs, constants, settings, tables, or documented transformations. |
+| Consent | Apply strict/basic CMP blocking by default; route explicitly approved advanced Google Consent Mode separately. |
 
-Never create a custom destination parameter just because the incoming dataLayer key has that name. Map the source key to the official destination parameter when one exists.
+Never copy a source key into GA4 merely because the names look plausible. Map the source field deliberately to an official destination parameter or an approved custom parameter.
 
-## GA4 and Google tag configuration
+## Configure the Google tag deliberately
 
 Use current Google documentation to distinguish:
 
-- the Google tag/configuration itself;
+- the Google tag/configuration tag;
 - a Google tag Configuration Settings variable;
 - a Google tag Event Settings variable;
-- GA4 event tags and their event-specific parameters.
+- GA4 event tags and event-specific parameters;
+- settings managed in the GA4 data stream or Google tag destination UI.
 
-Name the primary Google tag configuration "GA4 - Config", or "GA4 - Config - main" where several configurations need a clear qualifier. Do not use an invented prefix such as "GCS".
+Use these naming patterns when compatible with the container:
 
-Create "GA4 - Event Setting" only when a small, coherent set of parameters or user properties is used across relevant events and the settings variable makes the design simpler. Do not use it as a dumping ground, and do not create it solely because the feature exists.
+| Object | Name |
+| --- | --- |
+| Primary Google tag | `GA4 - Config` |
+| Qualified Google tag | `GA4 - Config - main` |
+| Configuration Settings variable, when justified | `GA4 - Config Setting` |
+| Event Settings variable, when justified | `GA4 - Event Setting` |
+| Measurement ID constant | `CST - GA4 measurement_id` |
 
-Keep event-specific values, especially transaction, item, search, form, and conversion details, on the applicable event tag unless a documented, limited shared use case justifies otherwise.
+Reference the measurement ID through a compatible constant rather than hard-coding it repeatedly. Do not create a settings variable merely because GTM offers one.
 
-## GA4 events and parameters
+Use a Configuration Settings variable only for a coherent set of configuration-level values reused across applicable Google tags. Use an Event Settings variable only for a coherent set of event parameters or user properties genuinely shared across applicable events. Keep transaction, item, search, form, and other event-specific values on the event tag.
 
-Before configuring a GA4 tag:
+Inspect consumers before changing either settings variable because one edit may affect many tags and destinations.
 
-1. Check whether the desired behavior is automatic, enhanced measurement, recommended, ecommerce, or custom.
-2. Confirm the current official event name and each parameter name.
-3. Confirm required/optional status, type, multiplicity, and accepted value format.
-4. Map each parameter from a named GTM variable, lookup table, or documented transformation.
-5. Validate the final tag payload against a representative dataLayer event.
+## Keep page view separate by default
 
-For example, a tracking plan may expose "page_location", "page_referrer", and a site-specific path field. Use the documented GA4 names for the destination. Do not automatically send "page_path" as a GA4 page_view parameter merely because the plan contains it; GA4 normally derives page path reporting from location. Retain a path field only when a documented/approved custom use case requires it.
+When page-view configuration is in the approved scope, keep the Google tag from sending an automatic page view by default. Verify the current `send_page_view` behavior and set it to `false` only where a separately managed page-view event is required. Do not alter an existing compatible page-view architecture merely to impose this preference during an unrelated event change.
 
-If a plan contains a misspelled source key such as "page_refferrer", treat it as a source-contract issue. Verify whether that key truly exists in runtime data and map it deliberately to the correctly named destination field; do not propagate the typo into the GA4 parameter name.
+When the approved requirement includes a manually managed page view and no compatible tag already supplies it, create `GA4 - Event - page_view` with the approved source values and trigger. Before doing so:
 
-## Page-view implementation
+1. Inspect existing Google tags and hard-coded gtag installations.
+2. Inspect Enhanced Measurement page-load and browser-history behavior.
+3. Disable or avoid overlapping automatic behavior.
+4. Verify page-load and SPA navigation semantics separately.
+5. Design CMP timing so the initial page view is not lost or duplicated.
 
-Decide page-view behavior deliberately before creating a tag:
+If the normal `page_view` dataLayer event occurs before CMP state is ready under strict/basic gating, use the CMP's officially documented one-time readiness event and a verified vendor gate. Do not use a repeatable consent-change event without an explicit duplicate and late-consent policy.
 
-- inspect whether the Google tag sends page views automatically;
-- inspect Enhanced Measurement and, for SPAs, history-change behavior;
-- choose manual page_view only when the implementation needs it;
-- prevent a manual event from duplicating an automatic/enhanced event;
-- document the page-view trigger's timing relative to CMP initialization.
+When the tag fires on a CMP event instead of the original `page_view` event, revalidate every page parameter at that later event. Use browser built-ins or retained dataLayer state only when evidence proves the value is current and in scope; never assume an earlier event-scoped payload remains available. If a required value is missing or stale, block the page-view implementation and request a CMP-safe application event or source contract.
 
-For a strict CMP-gated manual page view, the initial page event can precede consent initialization. Use the CMP's documented event that has the required one-time semantics, plus a verified consent check. Do not use a generic CMP event that can fire repeatedly unless duplicate prevention and later-consent behavior are explicitly designed and approved.
+## Configure events from the official schema
+
+For each GA4 event:
+
+1. Open the current GA4 event reference.
+2. Confirm automatic, enhanced-measurement, recommended, ecommerce, or custom classification.
+3. Extract each parameter's exact name, requirement status, type, scope, cardinality, and limits.
+4. Validate event-level and item-level placement.
+5. Map each destination parameter to a named GTM variable or documented transformation.
+6. Validate a representative resolved event, including all ecommerce items.
+
+When a source key is misspelled, verify whether that exact key exists in runtime data. Name the DLV for the actual source key, then map it to the correctly spelled official GA4 parameter. Do not propagate source typos into destination fields.
+
+Treat `value` and `currency`, transaction identifiers, and `items` according to the exact event reference. Never infer an item parameter from a similarly named event parameter.
+
+## Govern user properties and identifiers
+
+Add a user property only when it is an approved, stable user attribute with a valid analysis use and current GA4 documentation permits it. Keep it in an Event Settings variable only when it genuinely applies across the intended events.
+
+Do not send personally identifiable information to GA4. Do not repurpose media advanced-matching fields as GA4 parameters or user properties.
+
+## Apply consent
+
+Use strict/basic gating by default:
+
+- create or reuse `Block - <CMP> - GA4 denied`;
+- block unknown, uninitialized, and denied states;
+- apply the gate to the config and all GA4 event tags in scope only after confirming that any shared Google tag destinations require a compatible basic route.
+
+Use advanced Google Consent Mode only when explicitly requested and approved. In that route, follow the dedicated consent reference and do not attach a blocking trigger that suppresses the documented denied-state behavior.
+
+If a Google tag also serves Google Ads, Floodlight, or another destination with a different consent route, follow the shared-execution-unit rule in the Google consent reference. Do not let a GA4 block silently disable an approved advanced destination or let that destination's advanced route expose GA4 contrary to its selected basic policy.
 
 ## Naming examples
 
 | Object | Example |
 | --- | --- |
-| Google tag configuration | "GA4 - Config" |
-| Qualified configuration | "GA4 - Config - main" |
-| Event settings variable, when justified | "GA4 - Event Setting" |
-| GA4 event tag | "GA4 - Event - page_view" |
-| GA4 ecommerce event tag | "GA4 - Event - purchase" |
-| Source dataLayer variable | "DLV - page_location" |
-| Measurement ID constant, when appropriate | "CST - GA4 measurement_id" |
-| Custom Event trigger | "CE - page_view" |
+| Google tag | `GA4 - Config` |
+| GA4 event | `GA4 - Event - generate_lead` |
+| GA4 ecommerce event | `GA4 - Event - purchase` |
+| Source DLV | `DLV - page_location` |
+| Measurement ID | `CST - GA4 measurement_id` |
+| Custom Event trigger | `CE - generate_lead` |
+| Consent exception | `Block - Didomi - GA4 denied` |

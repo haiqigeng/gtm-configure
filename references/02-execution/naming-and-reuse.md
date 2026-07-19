@@ -1,59 +1,73 @@
 # Naming and reuse
 
-## Name by type, purpose, and owner
+## Follow type, owner, and purpose
 
-Follow existing container conventions where they are compatible with these rules. Keep vendor name/acronym first for vendor-specific tags and special Google tag settings.
+Preserve an established compatible container convention. Otherwise use:
 
-| Object type | Pattern | Examples |
+| Object type | Pattern | Example |
 | --- | --- | --- |
-| Tag | Vendor - type - event or qualifier | "GA4 - Event - page_view", "Meta - Event - purchase", "GA4 - Config - main" |
-| Normal trigger | Trigger type - value | "CE - purchase", "Click - newsletter_cta" |
-| Blocking trigger | Block - CMP - vendor denied | "Block - Didomi - Meta denied" |
-| DataLayer variable | DLV - value | "DLV - page_location", "DLV - didomiVendorsEnabled" |
-| Constant | CST - semantic value | "CST - GA4 measurement_id", "CST - currency" |
-| Custom JavaScript | CJS - vendor - output | "CJS - Meta - contents" |
-| Lookup table | LUT - purpose | "LUT - currency by hostname" |
-| Regex lookup table | RLT - purpose | "RLT - content category" |
-| GA4 setting variable | Vendor - setting type | "GA4 - Event Setting" |
+| Tag | Vendor - type - event/qualifier | `GA4 - Event - page_view`, `Meta - Event - Purchase` |
+| Config/base tag | Vendor - Config | `GA4 - Config`, `Meta - Config` |
+| Normal trigger | Trigger type - value | `CE - purchase`, `Click - newsletter_cta` |
+| Blocking trigger | Block - CMP - vendor denied | `Block - Didomi - Meta denied` |
+| DataLayer variable | DLV - actual source value/path | `DLV - ecommerce.items` |
+| Constant | CST - semantic value | `CST - GA4 measurement_id`, `CST - currency` |
+| Custom JavaScript | CJS - vendor - output | `CJS - Meta - contents` |
+| Lookup table | LUT - purpose | `LUT - currency by hostname` |
+| Regex lookup table | RLT - purpose | `RLT - environment by hostname` |
+| Google settings variable | Vendor - setting type | `GA4 - Config Setting`, `GA4 - Event Setting` |
 
-Use snake_case for event names and field-oriented values. Use a short, stable acronym only when the full element type is unwieldy and the container already recognizes it. Do not invent a prefix such as "GCS" for a GA4 configuration.
+Keep vendor/platform first for tags and vendor-owned special settings. Keep variable type first for ordinary variables. Use snake_case for source event names and field-oriented values. Preserve official destination event casing when the vendor requires another form.
+
+Use a short stable acronym only when the full type/vendor name is unwieldy and the container recognizes it. Do not invent prefixes such as `GCS` for GA4 configuration.
+
+## Name source and destination independently
+
+Name a DLV after the actual source key, including an intentional source typo if that is the real contract. Use the official destination name in the tag field, not in a misleading DLV rename.
+
+Name a vendor transformation after its output, not its input. For example, use `CJS - Meta - contents` for the Meta-formatted result.
 
 ## Reuse by semantic equivalence
 
-Before creating an object, inspect all potentially related candidates. Reuse only when all relevant dimensions match:
+Before creating an object, inspect candidates and all their consumers. Reuse only when these dimensions align:
 
-- object type and terminal value/output;
-- business/vendor purpose;
-- data type and null behavior;
-- trigger/event timing;
-- consent/firing/blocking behavior;
-- consumers and impact of future changes;
-- folder/template compatibility where relevant.
+- object type and terminal output;
+- business and vendor ownership;
+- data type, shape, and null behavior;
+- source timing and event scope;
+- normal and consent firing behavior;
+- template/version and destination compatibility;
+- environment/hostname scope;
+- expected future change path.
 
-Identical strings do not automatically justify reuse. For example, do not share two constants simply because both currently contain the same value if their ownership and future change paths differ.
+Matching names or values alone are insufficient. Two IDs with the same current string can require separate constants when they belong to different destinations or owners. Conversely, do not duplicate a compatible object merely because its name is imperfect; reuse it and report naming debt unless renaming is authorized.
 
-Likewise, do not create duplicates simply because a matching object has an imperfect name. If it is semantically compatible, reuse it and report the naming debt separately unless an approved migration is in scope.
+## Prefer references over repeated literals
 
-## Variable selection
+Use a constant or settings variable when it makes a stable value visible, reusable, and safer to change. Typical candidates include measurement IDs, pixel IDs, UET IDs, conversion IDs/labels, and a genuinely fixed currency.
 
-Use the least complex variable that yields the documented output:
+Do not force a constant for every literal. Keep an event-specific value on the tag when a reference adds indirection without reuse or clarity.
 
-1. Reuse a compatible variable.
-2. Use a DLV for direct dataLayer values.
-3. Use a constant for stable configuration values where a reference is clearer than a hard-coded literal.
-4. Use a lookup or regex lookup table when it meaningfully combines deterministic scenarios and has a tested default.
-5. Use Custom JavaScript only for a transformation that built-in variables cannot represent clearly.
+## Use lookup tables only when applicable
 
-Do not force lookup tables, regex lookup tables, constants, event settings variables, or Custom JavaScript into a design. Use them for analytics and media alike only when they reduce real duplication or clarify a multi-scenario mapping.
+Create a LUT/RLT only when:
 
-## Lookup table decision check
+- multiple real input scenarios exist;
+- the mapping is deterministic;
+- default/no-match behavior is safe and explicit;
+- it reduces duplication or clarifies environment/vendor mapping;
+- representative cases can be tested.
 
-Create a LUT/RLT only when all answers are yes:
+Apply the same rule to analytics and media. Do not use a table for a single mapping or force unrelated scenarios together.
 
-- Does more than one real input scenario need a mapping?
-- Is the mapping deterministic and understandable without code?
-- Is there a safe default or explicit no-match behavior?
-- Does it reduce duplicated configuration across tags or conditions?
-- Can representative inputs and outputs be tested?
+## Organize folders sparingly
 
-Otherwise, keep the direct variable mapping or a narrowly scoped transformation.
+Follow the container's existing folder model. When no useful model exists and the change is large enough to benefit, prefer a shallow structure by vendor/platform or implementation workstream.
+
+Do not create a folder for one isolated object. Do not move unrelated existing objects merely to make the new workspace look tidy; that is cleanup scope.
+
+## Add notes where they preserve non-obvious decisions
+
+Use object notes/descriptions when supported to record a critical source event, vendor schema decision, consent exception, template dependency, or temporary blocker. Keep notes concise and free of client secrets or personal data.
+
+Do not duplicate the entire handoff inside every object.

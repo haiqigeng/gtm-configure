@@ -1,82 +1,114 @@
 # Utility contract
 
+## Contents
+
+- [Audience](#audience)
+- [Objective](#objective)
+- [Current use cases](#current-use-cases)
+- [Requirement authority](#requirement-authority)
+- [Inputs](#inputs)
+- [Outputs](#outputs)
+- [Authority and workspace policy](#authority-and-workspace-policy)
+- [Boundaries](#boundaries)
+
 ## Audience
 
-Serve an expert web analyst who uses an AI agent such as Codex, Claude, or another capable agent to manage tag configuration. The analyst remains responsible for business intent, the approved measurement requirement, and the client consent policy. The agent is responsible for evidence-backed configuration work and traceable reporting.
+Serve an expert web analyst who uses an AI agent such as Codex, Claude, or another capable agent to configure tag management, especially client-side Google Tag Manager. Keep the analyst responsible for business intent, authorization, measurement decisions, and the client-approved consent policy. Make the agent responsible for evidence-backed design, scoped configuration, validation, and traceable reporting.
 
 ## Objective
 
-Convert an approved tracking plan or direct human measurement requirement into a clean, minimal, reusable, officially documented, and consent-gated client-side GTM configuration.
+Convert an approved analytics tracking plan, direct analytics requirement, or media-team implementation brief into a clean, minimal, reusable, officially documented, and consent-controlled client-side GTM configuration.
 
-The configuration may cover analytics tools, media platforms, or both. The objective is implementation quality and traceability, not a claim of legal compliance.
+Cover Google tag/GA4 analytics, supported browser media platforms, or both. Optimize implementation quality, maintainability, and traceability. Do not claim legal compliance or make the client's legal decisions.
 
 ## Current use cases
 
-Support these V1 use cases:
+Support these client-side use cases:
 
-- create GTM tags, triggers, variables, settings variables, and transformations from an approved requirement;
-- modify existing GTM objects for a new or changed requirement;
-- configure analytics tags, including Google tag and GA4 event configuration;
-- configure client-side media tags and vendor-specific payload transformations;
-- implement or adjust CMP consent gates for configured vendors.
+- create or modify tags, triggers, blocking triggers, variables, Google tag settings, and transformations;
+- configure Google tag and GA4 events from an analytics tracking plan or direct human requirement;
+- configure Google Ads, Microsoft Advertising, Meta, TikTok, Snapchat, and other browser media tags from a media-team brief;
+- map standard and custom destination events against current official vendor schemas;
+- configure base/configuration tags, event tags, conversion tags, remarketing tags, and documented browser-side matching features;
+- implement strict/basic CMP gating by default and explicitly approved per-product advanced/native, cookieless, or anonymous consent behavior when supported;
+- validate the available dataLayer contract without developing the website or dataLayer;
+- create an implementation specification when live mutation is unavailable or unauthorized.
 
-Additional use cases may be added later without changing this core contract.
+## Requirement authority
+
+Use different primary inputs for analytics and media:
+
+| Route | Primary business input | Supporting evidence | Technical authority |
+| --- | --- | --- | --- |
+| Analytics | Approved tracking plan or direct analytics requirement | Existing dataLayer, container, and runtime evidence | Current official Google tag, GA4, and GTM documentation |
+| Media | Human media-team brief | Tracking plan, existing business events, dataLayer, container, and runtime evidence | Current official media-vendor documentation and installed template |
+
+Do not assume that a requested media event appears in the analytics tracking plan or should use the corresponding GA4 destination name. Reuse a vendor-neutral source event where semantics and timing match, but establish each destination schema independently.
+
+Treat a tracking plan as supporting evidence for reusable business events and source values in the media route, not as the authority for the media destination schema.
 
 ## Inputs
 
-Inputs may be provided by the analyst, discovered by the agent, or conditional to the request. Do not assume that every input is available at intake.
+Accept incomplete intake. Discover safely derivable information before asking the analyst.
 
 | Input class | Examples | Agent behavior |
 | --- | --- | --- |
-| User-provided | Tracking-plan row, direct human requirement, target container, desired scope, consent policy | Treat as business intent and authorization context. |
-| Discoverable | Existing tags, triggers, variables, templates, folders, workspace state, current official documentation | Inspect and record before designing. |
-| Runtime evidence | DataLayer events, field values, CMP event order, preview state, site source | Obtain when timing, shape, or actual value format matters. |
-| Conditional | Sample ecommerce payload, vendor ID, template version, region or hostname mapping | Require or derive only when the selected implementation needs it. |
+| Analytics requirement | Tracking-plan row, business action, GA4 destination, reporting need | Treat as analytics intent; resolve exact destination semantics from official documentation. |
+| Media brief | Platform, pixel/account/destination, requested action, optimization or audience use, conversion label | Treat as media intent; do not treat its informal event label as an official schema. |
+| Target and authority | Account, container, environment, workspace, read/write authorization | Confirm before mutation. |
+| Discoverable configuration | Existing objects, folders, templates, workspace state, destination IDs | Inspect before designing. |
+| Source contract | dataLayer event, fields, types, cardinality, timing, sample values | Verify against runtime evidence when shape or timing matters. |
+| Consent | CMP, client-approved product policy, basic/strict or explicitly approved advanced/native behavior | Classify each browser product from official documentation, installed template, and runtime state. |
+| Conditional media details | Conversion ID/label, feed/business vertical, catalog IDs, first-party user data, advanced matching | Require only when the chosen product or feature needs them. |
 
-When an input is missing, first determine whether it can be safely derived. Block only when the missing information affects authorization, business meaning, destination schema, consent behavior, or another critical decision that cannot be established from available evidence.
+Classify a missing input as discoverable, optional for the selected route, or critical. Block only when the missing value affects authorization, business meaning, destination identity/schema, data handling, consent behavior, or another decision that cannot be established safely.
 
 ## Outputs
 
-For an authorized configuration request, produce:
+For authorized configuration, produce:
 
-- the configured objects in a dedicated workspace whenever possible;
-- the target container and workspace used;
-- a requirement-to-object map;
+- configured objects in a dedicated workspace whenever possible;
+- target account, container, environment, and workspace;
+- requirement-to-object and source-to-destination maps;
 - created, modified, reused, and intentionally untouched objects;
-- official sources and platform decisions;
-- final firing and consent-gating behavior per vendor;
-- validation results, unresolved blockers, deferred future capabilities, and remaining runtime QA;
-- confirmation that no publication occurred.
+- for every destination field: official name, requirement status, type/shape, source, transformation, and representative resolved value;
+- installed template identity/version and relevant permissions;
+- official source URLs, titles, access dates, and decisions;
+- final normal trigger, blocking trigger or consent mechanism, and denied/unknown behavior per browser product/vendor;
+- validation results, blockers, deferred capabilities, and remaining runtime QA;
+- confirmation that no publication or GTM version occurred.
 
-For a read-only, planning, or blocked request, produce the same object-level specification without claiming that live changes were made.
+For planning, read-only, unavailable-tool, or blocked work, return the same object-level specification without claiming live mutation.
 
 ## Authority and workspace policy
 
-Classify the request before mutation:
+Classify authority before mutation:
 
 | Request state | Permitted result |
 | --- | --- |
-| Review or implementation plan | Read-only inventory, design, blockers, and acceptance matrix. |
-| Explicitly authorized create or modify request | Configuration changes limited to the approved scope. |
-| Unclear authority or destination | Object-level plan and approval request before mutation. |
+| Review, design, or implementation plan | Read-only inventory, object graph, blockers, and acceptance matrix. |
+| Explicitly authorized create or modify request | Changes limited to the approved container, workspace, vendors, and business actions. |
+| Unclear authority, destination, data handling, or consent model | Complete the safe design work, then request the missing decision before mutation. |
 
 For authorized changes:
 
-1. Reuse a compatible existing dedicated workspace when it has the same scope.
-2. Otherwise create a dedicated workspace, using a clear implementation-oriented name such as "Implementation - <requirement> - <date>" when the platform allows it.
+1. Reuse a compatible dedicated workspace assigned to the same requirement.
+2. Otherwise create a dedicated workspace with a clear implementation name when permitted.
 3. Avoid the Default Workspace whenever possible.
-4. If a dedicated workspace cannot be created or reused, explain the reason and obtain approval before using the Default Workspace.
-5. Never publish, create a version, or expand to another container without explicit authorization.
+4. Explain the constraint and obtain approval before falling back to the Default Workspace.
+5. Never publish, create a version, change an advertising-platform setting, or expand to another container without explicit authorization.
 
 ## Boundaries
 
 Do not use this skill for:
 
-- creating or redesigning a tracking plan;
+- creating or redesigning an analytics tracking plan;
 - developing the website or its dataLayer;
-- container audit, cleanup, or hygiene work;
-- full interactive GTM Preview recette execution;
-- deciding legal basis, consent categories, or the client's privacy policy;
-- publishing a GTM version.
+- auditing, cleaning, or broadly refactoring a container;
+- executing a full interactive GTM Preview recette;
+- deciding legal basis, consent categories, regional law, or privacy policy;
+- publishing or creating a GTM version.
 
-Server-side GTM, Conversions API, browser/server deduplication, and related routing are not implemented in V1. They are deferred capabilities of this same skill, not permanent exclusions or automatic handoffs to another skill.
+Keep server-side GTM, Conversions API, browser/server deduplication, and event-ID architecture deferred in the current client-side version. Record them as future work when encountered; do not treat them as permanent exclusions from the skill.
+
+The cross-vendor consent-capability map is a research and classification aid. It does not add an analytics tag-configuration route beyond the current Google tag/GA4 scope. For Matomo, Piwik PRO, or another analytics product without an approved playbook in this skill, report the scope gap and do not create or modify its tags unless that capability is added explicitly.
