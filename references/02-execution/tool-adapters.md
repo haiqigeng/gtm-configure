@@ -1,5 +1,18 @@
 # Tool adapters
 
+## Contents
+
+- [Use a capability-first execution order](#use-a-capability-first-execution-order)
+- [Establish tool capabilities before mutation](#establish-tool-capabilities-before-mutation)
+- [Translate the change manifest deterministically](#translate-the-change-manifest-deterministically)
+- [Apply read-before-write discipline](#apply-read-before-write-discipline)
+- [Prove idempotency](#prove-idempotency)
+- [Handle partial failure](#handle-partial-failure)
+- [Use export/import safely](#use-exportimport-safely)
+- [Use the UI as a controlled fallback](#use-the-ui-as-a-controlled-fallback)
+- [Return a specification when blocked](#return-a-specification-when-blocked)
+- [Official entry points](#official-entry-points)
+
 ## Use a capability-first execution order
 
 Prefer:
@@ -21,10 +34,25 @@ Confirm whether the selected adapter can:
 - read, create, and modify tags, triggers, variables, folders, and templates;
 - expose built-in/additional consent settings and blocking triggers;
 - inspect references/consumers and workspace conflicts;
+- inspect or synchronize workspace state and report merge conflicts without resolving them implicitly;
+- expose stable object IDs/paths, fingerprints, firing options, advanced settings, and consent fields;
 - re-read saved objects;
 - avoid version creation and publication.
 
 Use the UI only for missing semantic fields, unsupported template operations, or visual confirmation. Keep the same target account/container/workspace across adapters.
+
+## Translate the change manifest deterministically
+
+Use the configuration contract as the adapter input. For each manifest row, resolve:
+
+- stable parent path and intended workspace;
+- action, object type, existing ID/path, and current fingerprint;
+- exact adapter/template type derived from an official schema or inspected existing object;
+- typed parameters, trigger IDs, blocking-trigger IDs, folder, consent settings, priority, schedule, firing option, sequencing, and notes;
+- dependencies and creation order;
+- complete pre-change representation for every update.
+
+Do not mutate from an informal prose summary. If the adapter cannot represent a required field or preserve the intended type/shape, stop that object and use another approved adapter or return `Specification complete`.
 
 ## Apply read-before-write discipline
 
@@ -39,6 +67,12 @@ For every adapter:
 7. Stop on a conflict or unexpected consumer rather than overwriting silently.
 
 Never use a guessed template type code or API parameter. Derive it from the existing object, API schema, official template, or tool response.
+
+## Prove idempotency
+
+After all successful saved-object comparisons, recompute the change manifest against the new workspace state. Every completed row must resolve to `reuse` or `untouched`. A second run that proposes another create or repeats the same update fails acceptance until matching, equivalence, or stored-field normalization is corrected.
+
+Do not use names alone as idempotency keys. Compare stable IDs where present and the semantic dimensions defined by the naming-and-reuse reference.
 
 ## Handle partial failure
 
@@ -82,3 +116,12 @@ If authentication, permissions, tool availability, or workspace limits prevent m
 - official source evidence;
 - validation and acceptance matrix;
 - explicit statement that no live GTM object changed.
+
+Classify the result as `Specification complete` when every static decision is resolved, or `Blocked` when a critical decision remains unresolved.
+
+## Official entry points
+
+- https://developers.google.com/tag-platform/tag-manager/api/v2
+- https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces/sync
+- https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces.tags
+- https://support.google.com/tagmanager/answer/6106997

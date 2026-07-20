@@ -49,17 +49,17 @@ Do not create a workspace for a read-only request.
 
 ## 4. Form the implementation contract
 
-Capture:
+Use the configuration-contract reference and capture:
 
 - business action, success moment, and expected destination use;
 - vendor-neutral source event and exact timing;
-- source fields, types, cardinality, null behavior, and representative payloads;
+- source fields, types, cardinality, null behavior, state lifetime, representative payloads, and evidence grades;
 - destination platform, product, account/pixel/tag ID, template, and version;
 - official event or conversion action and complete destination field schema;
 - base/configuration behavior and whether it sends any automatic event;
 - CMP, vendor identity, approved consent model, and denied/unknown behavior;
 - optional first-party user-data feature and its explicit authorization;
-- acceptance criteria and runtime tests still required.
+- object change manifest, external dependencies, result status, and static acceptance criteria.
 
 Classify every missing input as discoverable, unnecessary for the selected route, or critical and blocking.
 
@@ -75,14 +75,15 @@ Inventory relevant:
 - workspace conflicts and consumers of reusable objects.
 
 Compare semantics, timing, output, ownership, consent behavior, and consumers rather than names alone.
+When hard-coded code, CMS plugins, CMP configuration, or platform settings cannot be established from the available static evidence, record the external dependency or blocker instead of claiming that no duplicate or conflict exists.
 
 ## 6. Validate the source contract
 
 For every required source value:
 
-1. Verify the exact dataLayer key and event where it becomes available.
-2. Verify type, format, cardinality, null/undefined behavior, and stale-state risk.
-3. Test empty, one-item, and multi-item ecommerce payloads when applicable.
+1. Establish the exact dataLayer key and event where it becomes available from the approved source contract.
+2. Establish type, format, cardinality, null/undefined behavior, state lifetime, stale-state risk, and evidence grade.
+3. Validate supplied empty, one-item, and multi-item ecommerce examples when applicable; require representative examples when a transformation depends on shape.
 4. Distinguish the source key from the DLV name, template field, and destination parameter.
 5. Record missing or incompatible values as a dataLayer requirement/blocker; do not develop the site or invent a fallback.
 
@@ -99,7 +100,7 @@ Open current official documentation and verify:
 - template field mapping and permissions;
 - native consent capability and basic versus advanced behavior;
 - exact per-product consent classification: strict/basic blocked, native stop/hold, advanced consent-aware, adaptive/anonymous analytics, or unverified;
-- CMP lifecycle event, consent-state source, vendor identity, and actual value format.
+- CMP lifecycle event, consent-state source, vendor identity, approved predicate, and documented value format.
 
 Record the research evidence before mutation.
 
@@ -107,14 +108,14 @@ Record the research evidence before mutation.
 
 Default to strict/basic behavior:
 
-- create or reuse one shared CMP blocking trigger per vendor/platform;
+- create or reuse the smallest shared set of CMP blocking triggers that expresses the approved category/purpose, vendor, product, and initialization predicate;
 - make unknown, undefined, uninitialized, and denied states block;
 - use the CMP's documented state variable directly in a native GTM condition when it can express the policy safely;
 - treat a CMP value outside its documented contract as an integration defect to resolve, not a reason to invent a consent helper variable;
 - verify that the block's event matcher can activate on every normal firing event used by its consumer tags;
 - attach it to every in-scope base/configuration and event tag for that vendor;
 - give each base/configuration tag a verified normal-trigger opportunity after both an initial grant and a later grant; an exception that blocks a page-load trigger does not make that trigger run again;
-- prove the final firing logic rather than merely observing consent state.
+- prove the expected firing logic from GTM trigger semantics, the approved CMP contract, and the planned object graph without presenting it as runtime observation.
 
 Use advanced/native consent only when explicitly requested and approved. In that route, configure documented defaults and updates, preserve the vendor's intended denied-state behavior, and remove/avoid any blocking logic that would defeat it.
 
@@ -156,6 +157,8 @@ Obtain the necessary approval; do not broaden the original authorization.
 
 Prefer a purpose-built GTM MCP or API. Use UI only when a required operation is unavailable or for visual verification.
 
+Before the first write, finalize the object change manifest, capture IDs/fingerprints and exact pre-change state for modified objects, inspect workspace synchronization/conflicts, and confirm that rerunning the same contract will not create duplicates.
+
 Apply dependency order:
 
 1. folders or templates when approved;
@@ -165,15 +168,16 @@ Apply dependency order:
 5. event/conversion/remarketing tags;
 6. sequencing and consent settings.
 
-Re-read every saved object, inspect references, preserve unrelated changes, and record created, modified, reused, and untouched objects. Never publish or create a version.
+Re-read every saved object, compare it with the manifest, inspect references, preserve unrelated changes, and record created, modified, reused, and untouched objects. Re-evaluate the manifest after an unexpected saved field, consumer, or fingerprint. Never publish or create a version.
 
 ## 12. Validate and hand off
 
 Apply the acceptance reference. Separate:
 
-- documentation- and configuration-verified behavior;
-- runtime Preview/network/vendor tests still required;
+- documentation- and static configuration-verified assertions;
+- the explicit boundary that runtime validation was not performed or claimed;
 - blockers and missing dataLayer requirements;
+- external site, CMP, GA4-administration, and advertising-platform dependencies;
 - explicitly deferred server-side or deduplication work.
 
-If no mutation tool is available, return the complete object-level specification and state clearly that no live configuration changed.
+If no mutation tool is available, return the complete object-level specification as `Specification complete` and state clearly that no live configuration changed.

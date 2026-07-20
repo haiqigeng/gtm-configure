@@ -62,7 +62,7 @@ Default to basic UET Consent Mode/strict gating:
 
 - block the UET base and event tags until the required vendor consent is granted;
 - use `Block - <CMP> - Microsoft Ads denied`;
-- ensure unknown and denied states do not load or fire UET.
+- prove from the static trigger graph that unknown and denied states are expected to keep UET tags ineligible.
 
 Use advanced UET Consent Mode only when explicitly requested and approved. Verify the current official `ad_storage` behavior and official GTM template options, set the documented denied default before events, send updates from the CMP, and remove/avoid a blocking trigger that would defeat approved anonymized denied-state collection.
 

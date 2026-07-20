@@ -1,0 +1,172 @@
+{
+  "version": 2,
+  "description": "Static configuration-contract scenarios for configure-gtm. These are deterministic specification fixtures, not model-output or runtime tests.",
+  "allowed_statuses": [
+    "Configured",
+    "Specification complete",
+    "Partial",
+    "Blocked",
+    "Deferred"
+  ],
+  "scenarios": [
+    {
+      "id": "ga4-tracking-plan-static",
+      "route": "analytics",
+      "request": "Use configure-gtm to produce a read-only GA4 purchase configuration from an approved tracking-plan row and representative zero-, one-, and multi-item payloads. A compatible Google tag exists. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "reuse", "object_type": "tag", "name": "GA4 - Config", "justification": "Compatible Google tag already exists."},
+        {"action": "create", "object_type": "trigger", "name": "CE - purchase", "justification": "Approved vendor-neutral source event."},
+        {"action": "create", "object_type": "tag", "name": "GA4 - Event - purchase", "justification": "Approved GA4 ecommerce requirement."}
+      ],
+      "external_dependencies": ["Publication remains outside this skill."],
+      "expected_invariants": ["all items preserved", "field-level map", "no automatic/manual page-view change"],
+      "forbidden_invariants": ["runtime required", "new duplicate Google tag", "item zero only"]
+    },
+    {
+      "id": "media-brief-meta-static",
+      "route": "media",
+      "request": "Use configure-gtm to produce a read-only Meta Purchase specification from a human media brief. A partner integration already initializes the Pixel, the approved purchase event contains GA4-shaped items, and current Meta browser documentation requires a contents transformation. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "reuse", "object_type": "initialization", "name": "Existing Meta partner integration", "justification": "Approved evidence confirms compatible initialization."},
+        {"action": "create", "object_type": "variable", "name": "CJS - Meta - contents", "justification": "Official Meta array shape differs from the approved source shape."},
+        {"action": "create", "object_type": "tag", "name": "Meta - Event - Purchase", "justification": "Human media brief requests the official browser event."}
+      ],
+      "external_dependencies": ["Meta platform optimization or Custom Conversion state is recorded separately."],
+      "expected_invariants": ["media brief is primary", "reuse existing initialization", "all eligible items preserved"],
+      "forbidden_invariants": ["GA4 schema copied to Meta", "new Meta base tag", "runtime required"]
+    },
+    {
+      "id": "compound-cmp-predicate",
+      "route": "consent",
+      "request": "Use configure-gtm to specify strict/basic Meta gating where the approved CMP contract requires both advertising-purpose grant and the exact Meta vendor grant. Each state is exposed through a separate documented native GTM-compatible variable. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "create", "object_type": "blocking trigger", "name": "Block - CMP - advertising purpose denied", "justification": "Independent required purpose grant needs OR-denial behavior."},
+        {"action": "create", "object_type": "blocking trigger", "name": "Block - CMP - Meta denied", "justification": "Independent required vendor grant needs OR-denial behavior."}
+      ],
+      "external_dependencies": ["CMP must continue to supply the approved documented states."],
+      "expected_invariants": ["both blocks attach to every Meta consumer", "unknown remains blocked", "AND-filter trap avoided"],
+      "forbidden_invariants": ["consent CJS", "one trigger with mutually exclusive AND denials", "runtime required"]
+    },
+    {
+      "id": "shared-google-incompatible-routes",
+      "route": "combined",
+      "request": "Use configure-gtm to design GA4 basic blocking and Google Ads advanced Consent Mode on one currently shared Google tag. No officially supported approved separation has been supplied. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed"],
+      "expected_status": "Blocked",
+      "live_state_claim": false,
+      "expected_actions": [],
+      "external_dependencies": ["Analyst must approve a current officially supported execution-unit separation or compatible policy."],
+      "expected_invariants": ["shared execution unit conflict recorded", "safe design work retained"],
+      "forbidden_invariants": ["claim incompatible routes coexist", "silently expose GA4", "silently block approved Ads pings"]
+    },
+    {
+      "id": "missing-source-contract",
+      "route": "analytics",
+      "request": "Use configure-gtm for a generate_lead event where the human requirement names the business action but supplies no success moment, dataLayer event, field types, or representative payload. No runtime access is available.",
+      "evidence_grades": ["approved-input"],
+      "expected_status": "Blocked",
+      "live_state_claim": false,
+      "expected_actions": [],
+      "external_dependencies": ["Approved source event, success timing, field contract, and representative payload are required."],
+      "expected_invariants": ["critical missing facts identified"],
+      "forbidden_invariants": ["click trigger invented", "DOM fallback invented", "placeholder value"]
+    },
+    {
+      "id": "tool-unavailable-specification",
+      "route": "analytics",
+      "request": "Use configure-gtm for an approved GA4 sign_up event with a complete source contract and container export, but no MCP, API, or authorized UI mutation path. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "create", "object_type": "trigger", "name": "CE - sign_up", "justification": "Approved vendor-neutral source event."},
+        {"action": "create", "object_type": "tag", "name": "GA4 - Event - sign_up", "justification": "Approved analytics requirement and official event contract."}
+      ],
+      "external_dependencies": ["An authorized mutation path is required to apply the specification."],
+      "expected_invariants": ["complete ordered object fields", "no live-change claim"],
+      "forbidden_invariants": ["Configured status", "guessed object IDs", "runtime required"]
+    },
+    {
+      "id": "partial-mutation-journal",
+      "route": "media",
+      "request": "Use configure-gtm in an authorized dedicated workspace. A constant and DLV save successfully, then the approved community-template tag write fails. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Partial",
+      "live_state_claim": true,
+      "saved_partial_state": ["created constant", "created DLV"],
+      "recovery_boundary": "Stop the failed tag and all dependent writes; preserve unrelated and successfully saved current-operation objects pending an authorized recovery decision.",
+      "expected_actions": [
+        {"action": "create", "object_type": "constant", "name": "CST - vendor pixel_id", "justification": "Approved stable destination identity."},
+        {"action": "create", "object_type": "variable", "name": "DLV - event.value", "justification": "Approved source field."}
+      ],
+      "external_dependencies": ["Resolve the template write failure before dependent mutation."],
+      "expected_invariants": ["dependent writes stopped", "exact saved IDs and fingerprints recorded"],
+      "forbidden_invariants": ["claim full rollback", "delete unrelated work", "Configured status"]
+    },
+    {
+      "id": "idempotent-rerun",
+      "route": "combined",
+      "request": "Use configure-gtm after a prior authorized implementation. Every saved object and reference matches the configuration contract and current fingerprints are supplied. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Configured",
+      "live_state_claim": true,
+      "saved_object_readback": true,
+      "idempotent_second_execution": true,
+      "expected_actions": [
+        {"action": "reuse", "object_type": "object graph", "name": "Existing approved implementation", "justification": "Every semantic dimension and saved field matches."}
+      ],
+      "external_dependencies": ["Publication remains outside this skill."],
+      "expected_invariants": ["no writes required", "fingerprints recorded", "all references resolve"],
+      "forbidden_invariants": ["duplicate object", "repeat update", "runtime required"]
+    },
+    {
+      "id": "ga4-external-administration",
+      "route": "analytics",
+      "request": "Use configure-gtm to specify an approved GA4 custom event with a custom event parameter intended for reporting and a requested key event. GTM mutation is not authorized. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "create", "object_type": "tag", "name": "GA4 - Event - custom_event", "justification": "Approved analytics event requirement."}
+      ],
+      "external_dependencies": ["Register the appropriate GA4 custom definition.", "Designate the event as a key event outside the GTM authorization."],
+      "expected_invariants": ["GTM collection separated from GA4 administration", "external actions not claimed complete"],
+      "forbidden_invariants": ["silently configure GA4 property", "omit custom-definition dependency", "runtime required"]
+    },
+    {
+      "id": "unlisted-browser-vendor",
+      "route": "media",
+      "request": "Use configure-gtm for an unlisted browser media vendor with an approved media brief, complete source contract, current official browser event and consent documentation, and an inspected template. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "create", "object_type": "tag family", "name": "Official vendor browser implementation", "justification": "Generic media mapping contract is fully established by current official evidence."}
+      ],
+      "external_dependencies": ["Platform-side conversion or optimization setup is recorded separately."],
+      "expected_invariants": ["generic field-level map", "template permissions recorded", "product-specific consent classification"],
+      "forbidden_invariants": ["schema inferred from GA4", "consent inferred from another vendor", "runtime required"]
+    },
+    {
+      "id": "server-side-deduplication-deferred",
+      "route": "combined",
+      "request": "Use configure-gtm to add a server-side GTM route, browser/server event IDs, and CAPI deduplication to an otherwise approved client-side analytics and media design. No runtime access is available.",
+      "evidence_grades": ["approved-input"],
+      "expected_status": "Deferred",
+      "live_state_claim": false,
+      "expected_actions": [],
+      "external_dependencies": ["A future authorized server-side and deduplication capability must own this requirement."],
+      "expected_invariants": ["client-side work remains separately judgeable", "future capability recorded"],
+      "forbidden_invariants": ["browser event ID invented", "server container assumed", "client-side requirement blocked"]
+    }
+  ]
+}

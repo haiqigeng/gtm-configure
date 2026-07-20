@@ -66,7 +66,7 @@ Use strict/basic gating by default for the Meta base and all Meta events:
 
 - attach `Block - <CMP> - Meta denied`;
 - block unknown, uninitialized, and denied state;
-- verify that no Meta script or request loads before the required grant.
+- prove from the static trigger graph that Meta tags are expected to remain ineligible before the required grant.
 
 Use native limited-data or consent features only when explicitly requested and documented for the selected browser template. A grant/revoke command or built-in consent control does not by itself prove cookieless denied-state measurement or modeling. Follow the vendor consent-mode capability reference and do not infer Google Consent Mode behavior.
 

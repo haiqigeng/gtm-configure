@@ -1,5 +1,19 @@
 # Triggers and variables
 
+## Contents
+
+- [Prefer dataLayer Custom Events](#prefer-datalayer-custom-events)
+- [Configure Custom Event triggers precisely](#configure-custom-event-triggers-precisely)
+- [Model trigger Boolean logic](#model-trigger-boolean-logic)
+- [Handle initial page views and SPA navigation separately](#handle-initial-page-views-and-spa-navigation-separately)
+- [Use blocking triggers as vendor policy objects](#use-blocking-triggers-as-vendor-policy-objects)
+- [Select variables by purpose](#select-variables-by-purpose)
+- [Use lookup tables selectively](#use-lookup-tables-selectively)
+- [Inspect advanced tag execution settings](#inspect-advanced-tag-execution-settings)
+- [Use tag sequencing only when required](#use-tag-sequencing-only-when-required)
+- [Account for environments and hostnames](#account-for-environments-and-hostnames)
+- [Official entry points](#official-entry-points)
+
 ## Prefer dataLayer Custom Events
 
 Use one exact vendor-neutral Custom Event per business action whenever the dataLayer can provide the success signal. Reuse the same normal trigger across analytics and media tags when event timing and semantics are identical.
@@ -8,9 +22,9 @@ Create a different trigger type only when:
 
 - no reliable business event exists;
 - the analyst approves the fallback;
-- runtime evidence proves the chosen signal represents the action;
+- an approved site contract, supplied implementation artifact, or authoritative human decision establishes that the chosen signal represents the action;
 - the selector, URL, history state, visibility rule, or timing is stable;
-- the handoff records the resulting fragility and required QA.
+- the handoff records the resulting fragility and external site dependency.
 
 Do not create click, form, timer, scroll, visibility, DOM, or URL triggers merely because GTM supports them. A click is not automatically a successful form submission, purchase, or lead.
 
@@ -24,11 +38,23 @@ Do not create click, form, timer, scroll, visibility, DOM, or URL triggers merel
 
 Name normal triggers `CE - <event_name>`.
 
+## Model trigger Boolean logic
+
+Record the complete Boolean expression before creating triggers:
+
+- firing triggers on one tag are alternatives: any matching firing trigger can make the tag eligible;
+- filter rows within one trigger are cumulative and must all match;
+- any matching blocking/exception trigger prevents the tag from firing;
+- trigger groups, setup/cleanup sequencing, and tag firing options add separate lifecycle rules;
+- regex event names and filters must be deliberately anchored or unanchored, escaped, and tested against supplied positive and negative examples.
+
+Use the smallest trigger graph that expresses the approved logic. Do not compress independent OR-denial conditions into one trigger whose AND filters can never match together.
+
 ## Handle initial page views and SPA navigation separately
 
 For an initial page view under strict/basic gating, use the CMP's verified one-time readiness event when the page-view dataLayer push precedes usable consent state.
 
-Revalidate every page parameter on the CMP event that actually fires the tag. Use browser built-ins or retained dataLayer state only when the value is proven current; do not assume a value scoped to an earlier `page_view` push remains available. If the required source is unavailable or stale, record a blocker and require a CMP-safe application event or source contract.
+Revalidate every page parameter on the CMP event that actually fires the tag. Use browser built-ins or retained dataLayer state only when the approved source contract establishes that the value remains current; do not assume a value scoped to an earlier `page_view` push remains available. If the required source is unavailable or stale under the contract, record a blocker and require a CMP-safe application event or source contract.
 
 For an SPA:
 
@@ -40,7 +66,7 @@ For an SPA:
 
 ## Use blocking triggers as vendor policy objects
 
-Create one reusable block per CMP and vendor/platform when the approved strict/basic policy is shared. Name it `Block - <CMP> - <Vendor> denied`.
+Create the smallest reusable set of blocks that expresses the approved CMP predicate. One vendor/platform block is preferred when one native condition represents the complete grant. When category/purpose, vendor, product consent type, or initialization are independent required grants, use semantically named reusable blocks so any missing grant blocks; do not force mutually exclusive denial conditions into one AND trigger. Name vendor blocks `Block - <CMP> - <Vendor> denied` and qualify shared category/purpose blocks clearly.
 
 Make the blocking trigger's event matcher cover every normal event used by its consumer tags. For Custom Event consumers, use a tested regex scope when one shared block must cover several event names. Do not use a CMP readiness/change event as the exception's event name for unrelated business-event tags: the exception must activate on the same GTM event that could fire the tag.
 
@@ -61,6 +87,8 @@ Do not label a normal Custom Event trigger as a blocking trigger. Do not append 
 
 Prefer dataLayer values over DOM extraction. Do not use a JavaScript Variable to access a value already exposed cleanly through a DLV.
 
+For every DLV, record whether Version 1 literal-dot or Version 2 nested-path semantics match the actual source key. Do not change a reused DLV version without inspecting every consumer.
+
 ## Use lookup tables selectively
 
 Create a lookup or regex table only when:
@@ -72,6 +100,12 @@ Create a lookup or regex table only when:
 - representative inputs can be tested.
 
 Apply this judgement to analytics and media alike. Do not force a table into a direct one-to-one mapping.
+
+## Inspect advanced tag execution settings
+
+For every created or updated tag, inspect priority, custom schedule, live-only behavior, pause state, firing option, setup/cleanup references, and consent settings. Preserve defaults unless a current requirement or documented template/vendor constraint justifies a non-default value.
+
+Record the selected firing option, normally once per event unless the approved lifecycle requires once per page or unlimited execution. A higher priority changes asynchronous start order but does not create a completion dependency; use sequencing when a documented dependency must finish first.
 
 ## Use tag sequencing only when required
 
@@ -93,4 +127,7 @@ Never send staging/test traffic to a production destination unless explicitly in
 - https://support.google.com/tagmanager/answer/7679219
 - https://support.google.com/tagmanager/answer/7679318
 - https://support.google.com/tagmanager/answer/6238868
+- https://support.google.com/tagmanager/answer/2772421
 - https://developers.google.com/tag-platform/tag-manager/datalayer
+- https://support.google.com/tagmanager/answer/7683362
+- https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces.tags

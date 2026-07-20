@@ -2,134 +2,184 @@
 
 ## Contents
 
-- [Completion definition](#completion-definition)
+- [Static completion definition](#static-completion-definition)
 - [Judgement statuses](#judgement-statuses)
 - [Static validation matrix](#static-validation-matrix)
-- [Consent proof](#consent-proof)
+- [Consent configuration proof](#consent-configuration-proof)
 - [Handoff output](#handoff-output)
 
-## Completion definition
+## Static completion definition
 
-Mark a configuration complete only when all applicable conditions pass:
+Assign `Configured` only when authoritative current-workspace readback proves that the target
+already matches the approved contract or that authorized changes brought it into that state, and
+every applicable condition passes:
 
-1. Confirm the target account, web container, environment, authorization, and workspace.
-2. Create or reuse a dedicated workspace when possible; document and obtain approval for any Default Workspace fallback.
-3. Identify the correct analytics or media requirement authority.
+1. Confirm the target account, web container, environment, authorization, and workspace by stable
+   identity.
+2. Create or reuse a dedicated workspace when possible; document and obtain approval for any
+   Default Workspace fallback.
+3. Identify the correct analytics or media business authority and create one configuration-contract
+   record per independently judgeable requirement.
 4. For media, capture the media-team objective independently of any analytics tracking plan.
-5. Map every requirement to exact GTM objects and every destination field to its source, type, shape, transformation, and template field.
-6. Consult current official documentation for every destination event, parameter, template setting, per-product consent capability, CMP signal, and vendor identity.
-7. Validate the source dataLayer event, timing, types, null behavior, and zero/one/multi-item payloads where applicable.
-8. Inspect the installed template identity/version/permissions and reconcile its fields with official documentation.
-9. Reuse semantically compatible objects, avoid unintended duplicates, and justify every new object by a current requirement or documented constraint. A direct field or DLV must not be replaced by an unnecessary helper.
-10. Verify a normal firing path and the selected strict/basic or explicitly approved advanced consent behavior for every tag.
-11. Under the default strict/basic route, prove unknown, uninitialized, and denied state prevent firing. Treat a CMP value outside its documented contract as a blocking integration defect rather than a helper-variable requirement.
-12. Keep base/configuration tags from sending automatic page views by default and resolve every documented vendor exception or automatic/manual duplicate.
-13. Enable first-party user-data features only with explicit authorization, approved sources, current vendor requirements, and consent controls.
-14. Re-read every saved object and inspect references after mutation.
-15. Record configuration evidence separately from runtime Preview/network/vendor evidence. If any required runtime assertion remains, use `Needs runtime QA`; do not also label that requirement `Complete`.
-16. Confirm that no publish, Submit, or GTM version action occurred.
+5. Give every critical business, source, destination, template, consent, and container fact a
+   non-assumption evidence grade.
+6. Consult current official documentation for every destination event, field, template behavior,
+   per-product consent capability, CMP signal, and vendor identity.
+7. Establish the source event, timing contract, type, scope, cardinality, null behavior, state
+   lifetime, and representative zero/one/many payloads where applicable.
+8. Map every destination field through business meaning, source contract, GTM resolution, installed
+   template field, official destination contract, and representative result.
+9. Inspect the installed template identity/version/permissions and reconcile visible fields and
+   hidden behavior with current official documentation.
+10. Complete the object change manifest, reuse semantically compatible objects, avoid known
+    duplicates, and justify every create or update by a current requirement or documented constraint.
+11. Prove a static normal firing path and the selected strict/basic or explicitly approved advanced
+    consent configuration for every tag without describing it as observed runtime behavior.
+12. Resolve known base/configuration, automatic/manual event, environment, and shared-execution-unit
+    conflicts from the available container and approved-input evidence.
+13. Enable first-party user-data features only with explicit authorization, approved sources,
+    current vendor requirements, and consent controls.
+14. Record every external site, CMP, GA4-administration, advertising-platform, and publication
+    dependency without claiming it was completed by GTM configuration.
+15. Before any mutation, capture stable IDs/fingerprints and exact pre-change state. Whether or not
+    a write is needed, re-read every relevant saved object from the current workspace and compare
+    fields and references with the manifest.
+16. Confirm that a repeated execution against the saved state would reuse or leave objects untouched,
+    and that no publish, Submit, or GTM version action occurred.
 
-If any applicable condition is unverified, do not mark the affected work complete.
+For `Specification complete`, apply the same conditions except live mutation and saved-object
+readback. Provide exact planned fields, dependencies, action semantics, and verification assertions,
+and state that no live GTM object changed.
+
+Runtime execution is outside this skill and is never an input or completion condition. Static
+configuration must not be presented as browser, network, CMP, or vendor-platform observation.
 
 ## Judgement statuses
 
+Apply one status per requirement or tag family:
+
 | Status | Meaning |
 | --- | --- |
-| Complete | All applicable configuration criteria pass and every runtime assertion required by the acceptance contract is already evidenced; no required validation remains. |
-| Blocked | Critical authorization, destination, official requirement, source data, template behavior, consent fact, or runtime timing cannot be established safely. |
-| Deferred | The requirement depends on server-side GTM, Conversions API, browser/server deduplication, event-ID architecture, or another planned future capability. |
-| Needs runtime QA | Static object state passes, but one or more explicitly listed GTM Preview, browser network, CMP journey, or vendor-diagnostic assertions remain. Do not also label the same requirement `Complete`. |
+| `Configured` | Authoritative current-workspace readback proves the saved state already matched the approved contract or that authorized changes were applied; every relevant object passes the static invariants. |
+| `Specification complete` | The complete object-level design passes static invariants, but mutation was not authorized or no mutation path was available. |
+| `Partial` | The current authorized operation changed some objects but could not finish; exact saved state, dependencies, and safe recovery boundary are recorded. |
+| `Blocked` | A critical authorization, business, source, destination, template, consent, or mutation fact cannot be established safely. |
+| `Deferred` | The requirement depends on server-side GTM, CAPI, browser/server deduplication, event-ID architecture, or another intentionally future capability. |
 
-Apply a status per requirement/tag family when a mixed implementation has different outcomes.
+Apply mixed statuses at requirement or tag-family grain. Do not label an unaffected family `Partial`
+or `Blocked` merely because another family failed.
 
 ## Static validation matrix
 
 Use every applicable scenario:
 
-| Scenario | Required assertion |
+| Scenario | Required static assertion |
 | --- | --- |
-| Analytics tracking-plan event | The plan's business action maps to the current official analytics event/parameters and a vendor-neutral Custom Event. |
-| Direct analytics request | Missing plan does not block when business meaning and source contract are otherwise established. |
+| Analytics tracking-plan event | The approved business action maps to the current official analytics event/fields, explicit source contract, and vendor-neutral Custom Event. |
+| Direct analytics request | A missing plan does not block when approved business meaning, intended use, and the complete source contract are otherwise established. |
 | Media brief absent from tracking plan | The media brief drives the destination; the plan is used only for reusable source evidence. |
-| Informal media event label | No tag is created until the official standard/custom event and field schema are established. |
-| Standard versus custom media event | A standard event is preferred when semantics fit; custom use and platform limitations are documented. |
-| GA4 config | `GA4 - Config` uses a relative measurement-ID reference where appropriate and does not send an automatic page view by default. |
-| GA4 Event Settings | `GA4 - Event Setting` exists only when genuinely shared fields simplify the design. |
-| Manual GA4 page view | Automatic and Enhanced Measurement behavior is inspected, every parameter is current on the actual firing event, and no duplicate page view remains. |
-| Google Ads conversion | Conversion ID/label, value, currency, transaction ID, trigger, and consent match current official requirements. |
+| Informal media label | No tag is configured until the official standard/custom event, destination identity, and field schema are established. |
+| No runtime access | Approved inputs, representative payloads, current documentation, template, and container evidence are graded; runtime is not requested or used as a completion gate. |
+| Critical assumption | The affected requirement is `Blocked`; an assumption never supplies an ID, source timing/type, consent predicate, or required destination field. |
+| Standard versus custom event | A standard event is preferred when semantics fit; custom use, naming limits, and optimization/reporting consequences are documented. |
+| GA4 config | `GA4 - Config` uses a relative measurement-ID reference where appropriate and follows the approved page-view architecture. |
+| GA4 Event Settings | `GA4 - Event Setting` exists only when genuinely shared fields simplify the selected events. |
+| Manual GA4 page view | Known Google tag and Enhanced Measurement settings are reconciled, parameters are available under the source contract, and no known automatic/manual duplicate remains. |
+| GA4 external administration | Required custom definitions, key-event designation, data-stream, Enhanced Measurement, cross-domain, or other Google/GA4 settings outside the GTM authorization are listed separately. |
+| Google Ads conversion | Conversion ID/label, value, currency, transaction ID, trigger, direct/imported architecture, external conversion action, and consent are explicit. |
 | Google Ads dynamic remarketing | Business vertical/feed IDs and every item match the current Google Ads schema rather than an unmodified GA4 array. |
-| Conversion Linker | It is created/reused only after checking the current Google tag architecture and existing linkers. |
-| Microsoft UET | UET base/page-load behavior and custom-event fields match current Microsoft documentation and platform-goal conditions remain distinct. |
-| Meta ecommerce | `content_ids`, `contents`, value/currency, and all items use the current documented shapes; item zero is not selected. |
-| TikTok event | Current standard/custom name, reserved-name rules, objective-specific parameters, and Event Builder duplicates are checked. |
-| Snap event | Current browser Pixel event/template documentation, rather than Conversions API analogy, establishes the schema. |
-| Other media vendor | Current official browser, event, parameter, consent, and template documentation is recorded before configuration. |
-| Base/configuration tag | When initialization is in scope, one compatible path supplies only documented behavior, has a valid once-per-page opportunity after initial or later consent grant where required, and does not duplicate an existing base implementation or inherent page-load event. |
-| Default strict/basic consent | One shared CMP block per vendor/platform prevents tag loading/firing for unknown and denied consent. |
-| Blocking-trigger event scope | The exception matcher activates on every normal GTM event used by its consumer tags; a CMP-only event matcher does not claim to block unrelated business events. |
-| Direct CMP blocking condition | The blocking trigger tests the documented CMP state variable directly with one native negative condition that covers every non-granted state. No consent CJS, JavaScript, table, or Boolean helper is created; an unsupported source contract is `Blocked`. |
-| Advanced Google product-family Consent Mode | The exact Google tag, GA4, Google Ads, Floodlight, or Conversion Linker products are listed; explicit approval exists; defaults precede affected tags, updates are timely, and blocking logic does not defeat intended behavior. |
-| Shared Google execution unit | Every destination or consumer of a shared Google tag/linker has a compatible consent route, or a current officially supported separation is approved; incompatible basic and advanced policies are not attached to one execution unit. Compatible blocking triggers are reused by semantic equivalence rather than duplicated by product label. |
-| Advanced Microsoft Advertising UET | Explicit approval exists; `ad_storage`, immediate loading, anonymized denied-state collection, updates, and GTM template behavior match current Microsoft documentation. |
-| Microsoft Clarity advanced mode | Clarity is decided separately from UET; its current Consent API/types, cookieless denied behavior, storage, updates, and UET coupling are verified. |
-| Adaptive/anonymous analytics | The exact Matomo, Piwik PRO, or other official reduced-data mode and its limits are documented, and an approved client policy exists; the agent does not supply the legal basis. Capability classification does not authorize tag configuration outside this skill's current Google tag/GA4 analytics route. |
-| Native cookie or stop/hold control | Cookie suppression or event holding is not mislabeled as advanced denied-state measurement; unresolved transmission remains strictly blocked. |
-| First-party user data | Explicit authorization, vendor field/normalization/hash rules, controlled sources, consent, and no PII leakage are proven. |
-| Source missing | The required dataLayer change is a blocker; no DOM/click/URL fallback or invented value is added silently. |
-| Multi-item transformation | Empty, one-item, and multi-item outputs preserve exact arrays, objects, types, and all eligible items. |
-| Lookup/RLT | Multiple deterministic scenarios and tested no-match behavior justify the table. |
-| Custom JavaScript | Built-ins cannot express a required destination transformation cleanly; the function is narrow, null-safe, and tested. Routine CMP vendor consent is not transformed in CJS. |
-| SPA page view | Application event, History Change, Enhanced Measurement, and vendor auto-SPA behavior cannot duplicate one another. |
-| Tag sequencing | The initiating tag carries the vendor block and denied/unknown consent cannot invoke setup or cleanup tags that would ignore their own triggers. |
-| Community template | Publisher, version, permissions, fields, update diff, and approval are recorded. |
-| Existing-object reuse | Output, ownership, timing, consent, consumers, environment, and future change path are compatible. |
-| Tool unavailable | The complete object specification is returned and no live-change claim is made. |
-| Deferred server-side dependency | No event-ID or browser/server configuration is added; future work is recorded as deferred. |
+| Conversion Linker | It is created/reused only after checking current Google tag architecture, consumers, cross-domain need, and existing linkers. |
+| Microsoft UET | Base/page-load behavior, custom-event fields, external goal configuration, and selected consent route remain distinct. |
+| Meta ecommerce | `content_ids`, `contents`, value/currency, catalog identifiers, and all items use current documented browser shapes. |
+| TikTok event | Current standard/custom name, objective fields, Event Builder/automatic dependencies, and external settings are recorded. |
+| Snap event | Current browser Pixel and installed-template documentation, rather than CAPI analogy, establishes the schema. |
+| Other media vendor | Current official browser event, field, consent, matching, and template documentation is recorded before configuration. |
+| Existing initialization | A compatible GTM tag, hard-coded/partner dependency supplied by the analyst, or template path is reused; no speculative duplicate base tag is added. |
+| Base/configuration tag | One compatible initialization path contains only documented behavior and has a valid configured opportunity under the approved consent lifecycle. |
+| Default strict/basic consent | The approved CMP predicate translates into blocks that are expected to prevent every in-scope loader/event path for unknown and denied states. |
+| Blocking-trigger event scope | Each exception can activate on every GTM event used by its consumers; a CMP-only matcher does not claim to block unrelated events. |
+| Compound consent predicate | Required category/purpose, vendor, product consent type, initialization, and region components from the approved policy are represented or the design is blocked. |
+| Direct CMP condition | Native documented state is tested directly when safe; unsupported or undocumented state shape is blocked rather than hidden in a speculative helper. |
+| Advanced Google family | Exact products, explicit approval, defaults/updates, shared execution units, and intended denied-state behavior are documented without a defeating block. |
+| Shared Google execution unit | Every destination/consumer has a compatible route or an officially supported separation is approved; incompatible routes are not claimed to coexist. |
+| Advanced Microsoft UET | Explicit approval, `ad_storage`, default/update order, installed template, and documented denied-state behavior are established. |
+| Microsoft Clarity | Clarity is decided separately from UET and uses its current official Consent API/types and installed integration. |
+| Native cookie or stop/hold control | Cookie suppression or holding is not mislabeled as advanced denied-state measurement. |
+| First-party user data | Explicit authorization, accepted fields, normalization/hash ownership, controlled source, consent, and destination isolation are proven statically. |
+| Missing source | The required site/dataLayer obligation is a blocker; no DOM/click/URL value or placeholder is silently invented. |
+| Non-dataLayer fallback | The analyst explicitly approves the supplied stable selector/URL/history/visibility contract and its fragility is documented; otherwise it is blocked. |
+| Multi-item transformation | Supplied empty, one-item, and multi-item cases preserve exact arrays, objects, types, and every eligible item. |
+| Lookup/RLT | Multiple real deterministic scenarios and safe no-match behavior justify the table. |
+| Custom JavaScript | Built-ins cannot express a required destination transformation cleanly; the function is narrow, deterministic, null-safe, and covered by static test vectors. |
+| DLV version | Version 1 literal-dot versus Version 2 nested-path semantics are selected deliberately for the supplied source contract. |
+| Trigger filters | OR behavior across firing triggers, AND behavior within filters, exception precedence, regex anchoring, and repeatability are explicit. |
+| Tag advanced settings | Priority, schedule, live-only behavior, firing option, sequencing, and failure behavior remain default unless currently required and documented. |
+| SPA page view | Application event, known History Change and Enhanced Measurement settings, and vendor automatic behavior do not create a known duplicate. |
+| Tag sequencing | The initiating tag carries the vendor block and unknown/denied state is statically expected not to start setup or cleanup tags. |
+| Community template | Publisher, version/commit, permissions, fields, update diff, consumers, and explicit approval are recorded. |
+| Existing-object reuse | Output, ownership, timing, consent, consumers, environment, template, and future change path are compatible. |
+| Workspace precondition | Dedicated workspace identity, pre-existing changes, synchronization state, conflicts, object IDs, fingerprints, and pre-change state are recorded. |
+| Idempotent second execution | The saved state produces `reuse` or `untouched`, not duplicate objects or repeat updates. |
+| Tool unavailable | The complete contract is `Specification complete` and no live-change claim is made. |
+| Partial mutation | Dependent writes stop; saved created/updated objects, untouched work, exact blocker, and safe recovery boundary are recorded. |
+| Deferred server-side dependency | No event-ID or browser/server configuration is added; future work is `Deferred`. |
 
-## Consent proof
+## Consent configuration proof
 
-For strict/basic gating, evaluate each vendor's base/configuration and event tags under:
+For strict/basic gating, derive an expected configuration decision for each vendor base/configuration
+and event tag under:
 
-- CMP not initialized;
-- consent value undefined;
-- CMP value outside its documented contract, which fails integration validation and leaves the affected design blocked;
-- vendor denied;
+- CMP not initialized or source undefined;
+- source value outside its approved documented contract;
+- required category/purpose or vendor denied;
 - another vendor granted while this vendor remains denied;
-- vendor granted before the normal event;
-- grant after initial denial;
-- revocation after grant, including any already-loaded script and automatic vendor behavior;
-- repeatable consent-change and page-view events.
+- required grant present before the normal event;
+- later grant after an initial denial;
+- revocation after grant, including the limitation that a GTM block does not unload an already
+  loaded script;
+- repeatable readiness/change and business events.
 
-Record `fires` or `does not fire`, the normal trigger, the blocking trigger, and the actual condition responsible. A visible consent value or built-in-check label without final non-fire proof fails strict/basic acceptance.
+Record `expected to fire` or `expected not to fire`, the normal trigger, blocking trigger, predicate,
+event scope, tag firing option, and condition responsible. Mark this as static configuration logic.
+Do not write `fires` or `does not fire` as an observed fact.
 
-For advanced behavior, record instead:
+For explicitly approved advanced behavior, record instead:
 
-- explicit approval and vendor feature;
-- exact browser product and consent classification;
-- default and updated consent states;
-- whether the tag loads under denied state;
-- exact documented request/storage behavior under denied state;
-- absence of disallowed cookies or user-provided data;
-- the mechanism that changes behavior after grant/revocation.
+- exact browser product, official feature, and approval;
+- defaults, updates, returning-choice handling, and revocation command;
+- documented denied-state loading, request, storage, identifier, and data-use behavior;
+- installed template/CMP support and fields;
+- absence of disallowed user-provided data in the configured denied route;
+- any external account, CMP, site, or optional validation dependency.
 
-Label the result `advanced consent-aware`, not `strictly blocked`.
+Label the configuration `advanced consent-aware`, `native stop/hold`, `native cookie-control`, or
+`adaptive/anonymous analytics` as applicable; do not collapse it into `consent gated`.
 
 ## Handoff output
 
-Return a concise traceable handoff containing:
+Return two layers.
+
+### Analyst summary
 
 - target account, container, environment, and workspace;
-- primary requirement source for analytics and/or media;
-- requirement-to-object map;
-- field-level source-to-DLV-to-template-to-destination map;
-- official sources, page titles, access dates, and key decisions;
-- consent-capability matrix per browser product, including denied-state loading, requests, storage, API/types, CMP/template, approval, and status;
-- template identity/version and permissions;
-- created, modified, reused, and intentionally untouched objects;
-- current requirement or documented constraint justifying each created object;
-- normal firing trigger and final consent mechanism per tag/browser product;
-- configuration validation results and judgement status;
-- blockers, missing dataLayer requirements, deferred capabilities, and required runtime tests;
-- explicit confirmation that no publication or GTM version occurred.
+- authorized scope and primary analytics/media inputs;
+- status by requirement/tag family;
+- created, updated, reused, untouched, partial, blocked, and deferred work;
+- external site, CMP, GA4, advertising-platform, publication, and optional validation dependencies;
+- confirmation that runtime execution was not performed or claimed;
+- confirmation that no publication or GTM version occurred.
 
-Do not present static inspection as runtime evidence. Route full interactive journey validation to the separate GTM Preview recette workflow.
+### Technical annex
+
+- complete configuration-contract records and evidence grades;
+- requirement-to-object graph and ordered change manifest;
+- field-level business-to-source-to-GTM-to-template-to-destination map;
+- current official sources, page titles, access dates, and decisions;
+- product-level consent predicate and capability matrix;
+- template identity/version, permissions, fields, and consumers;
+- object IDs/paths, fingerprints, pre-change state, intended/saved fields, and references;
+- static validation results and idempotency result;
+- exact partial-state recovery boundary, blockers, external dependencies, and deferrals.
+
+Keep the summary concise and the annex complete. Do not duplicate the entire annex in object notes,
+and do not present static inspection as runtime evidence.

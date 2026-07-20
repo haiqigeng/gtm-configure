@@ -7,6 +7,7 @@
 - [Keep page view separate by default](#keep-page-view-separate-by-default)
 - [Configure events from the official schema](#configure-events-from-the-official-schema)
 - [Govern user properties and identifiers](#govern-user-properties-and-identifiers)
+- [Record external Google and GA4 administration](#record-external-google-and-ga4-administration)
 - [Apply consent](#apply-consent)
 - [Naming examples](#naming-examples)
 
@@ -60,7 +61,7 @@ When page-view configuration is in the approved scope, keep the Google tag from 
 
 When the approved requirement includes a manually managed page view and no compatible tag already supplies it, create `GA4 - Event - page_view` with the approved source values and trigger. Before doing so:
 
-1. Inspect existing Google tags and hard-coded gtag installations.
+1. Inspect existing Google tags and any supplied evidence of hard-coded or partner installations; record unknown outside-container installation as an external dependency.
 2. Inspect Enhanced Measurement page-load and browser-history behavior.
 3. Disable or avoid overlapping automatic behavior.
 4. Verify page-load and SPA navigation semantics separately.
@@ -68,7 +69,7 @@ When the approved requirement includes a manually managed page view and no compa
 
 If the normal `page_view` dataLayer event occurs before CMP state is ready under strict/basic gating, use the CMP's officially documented one-time readiness event and a verified vendor gate. Do not use a repeatable consent-change event without an explicit duplicate and late-consent policy.
 
-When the tag fires on a CMP event instead of the original `page_view` event, revalidate every page parameter at that later event. Use browser built-ins or retained dataLayer state only when evidence proves the value is current and in scope; never assume an earlier event-scoped payload remains available. If a required value is missing or stale, block the page-view implementation and request a CMP-safe application event or source contract.
+When the tag fires on a CMP event instead of the original `page_view` event, revalidate every page parameter at that later event. Use browser built-ins or retained dataLayer state only when the approved source contract establishes that the value is current and in scope; never assume an earlier event-scoped payload remains available. If a required value is missing or stale under the contract, block the page-view implementation and request a CMP-safe application event or source contract.
 
 ## Configure events from the official schema
 
@@ -81,7 +82,7 @@ For each GA4 event:
 5. Map each destination parameter to a named GTM variable or documented transformation.
 6. Validate a representative resolved event, including all ecommerce items.
 
-When a source key is misspelled, verify whether that exact key exists in runtime data. Name the DLV for the actual source key, then map it to the correctly spelled official GA4 parameter. Do not propagate source typos into destination fields.
+When a source key is misspelled, verify that the approved source contract uses that exact key. Name the DLV for the actual source key, then map it to the correctly spelled official GA4 parameter. Do not propagate source typos into destination fields.
 
 Treat `value` and `currency`, transaction identifiers, and `items` according to the exact event reference. Never infer an item parameter from a similarly named event parameter.
 
@@ -89,7 +90,21 @@ Treat `value` and `currency`, transaction identifiers, and `items` according to 
 
 Add a user property only when it is an approved, stable user attribute with a valid analysis use and current GA4 documentation permits it. Keep it in an Event Settings variable only when it genuinely applies across the intended events.
 
+Treat `user_id` as a separately approved identifier contract, not a routine event parameter or user property. Establish its source, authentication lifecycle, reset behavior, consent, and current official requirements before configuration.
+
 Do not send personally identifiable information to GA4. Do not repurpose media advanced-matching fields as GA4 parameters or user properties.
+
+## Record external Google and GA4 administration
+
+For every collected field or event, determine whether the approved reporting use also requires work outside the authorized GTM change. Record, without silently changing:
+
+- GA4 custom dimensions or metrics for custom event, item, or user fields;
+- GA4 key-event designation;
+- data-stream or Enhanced Measurement settings that can duplicate or alter the selected event;
+- Google tag destinations, shared settings, cross-domain configuration, unwanted-referral handling, or other current administration surfaces;
+- advertising or audience activation settings owned outside GTM.
+
+Resolve the current configuration surface from official documentation. Classify each dependency as already confirmed, separately authorized, required external work, intentionally untouched, or blocking.
 
 ## Apply consent
 

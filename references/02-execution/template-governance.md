@@ -22,6 +22,7 @@ Record:
 - field names, defaults, required fields, and hidden automatic behavior;
 - consent APIs/checks and automatic matching/event behavior;
 - existing tags that consume the template;
+- container/zone type restrictions, boundaries, and linked-container ownership when Zones are present;
 - update diff and changed permissions when an update is available.
 
 Do not add or update a template as an incidental side effect. Obtain approval when installation, update, or new permissions materially expand execution or data access.
@@ -45,6 +46,8 @@ Do not use Custom HTML to set GTM consent state when a verified CMP/consent temp
 
 When Custom HTML/Image is unavoidable, document script/pixel source, execution timing, selected consent mechanism and denied-state behavior, CSP impact, failure behavior, and the reason no supported template fits.
 
+Do not modify Zones, linked containers, allow/block restrictions, or container security policy as an incidental configuration step. Record a restriction that prevents the requested tag as an external dependency or blocker unless that exact control is separately authorized.
+
 ## Verify after mutation
 
 Re-read the saved tag and template. Confirm:
@@ -62,3 +65,4 @@ Record the template in the handoff even when no template change occurred.
 - https://support.google.com/tagmanager/answer/9454109
 - https://developers.google.com/tag-platform/tag-manager/templates
 - https://developers.google.com/tag-platform/tag-manager/templates/permissions
+- https://support.google.com/tagmanager/answer/7647043

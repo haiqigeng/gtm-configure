@@ -43,6 +43,8 @@ For every affected product and installed template, establish from current offici
 
 Re-open the sources at execution time. The map below is a dated discovery aid, not permanent authority and not an expansion of the selected tag-configuration scope. In particular, Matomo and Piwik PRO entries classify consent capability only; they do not add analytics tag creation or modification beyond this version's Google tag/GA4 route.
 
+Discovery baseline last reviewed: 2026-07-20. Record a new access date and current official evidence for every implementation.
+
 ## Use the current verified capability map
 
 The following map was verified from official browser documentation on 2026-07-18. Current official documentation and the installed template always override it.
@@ -75,7 +77,7 @@ When the analyst explicitly approves a documented advanced or adaptive route:
 4. Allow only the tags and requests covered by the approved denied-state contract. Do not remove blocks from unrelated products.
 5. Do not send user-provided data, advanced-matching identifiers, or another field under denial unless current official documentation and the approved policy explicitly permit that exact field.
 6. Keep page-view and automatic-event decisions separate from consent initialization.
-7. Validate denied, granted, late grant, returning visitor, and revocation states with the product's official diagnostic method and browser network/storage evidence.
+7. Derive denied, granted, late-grant, returning-visitor, and revocation expectations from the configured defaults, updates, triggers, template, and approved contract. Keep them explicitly labeled as static configuration expectations.
 
 Make the decision per product. GA4 and Google Ads may use different approved routes. UET and Clarity require separate decisions. A vendor-wide CMP category is not sufficient evidence that all its products behave identically.
 
@@ -93,7 +95,7 @@ When any denied-state request, field, storage, or revocation behavior remains un
 
 For each product, add a consent-capability row to the handoff:
 
-| Product | Official mode | Selected classification | Loads denied | Request denied | Storage denied | Consent API/types | CMP/template | Approval | Runtime evidence/status |
+| Product | Official mode | Selected classification | Loads denied | Request denied | Storage denied | Consent API/types | CMP/template | Approval | Static status / optional supplied evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Use exact documented language for denied-state transmission. Label the final result `strict/basic blocked`, `native stop/hold`, `native cookie-control`, `advanced consent-aware`, or `adaptive/anonymous analytics`. Do not collapse them into `consent gated`.

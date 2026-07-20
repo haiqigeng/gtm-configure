@@ -12,6 +12,7 @@
 - [Preserve ecommerce cardinality](#preserve-ecommerce-cardinality)
 - [Govern first-party user data](#govern-first-party-user-data)
 - [Apply consent](#apply-consent)
+- [Record external platform dependencies](#record-external-platform-dependencies)
 - [Handle an undocumented vendor](#handle-an-undocumented-vendor)
 - [Current client-side boundary](#current-client-side-boundary)
 
@@ -41,7 +42,7 @@ Do not create a tag from an informal label such as "purchase pixel" or "lead con
 
 1. Use the media brief for business intent and requested destination use.
 2. Use current official vendor documentation for the destination event and parameter schema.
-3. Use the existing dataLayer, tracking plan, and runtime evidence for source availability and timing.
+3. Use the approved source contract, tracking plan, representative payloads, and target container for source availability and timing.
 4. Use the installed GTM template/version for actual UI fields and execution behavior.
 
 Never configure one media platform by analogy with GA4 or another media vendor.
@@ -58,7 +59,7 @@ Record before mutation:
 | Vendor parameter | Exact destination name. |
 | Requirement | Required, recommended, optional, or conditionally required. |
 | Contract | Type, format, enum, item/event scope, and cardinality. |
-| Source | dataLayer key, existing GTM variable, constant, or approved fallback. |
+| Source | dataLayer key, evidence grade, existing GTM variable, constant, or approved fallback. |
 | Transformation | Exact logic, null behavior, and zero/one/many output. |
 | Template UI field | Visible field in the installed template/version. |
 | Consent | CMP vendor identity, strict/basic block or explicitly approved native advanced behavior. |
@@ -80,7 +81,7 @@ Check reserved names, naming limits, reporting/optimization eligibility, and pla
 
 Configure base or initialization tags only for documented initialization and shared settings. Do not make a base/configuration tag send a page view by default.
 
-First establish whether a compatible GTM tag, hard-coded implementation, partner integration, or template behavior already supplies initialization. Create a GTM base/configuration tag only when initialization is in scope and no compatible path exists.
+First establish from the target container and approved supplied evidence whether a compatible GTM tag, hard-coded implementation, partner integration, or template behavior already supplies initialization. Create a GTM base/configuration tag only when initialization is in scope and no compatible path exists; record unknown outside-container initialization as an external dependency rather than claiming absence.
 
 Create page-view and business-event tags separately unless the current official template requires an inseparable documented base event. Where a base tag inherently emits a page-load event, document that exception and prevent any duplicate manual page-view tag.
 
@@ -110,7 +111,20 @@ Do not enable enhanced conversions, advanced matching, automatic matching, DOM s
 
 ## Apply consent
 
-Use strict/basic CMP gating by default for both base and event tags. Prefer one shared block per vendor/platform. Configure a native advanced consent mode only when the media team/analyst explicitly requests it, the vendor officially supports it, and its denied-state transmission is understood and approved.
+Use strict/basic CMP gating by default for both base and event tags. Use the smallest reusable block set that expresses the complete approved predicate. Configure a native advanced consent mode only when the media team/analyst explicitly requests it, the vendor officially supports it, and its denied-state transmission is understood and approved.
+
+## Record external platform dependencies
+
+For every browser tag, record current work required outside GTM, including when applicable:
+
+- conversion actions, labels, goals, custom conversions, or imported analytics events;
+- optimization eligibility, audience or remarketing settings, and account-level feature activation;
+- feed, catalog, business vertical, product-ID convention, and destination ownership;
+- Event Builder, automatic events, partner/CMS installations, or existing site code;
+- enhanced/advanced matching terms, account controls, and approved data sources;
+- publication and vendor-platform administration outside the authorized GTM change.
+
+Classify each dependency as confirmed, separately authorized, required external work, intentionally untouched, or blocking. Sending a browser event never proves that a platform-side conversion or optimization object exists.
 
 ## Handle an undocumented vendor
 

@@ -9,7 +9,7 @@
 - [Implement advanced mode only when approved](#implement-advanced-mode-only-when-approved)
 - [Keep tag behavior and page views separate](#keep-tag-behavior-and-page-views-separate)
 - [Configure every Google product consistently](#configure-every-google-product-consistently)
-- [Define the Tag Assistant handoff](#define-the-tag-assistant-handoff)
+- [Record static consent assertions](#record-static-consent-assertions)
 - [Official entry points](#official-entry-points)
 
 ## Treat Consent Mode as broader than GA4
@@ -56,7 +56,7 @@ For basic behavior:
 3. Make unknown, uninitialized, and denied state block.
 4. Attach the applicable block to each Google config, event, conversion, remarketing, and linker execution unit only after verifying that every destination or consumer of that unit has a compatible basic policy.
 5. Fire tags only after the required grant.
-6. Confirm that no Google request is sent before consent under the approved basic policy.
+6. Prove from the complete GTM object graph that no in-scope Google execution unit is eligible before the required grant; describe this as a configured expectation, not observed network behavior.
 
 Use names such as `Block - Didomi - GA4 denied` and `Block - Didomi - Google Ads denied`.
 
@@ -91,22 +91,20 @@ Apply the selected product decision to each in-scope Google tag, GA4 tag, Google
 
 Different products may use different approved routes, but never mix a basic blocked product with an advanced product accidentally. Inventory shared destinations and helpers, require an explicit destination-by-destination decision and validation matrix, and split or block the design when one execution unit cannot satisfy every selected route.
 
-## Define the Tag Assistant handoff
+## Record static consent assertions
 
-This configuration skill does not execute the full interactive runtime recette. Specify the following assertions for the GTM Preview recette workflow. If equivalent runtime evidence was not already supplied and verified, classify the affected configuration as `Needs runtime QA`, not `Complete`.
-
-Verify:
+This configuration skill does not execute runtime recette. Derive these assertions from the approved consent contract, configured defaults/updates, complete tag graph, and current official product behavior:
 
 - default consent is set before affected tags;
 - every required consent type has the expected initial value;
 - updates occur on the interaction page;
 - revocation updates the state;
-- basic mode sends no pre-consent Google request;
-- advanced mode sends only the documented denied-state requests and no cookies/storage prohibited by the selected state;
+- basic mode is configured so no in-scope Google execution unit is eligible before consent;
+- advanced mode is configured for only the documented denied-state behavior and storage rules;
 - tags list the expected built-in and additional consent checks;
 - page views and conversions are not duplicated after consent updates.
 
-Record whether the result is `strict/basic blocked` or `advanced consent-aware`; do not collapse both into the label `consent gated`.
+Record the configured route as `strict/basic blocked` or `advanced consent-aware`; do not collapse both into the label `consent gated`. Label every result as a static configuration expectation, not observed browser behavior.
 
 ## Official entry points
 

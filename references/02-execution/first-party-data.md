@@ -10,7 +10,7 @@ Do not enable automatic or manual collection by default. Require:
 - the client-approved purpose and consent policy;
 - confirmation that required vendor terms/settings are completed outside GTM where applicable;
 - current official browser documentation for supported fields and handling;
-- an approved source and representative non-production test data.
+- an approved source contract, evidence grade, and representative non-production test data.
 
 Do not make the legal decision. Stop when the analyst cannot establish approved data use.
 
@@ -68,11 +68,11 @@ Do not assume that hashing replaces consent or makes a value anonymous.
 
 Use synthetic test values when possible. Verify:
 
-- source availability at the exact event;
+- source availability at the exact event according to the approved contract;
 - normalization and hash ownership;
 - template field resolution;
-- no collection before required consent;
-- no user data in denied-state requests when prohibited;
+- configured collection fields remain ineligible before required consent;
+- configured denied-state routes omit user data when prohibited by the approved contract;
 - no PII in GA4, URLs, logs, reports, or unrelated tags;
 - missing input produces no invented fallback.
 

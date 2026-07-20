@@ -46,7 +46,7 @@ Do not enable automatic or manual customer matching by default. Require explicit
 
 ## Apply consent
 
-Use strict/basic CMP gating by default for the Snap base and all event tags. Attach `Block - <CMP> - Snapchat denied` and make unknown and denied state prevent any Snap script/request.
+Use strict/basic CMP gating by default for the Snap base and all event tags. Attach the complete approved Snapchat block set and prove from the static trigger graph that unknown and denied states are expected to keep Snap tags ineligible.
 
 Use a native consent capability only when explicitly requested and its complete denied-state request, storage, and data-use behavior is established by current official Snap browser documentation. A template consent field alone does not establish advanced behavior. Follow the vendor consent-mode capability reference and do not infer Google Consent Mode behavior.
 

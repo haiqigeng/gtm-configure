@@ -57,7 +57,7 @@ Do not enable automatic or manual Advanced Matching by default. Require explicit
 
 ## Apply consent
 
-Use strict/basic CMP gating by default for the Pixel base and all event tags. Attach `Block - <CMP> - TikTok denied` and prove no Pixel script/request loads for unknown or denied consent.
+Use strict/basic CMP gating by default for the Pixel base and all event tags. Attach the complete approved TikTok block set and prove from the static trigger graph that Pixel tags are expected to remain ineligible for unknown or denied consent.
 
 TikTok documents a Pixel cookie-consent mode and cookie enable/disable controls. Classify that first as `native cookie-control`, not automatically as advanced denied-state measurement. Cookie suppression does not prove which events, fields, identifiers, or requests continue, nor that TikTok applies an advertiser-specific model.
 

@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v20*"
+      - "v*.*.*"
 
 permissions:
   contents: write
@@ -22,7 +22,7 @@ jobs:
         run: |
           python -m ruff format --no-cache --check scripts tests
           python -m ruff check --no-cache scripts tests
-          python scripts/check_release.py --tag "$GITHUB_REF_NAME" --release-notes CHANGELOG.md
+          python scripts/check_release.py --tag "$GITHUB_REF_NAME" --release-notes CHANGELOG.md --require-git-tag --require-clean-tree
           python -m unittest discover -s tests -v
       - name: Build runtime package
         run: python scripts/build_skill_package.py --output "dist/configure-gtm-$GITHUB_REF_NAME.zip"

@@ -1,5 +1,88 @@
 # Changelog
 
+## 2.0.0
+
+### Why This Release Matters
+
+- Gives the skill one clear north star: translate approved client-side analytics
+  and media requirements into the smallest authorized, statically verifiable,
+  traceable, and consent-controlled GTM change set.
+- Makes configuration completion possible from an approved tracking plan,
+  direct human requirement, or media brief without requiring runtime access.
+- Retains deliberate complexity where it protects compound consent, shared tag
+  architecture, data shape, workspace safety, and mutation integrity.
+
+### What Changed
+
+- Add a mandatory adapter-neutral configuration contract with evidence grades,
+  requirement records, field mappings, an object change manifest, external
+  dependencies, statuses, and static completion invariants.
+- Replace the runtime-dependent completion status with `Configured`,
+  `Specification complete`, `Partial`, `Blocked`, and `Deferred`; runtime
+  observations are not a configuration input or completion condition.
+- Define `Configured` by authoritative current-workspace state, including an
+  idempotent no-op when the target already matches; do not mislabel that as a
+  new live change.
+- Model GTM trigger semantics explicitly: firing-trigger OR, filter-row AND,
+  exception precedence, regex intent, Data Layer Variable versions, firing
+  options, priority, schedule, live-only behavior, pause state, and sequencing.
+- Generalize strict/basic consent from one vendor block to the smallest reusable
+  block set that represents category/purpose, vendor, product, and initialization
+  requirements without the mutually-exclusive-AND trap.
+- Add static handling for GA4 custom definitions, key events, Google tag/property
+  surfaces, media-platform administration, outside-container installations, GTM
+  Zones, template restrictions, and other external dependencies.
+- Date the vendor-consent capability baseline and require fresh official evidence
+  for every implementation.
+- Make MCP/API/UI mutation manifest-driven and deterministic, with workspace
+  synchronization, conflict inspection, stable IDs/fingerprints, pre-change
+  state, saved-object readback, partial-state recovery, and idempotency checks.
+- Replace prose-only semantic fixtures with structured configuration scenarios
+  that validate the packaged decision contract without claiming model or runtime
+  test coverage.
+- Adopt Semantic Versioning at `2.0.0`; this major version reflects incompatible
+  changes to configuration statuses, evidence, validation, and handoff contracts.
+  Earlier date-based tags remain historical releases.
+- Align repository/package metadata. The pre-existing `v2026.7.20` tag pointed
+  to metadata that still declared `2026.7.18`; release checks now verify that a
+  release tag points at the tested clean commit.
+
+### What Users Should Do
+
+- Supply an approved tracking-plan requirement or direct analytics requirement
+  for analytics work, and a human media brief for media work.
+- Supply or approve the source event contract, representative payloads, consent
+  policy, destination identifiers, and mutation scope; runtime access is not a
+  prerequisite.
+- Review the configuration contract and object manifest before mutation, then
+  review the exact saved-object and external-dependency handoff.
+- Use the separate GTM Preview recette skill when observed browser behavior is
+  required, and authorize publication independently.
+
+### Validation
+
+- Release checks enforce the north star, evidence grades, status model, direct
+  routing, object manifest, trigger semantics, compound-consent logic, adapter
+  idempotency, external dependencies, metadata, and exact package contents.
+- Eleven structured scenarios cover GA4, media, compound consent, shared Google
+  conflicts, missing source contracts, no-tool specifications, partial writes,
+  idempotent reruns, GA4 administration, an unlisted browser vendor, and the
+  deferred server-side/deduplication boundary.
+- Formatting, lint, unit tests, Python compilation, deterministic package build,
+  clean-tree validation, tag-to-commit validation, and whitespace checks gate
+  the release.
+
+### Known Limits
+
+- The skill configures client-side web GTM only and does not publish or create
+  container versions.
+- It does not create tracking plans, develop the site/dataLayer, make legal
+  decisions, or certify runtime browser, network, CMP, or vendor behavior.
+- GTM adapter capabilities vary; an unsupported mutation field produces a
+  complete specification or explicit blocker rather than an improvised write.
+- Server-side GTM, Conversions API, event-ID architecture, and browser/server
+  deduplication remain deferred future extensions.
+
 ## 2026.7.18
 
 ### Why This Release Matters

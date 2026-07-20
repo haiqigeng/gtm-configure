@@ -5,17 +5,19 @@ from __future__ import annotations
 
 import argparse
 import re
+import subprocess
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CALVER = re.compile(r"^v\d{4}\.\d{1,2}\.\d{1,2}(?:\.\d+)?$")
-CURRENT_RELEASE = "2026.7.18"
+SEMVER = re.compile(r"^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$")
+CURRENT_RELEASE = "2.0.0"
 REQUIRED_FILES = (
     "SKILL.md",
     "agents/openai.yaml",
     "references/01-orientation/utility-contract.md",
     "references/01-orientation/official-source-policy.md",
+    "references/02-execution/configuration-contract.md",
     "references/02-execution/implementation-workflow.md",
     "references/02-execution/analytics-tags.md",
     "references/02-execution/media-tags.md",
@@ -48,8 +50,8 @@ REQUIRED_FILES = (
     "scripts/build_skill_package.py",
     "tests/test_release.py",
     "tests/test_skill_contract.py",
-    "tests/test_semantic_scenarios.py",
-    "tests/fixtures/semantic_scenarios.json",
+    "tests/test_configuration_scenarios.py",
+    "tests/fixtures/configuration_scenarios.json",
 )
 STALE_FILES = (
     "references/execution-contract.md",
@@ -59,6 +61,8 @@ STALE_FILES = (
     "references/cmp-consent.md",
     "references/naming-and-reuse.md",
     "references/validation-scenarios.md",
+    "tests/test_semantic_scenarios.py",
+    "tests/fixtures/semantic_scenarios.json",
 )
 FORBIDDEN_ARTIFACT_NAMES = {
     ".coverage",
@@ -142,12 +146,15 @@ def check_content() -> list[str]:
     skill = read("SKILL.md")
     utility = read("references/01-orientation/utility-contract.md")
     sources = read("references/01-orientation/official-source-policy.md")
+    configuration_contract = read("references/02-execution/configuration-contract.md")
     workflow = read("references/02-execution/implementation-workflow.md")
     analytics = read("references/02-execution/analytics-tags.md")
     media = read("references/02-execution/media-tags.md")
     consent = read("references/02-execution/cmp-consent.md")
     google_consent = read("references/02-execution/google-consent-mode.md")
     vendor_consent = read("references/02-execution/vendor-consent-modes.md")
+    triggers = read("references/02-execution/triggers-and-variables.md")
+    adapters = read("references/02-execution/tool-adapters.md")
     judgement = read("references/03-judgement/acceptance-and-handoff.md")
     readme = read("README.md")
     changelog = read("CHANGELOG.md")
@@ -155,6 +162,7 @@ def check_content() -> list[str]:
     agent_metadata = read("agents/openai.yaml")
     pyproject = read("pyproject.toml")
     ci_workflow = read(".github/workflows/ci.yml")
+    release_workflow = read(".github/workflows/release.yml")
     required_terms = (
         "01 - Orientation",
         "02 - Execution",
@@ -166,6 +174,9 @@ def check_content() -> list[str]:
         "strict/basic CMP gating",
         "Classify consent behavior per browser product",
         "Create an object only for a current requirement",
+        "smallest authorized, statically verifiable",
+        "configuration-contract.md",
+        "Do not require or claim runtime execution",
     )
     errors.extend(
         f"SKILL.md missing required term: {term}" for term in required_terms if term not in skill
@@ -190,6 +201,31 @@ def check_content() -> list[str]:
         f"utility contract missing requirement authority: {term}"
         for term in contract_terms
         if term not in utility
+    )
+    configuration_contract_terms = (
+        "## Evidence grades",
+        "`approved-input`",
+        "`official-current`",
+        "`container-confirmed`",
+        "`contract-sample`",
+        "## Requirement record",
+        "## Field mapping",
+        "## Object change manifest",
+        "## Consent and external dependencies",
+        "## Result statuses",
+        "`Configured`",
+        "`Specification complete`",
+        "`Partial`",
+        "`Blocked`",
+        "`Deferred`",
+        "## Static completion invariants",
+        "authoritative current-workspace readback",
+        "idempotency",
+    )
+    errors.extend(
+        f"configuration contract missing requirement: {term}"
+        for term in configuration_contract_terms
+        if term not in configuration_contract
     )
     source_terms = (
         "Never rely on memory",
@@ -278,6 +314,7 @@ def check_content() -> list[str]:
         "Piwik PRO Analytics",
         "TikTok Pixel",
         "classify consent capability only",
+        "Discovery baseline last reviewed",
     )
     errors.extend(
         f"vendor consent reference missing contract: {term}"
@@ -289,8 +326,10 @@ def check_content() -> list[str]:
         "does not contain <exact documented vendor token>",
         "Do not create a Custom JavaScript",
         "Shared Google execution unit",
+        "any matching blocking trigger prevents",
+        "smallest reusable set of blocks",
     )
-    combined_logic = "\n".join((consent, google_consent, judgement))
+    combined_logic = "\n".join((consent, google_consent, triggers, judgement))
     errors.extend(
         f"consent logic contract missing: {term}"
         for term in consent_logic_terms
@@ -307,16 +346,45 @@ def check_content() -> list[str]:
         if term in combined_logic or term in readme
     )
     judgement_terms = (
-        "## Completion definition",
+        "## Static completion definition",
         "## Judgement statuses",
         "## Static validation matrix",
-        "## Consent proof",
+        "## Consent configuration proof",
         "## Handoff output",
     )
     errors.extend(
         f"judgement reference missing section: {term}"
         for term in judgement_terms
         if term not in judgement
+    )
+    trigger_terms = (
+        "firing triggers on one tag are alternatives",
+        "filter rows within one trigger are cumulative",
+        "any matching blocking/exception trigger prevents",
+        "Version 1 literal-dot",
+        "Version 2 nested-path",
+        "priority",
+        "custom schedule",
+        "live-only behavior",
+        "firing option",
+        "setup/cleanup references",
+    )
+    errors.extend(
+        f"trigger reference missing semantic: {term}"
+        for term in trigger_terms
+        if term not in triggers
+    )
+    adapter_terms = (
+        "configuration contract as the adapter input",
+        "current fingerprint",
+        "Do not mutate from an informal prose summary",
+        "Prove idempotency",
+        "synchronize workspace state",
+    )
+    errors.extend(
+        f"tool-adapter reference missing contract: {term}"
+        for term in adapter_terms
+        if term not in adapters
     )
     readme_terms = (
         "## Who It Serves",
@@ -355,6 +423,8 @@ def check_content() -> list[str]:
         ("README package command", f"configure-gtm-{expected_tag}.zip", readme),
         ("CONTRIBUTING release check", f"--tag {expected_tag} --release-notes", contributing),
         ("CI release check", f"--tag {expected_tag} --release-notes", ci_workflow),
+        ("README version policy", "Semantic Versioning: `vMAJOR.MINOR.PATCH`", readme),
+        ("release workflow tag filter", '      - "v*.*.*"', release_workflow),
     )
     for label, expected, text in version_contracts:
         if expected not in text:
@@ -368,6 +438,41 @@ def check_content() -> list[str]:
     release_text = "\n".join(read(path) for path in ("SKILL.md", "README.md", "CHANGELOG.md"))
     if re.search(r"TODO|\[TODO\]", release_text, re.I):
         errors.append("release-facing files contain placeholders")
+    return errors
+
+
+def check_git_release_state(
+    tag: str | None, *, require_git_tag: bool, require_clean_tree: bool
+) -> list[str]:
+    errors: list[str] = []
+    if require_clean_tree:
+        result = subprocess.run(
+            ["git", "status", "--porcelain"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            errors.append(f"cannot inspect git worktree: {result.stderr.strip()}")
+        elif result.stdout.strip():
+            errors.append("release worktree is not clean")
+
+    if require_git_tag:
+        if not tag:
+            errors.append("--require-git-tag requires --tag")
+        else:
+            result = subprocess.run(
+                ["git", "tag", "--points-at", "HEAD"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if result.returncode != 0:
+                errors.append(f"cannot inspect tags at HEAD: {result.stderr.strip()}")
+            elif tag not in result.stdout.splitlines():
+                errors.append(f"release tag {tag} does not point at HEAD")
     return errors
 
 
@@ -401,6 +506,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--tag")
     parser.add_argument("--release-notes", type=Path)
+    parser.add_argument("--require-git-tag", action="store_true")
+    parser.add_argument("--require-clean-tree", action="store_true")
     args = parser.parse_args()
     errors: list[str] = []
     try:
@@ -417,14 +524,21 @@ def main() -> int:
     errors.extend(check_links())
     errors.extend(check_content())
     if args.tag:
-        if not CALVER.fullmatch(args.tag):
-            errors.append(f"invalid CalVer release tag: {args.tag}")
+        if not SEMVER.fullmatch(args.tag):
+            errors.append(f"invalid Semantic Version release tag: {args.tag}")
         elif args.tag != f"v{CURRENT_RELEASE}":
             errors.append(
                 f"release tag {args.tag} does not match current release v{CURRENT_RELEASE}"
             )
     if args.release_notes:
         errors.extend(check_release_notes(args.release_notes))
+    errors.extend(
+        check_git_release_state(
+            args.tag,
+            require_git_tag=args.require_git_tag,
+            require_clean_tree=args.require_clean_tree,
+        )
+    )
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)

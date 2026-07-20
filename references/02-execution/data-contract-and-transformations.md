@@ -21,6 +21,7 @@ For every business action, record:
 - expected type, format, cardinality, and null behavior;
 - sample payloads for relevant edge cases;
 - whether values are event-scoped or can persist from a previous push;
+- evidence grade for the event, timing, shape, and representative payload;
 - source owner and required site change when a field is absent.
 
 Use the Custom Event as the normal trigger. Do not infer a success event from a click, URL, DOM message, or form submission when a reliable business dataLayer event exists.
@@ -40,7 +41,7 @@ Do not rename the source key to look official. Name the DLV after the actual key
 
 ## Validate before transforming
 
-Confirm the source value exists on the same GTM event that fires the tag. Check:
+Require the approved source contract to place the value on the same GTM event that fires the tag, or to document its retained state and reset behavior. Check:
 
 - string versus number versus Boolean;
 - object versus array;
@@ -98,7 +99,7 @@ Avoid a broad `try/catch` that hides contract defects. Catch only a specifically
 
 ## Test transformations
 
-Record at least:
+Use supplied non-sensitive payloads as static test vectors and record at least:
 
 | Input case | Required check |
 | --- | --- |

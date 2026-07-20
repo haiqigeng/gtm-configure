@@ -21,7 +21,7 @@ class ReleaseChecksTest(unittest.TestCase):
                 sys.executable,
                 str(ROOT / "scripts" / "check_release.py"),
                 "--tag",
-                "v2026.7.18",
+                "v2.0.0",
                 "--release-notes",
                 str(ROOT / "CHANGELOG.md"),
             ],
@@ -37,7 +37,7 @@ class ReleaseChecksTest(unittest.TestCase):
                 sys.executable,
                 str(ROOT / "scripts" / "check_release.py"),
                 "--tag",
-                "v2026.7.17",
+                "v1.9.9",
             ],
             cwd=ROOT,
             capture_output=True,
@@ -47,16 +47,31 @@ class ReleaseChecksTest(unittest.TestCase):
         self.assertNotEqual(wrong_tag.returncode, 0)
         self.assertIn("does not match current release", wrong_tag.stderr)
 
+        invalid_tag = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "check_release.py"),
+                "--tag",
+                "v2026.7.20.1",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(invalid_tag.returncode, 0)
+        self.assertIn("invalid Semantic Version release tag", invalid_tag.stderr)
+
         with tempfile.TemporaryDirectory() as temporary:
             notes = Path(temporary) / "CHANGELOG.md"
             notes.write_text(
                 "# Changelog\n\n"
-                "## 2026.7.18\n\n"
+                "## 2.0.0\n\n"
                 "### Why This Release Matters\n\n"
                 "### What Changed\n\n"
                 "### What Users Should Do\n\n"
                 "### Known Limits\n\n"
-                "## 2026.7.17\n\n"
+                "## 2026.7.20\n\n"
                 "### Validation\n",
                 encoding="utf-8",
             )
@@ -74,6 +89,20 @@ class ReleaseChecksTest(unittest.TestCase):
             )
             self.assertNotEqual(stale_heading.returncode, 0)
             self.assertIn("release notes missing heading: Validation", stale_heading.stderr)
+
+        missing_tag = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "check_release.py"),
+                "--require-git-tag",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertNotEqual(missing_tag.returncode, 0)
+        self.assertIn("--require-git-tag requires --tag", missing_tag.stderr)
 
     def test_runtime_package_contains_only_runtime_files(self) -> None:
         expected_sources = [

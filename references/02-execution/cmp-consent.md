@@ -15,7 +15,7 @@
 
 Unless the analyst explicitly requests and approves advanced/native consent behavior, prevent every analytics and media vendor tag from loading or firing before the required consent is granted.
 
-Prefer one reusable CMP blocking/exception trigger per vendor/platform. Apply it to the vendor's base/configuration and event tags in scope. Make unknown, undefined, uninitialized, and denied state block.
+Use the smallest reusable set of CMP blocking/exception triggers that expresses the complete approved predicate. One vendor/platform block is preferred when one native state represents the grant; use additional shared category/purpose, product-consent, or initialization blocks when those are independent required grants. Apply the complete set to the vendor's base/configuration and event tags in scope. Make unknown, undefined, uninitialized, and denied state block.
 
 Use a normal Custom Event trigger for the business action and a separate vendor block, for example:
 
@@ -46,26 +46,26 @@ Before creating a condition:
 
 1. Open the current official CMP documentation for the installed product/version and GTM integration.
 2. Identify separately the CMP initialization/readiness events, consent-change events, state variables/cookies/APIs, vendor identifiers, and value format.
-3. Inspect the live dataLayer and state before initialization, after denial, and after grant.
-4. Confirm event frequency and ordering.
-5. Confirm the exact vendor identity used by this site.
-6. Verify that undefined state remains blocked. Treat a value outside the CMP's documented format as an integration defect and block the affected design until the source contract is corrected or authoritatively clarified.
+3. Obtain the approved site/CMP signal contract and representative values before initialization, after denial, and after grant.
+4. Establish event frequency, ordering, state lifetime, and returning-choice behavior from that contract.
+5. Confirm the exact category/purpose and vendor identities used by this site.
+6. Prove from GTM filter semantics that undefined state is expected to remain blocked. Treat a supplied value outside the CMP's documented format as an integration defect and block the affected design until the source contract is corrected or authoritatively clarified.
 
-Do not infer that similarly named CMP events and variables have the same role. For Didomi, for example, verify readiness/change events independently from enabled-vendor state. Use the exact vendor identity documented and observed for the site. Do not append a delimiter to the identity by convention; when the CMP serializes a delimited list, match the exact token format established by its documentation and runtime value.
+Do not infer that similarly named CMP events and variables have the same role. For Didomi, for example, establish readiness/change events independently from enabled-vendor state. Use the exact category/purpose and vendor identities documented and supplied for the site. Do not append a delimiter by convention; when the CMP serializes a delimited list, match the exact token format established by official documentation and the approved representative value.
 
 ## Build a safe vendor block
 
 Define the exception's event scope before its consent-state condition. A shared block must be able to activate on every GTM event used by each consumer tag; a condition that reads the right CMP value is ineffective on an event the trigger does not match. In a Custom Event-first design, use a verified Custom Event regex that covers every relevant event name (often `.*` when the target container proves it matches the required events), rather than a CMP-only event name. If a consumer uses an event type the shared block cannot cover, stop and redesign the exception scope before claiming strict gating.
 
-Inspect tag sequencing separately. GTM tags invoked as setup or cleanup tags ignore their own firing and blocking triggers. Do not rely on the sequenced tag's exception: make the initiating tag's vendor block prevent the entire sequence under unknown or denied consent, and prove that no setup/cleanup tag loads the vendor on that path.
+Inspect tag sequencing separately. GTM tags invoked as setup or cleanup tags ignore their own firing and blocking triggers. Do not rely on the sequenced tag's exception: make the initiating tag's complete predicate prevent the sequence under unknown or denied consent, and prove the expected static path from the configured references.
 
 Use the documented CMP state variable directly in the blocking trigger whenever a native GTM filter can express the policy safely. For a vendor-enabled list, the default pattern is one negative condition:
 
     {{DLV - <CMP enabled vendors>}} does not contain <exact documented vendor token>
 
-Derive the DLV key, operator, vendor token, delimiter, case, and value type from current CMP documentation and observed runtime values. For a CMP that exposes a documented Boolean or keyed vendor state, test that source directly. Avoid substring collisions by matching the exact documented token format.
+Derive the DLV key, operator, category/purpose and vendor token, delimiter, case, and value type from current CMP documentation and approved representative values. For a CMP that exposes a documented Boolean or keyed state, test that source directly. Avoid substring collisions by matching the exact documented token format.
 
-GTM combines multiple filter rows inside one trigger with logical AND. Do not add separate mutually exclusive rows for denied and unknown states. Use one documented native condition whose negative result covers every non-granted state, and verify its behavior when the CMP value is undefined. Do not create a Custom JavaScript, JavaScript, lookup-table, or Boolean consent helper when the documented CMP variable can be tested directly.
+GTM combines multiple filter rows inside one trigger with logical AND, while any matching blocking trigger prevents its consumer tag. Do not add mutually exclusive denial rows to one trigger. Use one documented native condition whose negative result covers every non-granted state when one signal represents the complete grant. When independent required grants each need OR-denial behavior, use separate reusable blocks or another officially supported native representation. Do not create a Custom JavaScript, JavaScript, lookup-table, or Boolean consent helper when documented CMP variables can be tested directly.
 
 If the official CMP contract cannot be represented safely with a native GTM condition, mark the affected consent design `Blocked` and request an authoritative CMP signal or approved architecture. Do not invent a parser or helper variable to compensate for an undocumented source shape.
 
@@ -95,7 +95,7 @@ Page-view source events often occur before CMP state is initialized. Under stric
 1. Identify an official CMP event with the required one-time readiness semantics.
 2. Verify that it occurs after the state is readable.
 3. Trigger the separate page-view tag from that event with the vendor block.
-4. Revalidate that every page-view source value is current and available on that CMP event; do not assume an earlier event-scoped payload persists.
+4. Revalidate from the approved source contract that every page-view value is current and available on that CMP event; do not assume an earlier event-scoped payload persists.
 5. Define whether a later grant sends a page view.
 6. Prevent duplicate initial and consent-change page views.
 
@@ -103,21 +103,21 @@ Do not attach a page-view tag to a generic repeatable consent-change event witho
 
 ## Handle revocation without overclaiming
 
-A GTM exception can stop later tag invocations, but it does not unload a vendor script that already loaded after an earlier grant or erase data already sent. Inspect current vendor documentation and template behavior for native disable/revoke controls, automatic events, storage, and whether a page reload or site-level action is required. If the approved policy requires all vendor execution to stop immediately and the available browser implementation cannot establish that behavior, mark the affected requirement `Blocked` and report the limitation. Never describe a loaded script as unloaded merely because subsequent GTM tags are blocked.
+A GTM exception can stop later tag invocations, but it does not unload a vendor script that already loaded after an earlier grant or erase data already sent. Inspect current vendor documentation and template behavior for native disable/revoke controls, automatic events, storage, and whether a page reload or site-level action is required. If the approved policy requires immediate unload behavior that the browser implementation cannot establish, mark the affected requirement `Blocked` and report the limitation. Record this as a configured limitation; never describe a loaded script as unloaded merely because subsequent GTM tags are blocked.
 
 ## Validate the final decision
 
-For each vendor tag, prove:
+For each vendor tag, derive the expected static result:
 
-| State | Strict/basic expected result |
+| Contract state | Strict/basic configured expectation |
 | --- | --- |
-| CMP not initialized or value undefined | Does not fire. |
-| Vendor denied | Does not fire. |
-| Different vendor granted only | Does not fire. |
-| Vendor granted and normal trigger occurs | May fire once. |
-| Consent revoked | Subsequent GTM tags/sequences do not run; any already-loaded script and automatic behavior follow a separately verified vendor revocation design. |
-| Consent granted after initial denial | Matches the documented late-consent/page-view policy without duplicates. |
+| CMP not initialized or value undefined | Expected not to fire. |
+| Required category/purpose or vendor denied | Expected not to fire. |
+| Different vendor granted only | Expected not to fire. |
+| Complete required grant and normal trigger occur | Eligible under the selected firing option. |
+| Consent revoked | Later GTM invocations are expected to remain blocked; already-loaded behavior follows the documented configured limitation. |
+| Consent granted after initial denial | The configured late-consent/page-view path matches the approved policy without a known duplicate. |
 
-For a base/configuration tag, also prove that an initial grant and a later grant each provide a valid initialization opportunity without repeated initialization.
+For a base/configuration tag, also prove statically that an initial grant and a later grant each have a valid configured initialization opportunity without repeated initialization.
 
-For explicitly approved advanced behavior, replace the strict non-fire assertion with the exact officially documented limited-data assertion and label it clearly.
+For explicitly approved advanced behavior, replace the strict non-fire expectation with the exact officially documented limited-data configuration expectation and label it clearly. Do not present it as an observed request.
