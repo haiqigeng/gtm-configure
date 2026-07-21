@@ -3,150 +3,146 @@
 ## Contents
 
 - [Keep measurement design outside configuration](#keep-measurement-design-outside-configuration)
-- [Separate the collection and implementation contracts](#separate-the-collection-and-implementation-contracts)
-- [Normalize the approved scope](#normalize-the-approved-scope)
-- [Classify documentation discrepancies](#classify-documentation-discrepancies)
+- [Separate approved semantics from GTM implementation](#separate-approved-semantics-from-gtm-implementation)
+- [Resolve the relevant source scope](#resolve-the-relevant-source-scope)
+- [Classify official-documentation discrepancies](#classify-official-documentation-discrepancies)
 - [Resolve discrepancies before mutation](#resolve-discrepancies-before-mutation)
-- [Prove contract conformance](#prove-contract-conformance)
+- [Prove exact conformance](#prove-exact-conformance)
 - [Use the deterministic comparator](#use-the-deterministic-comparator)
 
 ## Keep measurement design outside configuration
 
-For the analytics tracking-plan route, implement the approved tracking plan faithfully. Do not
-rename an event, substitute a recommended event, add or remove a parameter, add a literal, change
-the business success moment, or broaden scope because another design appears more optimal.
+Implement an approved analytics tracking plan faithfully. Do not rename or substitute an event, add
+or remove a parameter, add a literal, change a source, alter a business filter or success moment, or
+broaden scope because another measurement design appears better.
 
 The tracking-plan analyst or tracking-plan skill owns measurement design and optimization. This
-skill owns technical validation, GTM design, authorized mutation, and static verification. A later
-explicit analyst decision can amend the approved input; record that decision before using it.
+skill owns official technical validation, clean GTM architecture, actual workspace mutation, and
+saved-state verification. Use a later analyst decision only after it explicitly amends the approved
+input.
 
-Use current official documentation to validate the approved collection contract and guide its GTM
-implementation. Documentation can establish that a requested event or field is invalid, reserved,
-deprecated, required, optional, recommended, typed differently, or unsupported by the selected
-template. Documentation does not authorize this skill to rewrite the approved analytics contract.
+Use current official documentation to validate classification, requirements, types, shapes, limits,
+and implementability. Documentation may prove that a choice is invalid, reserved, deprecated,
+missing a required field, incompatible, or unsupported. It does not authorize silent optimization
+or payload enrichment when the approved choice remains valid.
 
-Apply the same fidelity rule to a direct analytics requirement once the analyst has explicitly
-approved its event, fields, source event, and business timing. When a direct request supplies only
-an informal business action, present the documented choices and obtain an exact analytics decision
-instead of silently designing the measurement plan.
+Apply the same fidelity rule to an exact direct analytics requirement. When the user supplies only
+an informal business action without an approved event, fields, source event, and timing, request the
+analytics decision rather than silently creating a measurement plan.
 
-The media route remains separate. A media-team brief establishes the media objective, while current
-official media documentation establishes the destination event and payload schema.
+Keep media separate: an explicit media brief establishes its objective and current official media
+documentation establishes its destination schema.
 
-## Separate the collection and implementation contracts
+## Separate approved semantics from GTM implementation
 
-Treat these as the authorized **collection contract**:
+Treat these as approved analytics semantics:
 
-- included business requirements and explicitly excluded source items;
-- destination event name and classification selected by the approved analytics input;
+- included business requirements;
+- destination event and classification;
 - outgoing event, item, user-property, and other payload fields;
-- approved literals, source paths, transformations, and null behavior;
-- source event, business success moment, repeatability, and business filters.
+- literals, source paths, approved transformations, and missing-data behavior;
+- source event, success moment, repeatability, and business filters.
 
-Treat these as the **implementation contract** when they do not change collection semantics:
+Treat these as GTM implementation choices when they do not change semantics:
 
 - account, container, workspace, destination identity, tag type, and installed template;
-- GTM variables, Data Layer Variable version, folders, and object references;
-- firing and blocking triggers that reproduce the approved source event and business timing;
-- consent settings, firing options, sequencing, priority, and documented template mechanics;
-- fingerprints, adapter actions, pagination, mutation order, and saved-state verification.
+- GTM variables, DLV version, folders, and object references;
+- normal and blocking triggers that reproduce the approved timing and policy;
+- consent settings, firing options, sequencing, priority, and template mechanics;
+- adapter actions, pagination, fingerprints, mutation order, and saved-state verification.
 
-Official documentation and confirmed container evidence may establish implementation facts. They
-may not add a destination payload field or business condition absent from the approved collection
-contract. When official documentation requires such a field, record a blocking discrepancy rather
-than inventing it.
+An official requirement missing from the tracking plan is not infrastructure. If it is technically
+required, classify the analytics requirement as a blocking discrepancy instead of inventing it.
 
-## Normalize the approved scope
+## Resolve the relevant source scope
 
-Before designing GTM objects, create a source-scope manifest that records every relevant workbook
-sheet, table, row group, or supplied requirement as:
+When the supplied workbook or artifact contains multiple relevant parts, classify only what can
+affect the requested configuration as:
 
-- `included`, with its stable requirement ID and source reference;
-- `reference-only`, such as a dictionary, guide, or example;
+- `included`, with a stable requirement ID and source reference;
+- `reference-only`, such as a dictionary or example;
 - `excluded`, with the approved reason;
-- `ambiguous`, with the exact decision required.
+- `ambiguous`, with the exact decision needed.
 
-Visibility is evidence, not authority. Do not automatically exclude a hidden sheet or implement a
-visible sheet. Do not silently import stale, duplicate, foreign-client, or illustrative content.
-Block only the ambiguous requirements when the remaining scope is independently safe to configure.
+Visibility is evidence, not authority: a hidden sheet may be approved and a visible sheet may be a
+reference or legacy artifact. Do not turn this targeted scope resolution into a tracking-plan audit.
+Block only ambiguous dependent requirements when other requirements remain independently safe.
 
-Normalize each included requirement into an adapter-neutral record before container mutation. Keep
-client-specific workbook interpretation with the capable agent; do not use a universal spreadsheet
-parser to guess semantics. Preserve source sheet/cell or row references so the normalized record can
-be reviewed against the approved input.
+Translate each included requirement into the concise operational configuration map. Preserve the
+source sheet/cell or row reference needed to prove exact conformance; do not require a universal
+spreadsheet parser or create a large secondary plan.
 
-## Classify documentation discrepancies
+## Classify official-documentation discrepancies
 
-Record one of these outcomes for every apparent plan/documentation difference:
+Use exactly one class for each real difference:
 
-| Class | Meaning | Required behavior |
+| Class | Meaning | Behavior |
 | --- | --- | --- |
-| `blocking-error` | The requested collection is invalid, reserved, missing a required field, type/shape incompatible, unsupported, or impossible to map safely. | Do not mutate the affected requirement. Present the exact evidence and decision needed. |
-| `advisory` | The approved collection remains technically valid, but current documentation indicates a recommended event, parameter, or more appropriate analytics convention. | Report before mutation and preserve the approved contract by default. Do not substitute or enrich it. |
-| `implementation-note` | Documentation determines a GTM/template setting without changing the collection contract. | Apply it within the authorized implementation scope and record the evidence. |
+| `blocking-error` | The requested collection is invalid, reserved, missing a required field, type/shape incompatible, unsupported, or impossible to map safely. | Do not mutate the affected requirement. Give the exact official evidence and amended decision needed. |
+| `advisory` | The approved collection remains technically valid, but current documentation identifies a recommended event, field, or convention that may be more appropriate. | Report it and implement the approved contract unchanged by default. |
+| `implementation-note` | Documentation determines a GTM/template setting without changing collection semantics. | Apply the documented setting within the configuration. |
 
-Do not misclassify an optional or recommended destination field as required. Do not downgrade a
-required-field or reserved-name conflict to an advisory merely to complete the configuration.
+Never misclassify an optional or recommended field as required, and never downgrade a genuine
+required-field or reserved-name conflict merely to finish the tag.
 
 ## Resolve discrepancies before mutation
 
-Produce a concise preflight discrepancy report before the first write. Include the requirement ID,
-approved value, documented finding, class, impact, official source, and default action.
+Before the first affected write, provide only the concise discrepancy information needed for the
+analyst to understand the outcome: requirement, approved value, current official finding, class,
+impact, source, and default action.
 
-- Continue unchanged for a documented advisory unless the analyst explicitly amends the approved
-  input.
-- Stop the affected requirement for a blocking error until the analyst supplies a corrected plan or
-  explicit approved decision.
-- Continue unaffected requirements only when they have independent dependencies and mutation cannot
-  leave a misleading or conflicting partial implementation.
-- Repeat unresolved discrepancies in the handoff. If a discrepancy appears only after a saved-state
-  readback, stop dependent writes and apply the partial-failure contract.
+- Continue unchanged for an advisory unless the analyst explicitly amends the plan.
+- Stop the affected requirement for a blocking error.
+- Continue unaffected requirements only when their dependencies are independent and the saved
+  partial graph cannot mislead or conflict.
+- Repeat unresolved blocking items in the handoff.
 
-## Prove contract conformance
+No separate approval table is needed when the comparison is conformant and no material decision is
+required.
 
-Before mutation, compare the normalized approved collection contract with the intended tag contract.
-After mutation, compare it again with authoritative current-workspace readback. Require:
+## Prove exact conformance
+
+Before mutation, compare the approved analytics semantics with the intended event tags. After
+mutation, compare them with authoritative saved workspace fields. Require:
 
 - identical included requirement IDs;
 - identical destination and source event names;
-- identical business timing and filters;
+- identical business timing, repeatability, and filters;
 - exact parameter/property/item-field set equality;
-- exact approved source or literal for every outgoing field;
+- exact approved source path or literal for every outgoing field;
 - zero unauthorized additions, removals, substitutions, or hidden-scope inclusions.
 
-Keep implementation infrastructure in a separate manifest. Necessary IDs, consent settings, GTM
-references, and template mechanics are not unauthorized payload enrichment, but each still needs a
-current requirement or documented implementation constraint.
+Keep technical infrastructure outside the collection comparison. IDs, folders, triggers, consent,
+references, and template mechanics are required implementation fields but are not analytics payload
+enrichment.
 
-A zero-difference result may proceed without a separate approval table. Any non-zero semantic
-difference must be corrected, classified as a blocking discrepancy, or supported by a new explicit
-approved decision before the affected write.
+A zero-difference intended result may proceed. Any non-zero semantic difference must be corrected,
+classified as a blocking discrepancy, or supported by an explicit amended analytics decision. A
+zero-difference saved result is required for `Configured`.
 
 ## Use the deterministic comparator
 
 Use `scripts/validate_contract_conformance.py` when the approved, intended, or saved contracts can be
-represented as normalized JSON. The agent remains responsible for interpreting the source artifact;
-the script only performs deterministic equality checks.
+represented as normalized JSON. The agent interprets the client artifact; the script verifies exact
+equality and never guesses workbook semantics.
 
-Each JSON document must contain:
+Each JSON document contains:
 
 - `scope`, normally with `included`, `reference_only`, and `excluded` collections;
-- `requirements`, a list of unique objects containing a stable string `id`;
-- collection-semantic fields inside each requirement, with `parameters` represented as a mapping
-  when parameter order is irrelevant.
+- `requirements`, a list of objects with unique stable string `id` values;
+- collection-semantic fields, with `parameters` represented as a mapping when parameter order is
+  irrelevant.
 
-Requirement and scope-list order is non-semantic. Nested arrays inside a requirement remain
-order-sensitive so the comparator cannot hide reordered transformation steps or other sequences.
+Requirement and scope-list order is non-semantic. Nested arrays within a requirement remain
+order-sensitive. Adapter and repository metadata may remain outside `scope` and `requirements` and
+is ignored deliberately.
 
-Repository or adapter metadata may live outside `scope` and `requirements`; the comparator ignores
-that implementation metadata deliberately.
-
-Run it before and after mutation:
+Run before and after mutation:
 
 ~~~powershell
 python scripts/validate_contract_conformance.py --approved approved.json --candidate intended.json
 python scripts/validate_contract_conformance.py --approved approved.json --candidate saved.json
 ~~~
 
-Exit code `0` means exact conformance, `1` means a deterministic difference, and `2` means an invalid
-input or invocation. Preserve the JSON report in the technical handoff.
+Exit code `0` means exact conformance, `1` means a deterministic difference, and `2` means invalid
+input or invocation. Preserve the concise JSON result with the implementation evidence.

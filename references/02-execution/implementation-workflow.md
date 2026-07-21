@@ -1,241 +1,188 @@
-# Implementation workflow
+# Operational implementation workflow
 
 ## Contents
 
-- [1. Orient and authorize](#1-orient-and-authorize)
-- [2. Select the requirement route](#2-select-the-requirement-route)
-- [3. Resolve the workspace](#3-resolve-the-workspace)
-- [4. Form the implementation contract](#4-form-the-implementation-contract)
-- [5. Inspect the container as integration evidence](#5-inspect-the-container-as-integration-evidence)
-- [6. Validate the source contract](#6-validate-the-source-contract)
-- [7. Research, validate, and classify discrepancies](#7-research-validate-and-classify-discrepancies)
-- [8. Decide consent architecture](#8-decide-consent-architecture)
-- [9. Design the object graph](#9-design-the-object-graph)
-- [10. Present the plan when risk requires it](#10-present-the-plan-when-risk-requires-it)
-- [11. Mutate only the approved scope](#11-mutate-only-the-approved-scope)
-- [12. Validate and hand off](#12-validate-and-hand-off)
+- [1. Resolve only blocking inputs](#1-resolve-only-blocking-inputs)
+- [2. Create or reuse the workspace](#2-create-or-reuse-the-workspace)
+- [3. Research the product and installed template](#3-research-the-product-and-installed-template)
+- [4. Inspect relevant container integration](#4-inspect-relevant-container-integration)
+- [5. Build the configuration map](#5-build-the-configuration-map)
+- [6. Design and preflight the object graph](#6-design-and-preflight-the-object-graph)
+- [7. Mutate in dependency order](#7-mutate-in-dependency-order)
+- [8. Read back, correct, and hand off](#8-read-back-correct-and-hand-off)
 
-## 1. Orient and authorize
+Use this single internal workflow for every actual configuration. Analytics, media, ecommerce,
+first-party data, and consent are conditional configuration requirements, not different operating
+modes. Work continuously unless a critical input, conflict, or mutation failure blocks the affected
+objects.
 
-Confirm:
+## 1. Resolve only blocking inputs
 
-- target account, web container, environment, and requested workspace;
-- read-only, planning, or explicitly authorized mutation;
-- analytics, media, consent, or combined scope;
-- current client-side work versus deferred server-side/deduplication work;
-- requested advertising-platform changes outside GTM, if any, and keep them outside scope unless separately authorized.
+Confirm the target account and web container, then derive or request the applicable business input:
 
-Do not mutate for a review or planning request.
+- For analytics, use the approved tracking plan or exact direct analytics requirement. Preserve the
+  selected event, outgoing fields, literals, source mappings, filters, and business timing.
+- For media, use the explicit human brief for platform, business action, intended use, and
+  destination identity. Use a tracking plan only for compatible source events and values.
+- For consent, default to strict/basic CMP blocking. Detect the installed CMP and its documented
+  state where possible. Require an explicit request for advanced/native behavior.
 
-## 2. Select the requirement route
+Discover destination IDs, installed templates, CMP objects, source variables, folders, and other
+safe container facts before asking. Ask only for a critical fact that cannot be established and
+changes the configuration. Do not ask for a read-only, planning, or test mode.
 
-For analytics, treat the approved tracking plan or direct analytics requirement as the primary business input.
+Limit the source artifact to its relevant configuration scope. Resolve an ambiguous sheet, row,
+event, media objective, or consent identity before mutating the dependent object; do not turn the
+exercise into a tracking-plan or container audit.
 
-For an approved tracking plan, preserve its exact in-scope event names, outgoing fields, literals,
-source mappings, and business timing. Do not optimize or redesign it. When a direct analytics request
-does not yet contain an exact collection decision, present the documented choices and obtain the
-analyst's decision before mutation.
+## 2. Create or reuse the workspace
 
-For media, treat the media-team brief as the primary business input. Capture at least the platform, requested business action, intended use, and destination identity or identify which of these is still blocking. Use any tracking plan only to discover reusable business events and source fields.
+For the requested configuration:
 
-Do not require the media event to exist in the analytics plan. Do not copy a GA4 destination name into another platform.
+1. Reuse a compatible dedicated workspace for the same owner and scope, or create a clearly named
+   dedicated workspace.
+2. Resolve it by stable ID and record its pre-existing changes, synchronization state, and
+   conflicts.
+3. Use the Default Workspace only after the analyst explicitly accepts why a dedicated workspace is
+   unavailable.
+4. Keep the same account, container, and workspace across MCP, API, export/import, and UI tools.
 
-## 3. Resolve the workspace
+Never publish, Submit, or create a GTM version.
 
-For authorized changes:
+## 3. Research the product and installed template
 
-1. Reuse a dedicated workspace with the same owner and scope when compatible.
-2. Otherwise create a dedicated implementation workspace when permitted.
-3. Record workspace name/ID, owner, scope, and pre-existing changes.
-4. Detect workspace conflicts before mutation.
-5. Use the Default Workspace only after explaining why a dedicated workspace is unavailable and obtaining analyst approval.
+Before designing a tag or transformation, open current official documentation for the exact
+client-side product and establish:
 
-Do not create a workspace for a read-only request.
-
-## 4. Form the implementation contract
-
-Use the configuration-contract reference and capture:
-
-- a source-scope manifest covering included, reference-only, excluded, and ambiguous source items;
-- the approved collection contract separately from the technical implementation contract;
-- business action, success moment, and expected destination use;
-- vendor-neutral source event and exact timing;
-- source fields, types, cardinality, null behavior, state lifetime, representative payloads, and evidence grades;
-- destination platform, product, account/pixel/tag ID, template, and version;
-- official event or conversion action and complete destination field schema;
-- base/configuration behavior and whether it sends any automatic event;
-- CMP, vendor identity, approved consent model, and denied/unknown behavior;
-- optional first-party user-data feature and its explicit authorization;
-- object change manifest, external dependencies, result status, and static acceptance criteria.
-- the applicable skill reference architecture, preflight discrepancy report, and approved-to-intended conformance result.
-
-Classify every missing input as discoverable, unnecessary for the selected route, or critical and blocking.
-
-## 5. Inspect the container as integration evidence
-
-Inventory relevant:
-
-- tags, normal triggers, blocking/exception triggers, and sequencing;
-- DLVs, constants, tables, Custom JavaScript, Google tag settings, and user-data variables;
-- folders, notes, templates, template permissions/versions, and destinations;
-- CMP tags, consent defaults/updates, built-in checks, and additional checks;
-- automatic/enhanced measurement, Event Builder, auto-event, and duplicate browser installations;
-- workspace conflicts and consumers of reusable objects.
-
-Compare semantics, timing, output, ownership, consent behavior, and consumers rather than names alone.
-When hard-coded code, CMS plugins, CMP configuration, or platform settings cannot be established from the available static evidence, record the external dependency or blocker instead of claiming that no duplicate or conflict exists.
-
-Do not infer the target architecture from the most common or nearest existing pattern. Existing
-container state can establish capabilities, template versions, IDs, consumers, conflicts, duplicate
-risk, saved fields, and candidates for reuse. It cannot establish best practice merely because an
-object already exists.
-
-Use the applicable skill playbook and current official documentation to select the target pattern.
-Classify each reuse candidate as conformant, conformant with harmless naming debt, nonconformant,
-conflicting, or unknown. Reuse only the first two classes. Do not reproduce a legacy helper, trigger,
-consent model, page-view pattern, or tag architecture without passing the current static criteria.
-
-## 6. Validate the source contract
-
-For every required source value:
-
-1. Establish the exact dataLayer key and event where it becomes available from the approved source contract.
-2. Establish type, format, cardinality, null/undefined behavior, state lifetime, stale-state risk, and evidence grade.
-3. Validate supplied empty, one-item, and multi-item ecommerce examples when applicable; require representative examples when a transformation depends on shape.
-4. Distinguish the source key from the DLV name, template field, and destination parameter.
-5. Record missing or incompatible values as a dataLayer requirement/blocker; do not develop the site or invent a fallback.
-
-For analytics, validate that the intended source event, source paths, literals, business filters, and
-timing exactly match the approved collection contract. Do not add a source field merely because an
-official optional or recommended destination parameter could consume it.
-
-Prefer the clean dataLayer contract over DOM scraping, click-text inference, URL inference, or brittle selectors.
-
-## 7. Research, validate, and classify discrepancies
-
-Open current official documentation and verify:
-
-- standard versus custom event choice and reserved/deprecated names;
+- official event/conversion classification and exact field schema;
 - required, recommended, optional, and conditional fields;
-- types, formats, enumerations, arrays/objects, and accepted identifiers;
-- base tag, event tag, conversion, remarketing, or settings behavior;
-- template field mapping and permissions;
-- native consent capability and basic versus advanced behavior;
-- exact per-product consent classification: strict/basic blocked, native stop/hold, advanced consent-aware, adaptive/anonymous analytics, or unverified;
-- CMP lifecycle event, consent-state source, vendor identity, approved predicate, and documented value format.
+- types, formats, enums, arrays, objects, identifiers, and cardinality;
+- base/configuration, automatic-event, page-view, and matching behavior;
+- supported basic, advanced, native, cookieless, or limited-data consent behavior;
+- external platform requirements such as conversion actions, catalogs, feeds, or terms.
 
-Record the research evidence before mutation.
+Then inspect the installed template's exact identity/version, publisher, permissions, visible fields,
+defaults, and hidden automatic behavior. The official documentation establishes the technical
+contract; the installed version establishes whether that contract can be configured in this
+container. Block an unresolved mismatch instead of forcing a field or designing for a newer template
+that is not installed.
 
-For an approved analytics plan, compare the official findings with the exact approved collection
-contract. Classify every difference as:
+For analytics, compare documentation with the approved collection contract. Preserve a technically
+valid advisory by default and stop only an invalid, reserved, required-field, type/shape,
+unsupported, or unsafe requirement. For media, official vendor documentation establishes the
+destination schema; never infer it from GA4 or another media platform.
 
-- `blocking-error` when the plan is invalid, reserved, missing a required field, type/shape
-  incompatible, unsupported, or impossible to implement safely;
-- `advisory` when the approved choice remains valid but a recommended event, field, or convention
-  may be more appropriate;
-- `implementation-note` when documentation guides GTM/template mechanics without changing the
-  collection contract.
+## 4. Inspect relevant container integration
 
-Never substitute a recommended event or add a recommended/optional parameter automatically. Stop
-the affected requirement for a blocking error. Preserve the approved contract for an advisory unless
-the analyst explicitly amends it.
+Inspect only objects that can supply, consume, duplicate, block, or conflict with the requested
+configuration:
 
-## 8. Decide consent architecture
+- destination/configuration and event tags, triggers, exceptions, sequencing, and advanced settings;
+- source DLVs, constants, settings variables, LUTs, RLTs, transformations, and their consumers;
+- folders and naming conventions for the relevant object family;
+- CMP tags, readiness/update events, state variables, consent defaults, and additional checks;
+- installed template consumers, versions, and permissions;
+- known automatic, Enhanced Measurement, Event Builder, SPA, partner, plugin, or hard-coded paths;
+- workspace conflicts, stable IDs, fingerprints, and pre-existing changes.
 
-Default to strict/basic behavior:
+Use the applicable playbook and current official documentation to select the target architecture
+before evaluating local reuse. Reuse only a semantically compatible object. Do not reproduce a
+legacy pattern, inventory unrelated objects, move unrelated objects, or add a clean parallel tag
+around a known conflict.
 
-- create or reuse the smallest shared set of CMP blocking triggers that expresses the approved category/purpose, vendor, product, and initialization predicate;
-- make unknown, undefined, uninitialized, and denied states block;
-- use the CMP's documented state variable directly in a native GTM condition when it can express the policy safely;
-- treat a CMP value outside its documented contract as an integration defect to resolve, not a reason to invent a consent helper variable;
-- verify that the block's event matcher can activate on every normal firing event used by its consumer tags;
-- attach it to every in-scope base/configuration and event tag for that vendor;
-- give each base/configuration tag a verified normal-trigger opportunity after both an initial grant and a later grant; an exception that blocks a page-load trigger does not make that trigger run again;
-- prove the expected firing logic from GTM trigger semantics, the approved CMP contract, and the planned object graph without presenting it as runtime observation.
+When outside-container code or platform settings cannot be established from supplied static
+evidence, record the exact external dependency. Do not claim that no duplicate exists.
 
-Use advanced/native consent only when explicitly requested and approved. In that route, configure documented defaults and updates, preserve the vendor's intended denied-state behavior, and remove/avoid any blocking logic that would defeat it.
+## 5. Build the configuration map
 
-Make that decision for each browser product, not only for the parent vendor. Use the vendor consent-mode capability reference. If the official sources do not establish the denied-state request, storage, fields, and data-use behavior, retain strict/basic blocking or mark the advanced request blocked.
+Use the configuration-contract reference as a concise internal mutation map. For every independent
+business action and destination, establish:
 
-## 9. Design the object graph
+- approved event/action and exact success moment;
+- source event, required paths, type/shape, timing, lifetime, and missing-data behavior;
+- destination product, identity, official event/conversion, and complete configured field set;
+- GTM resolution for each field: direct value, DLV, constant, settings variable, LUT/RLT, or
+  necessary transformation;
+- installed-template field and version;
+- normal trigger, basic block or explicitly approved advanced consent mechanism, and firing option;
+- object action (`create`, `update`, `reuse`, or `untouched`), dependencies, folder, and intended
+  saved fields;
+- relevant external dependency or blocker.
 
-Select the smallest best-practice reference architecture from the applicable skill playbooks,
-approved consent policy, source contract, installed-template capabilities, and current official
-documentation. Reconcile it with container integration constraints only after selecting that target.
+Do not demand a separate source-contract document when approved inputs establish these facts. When
+a required value is absent or incompatible, record the precise dataLayer obligation and block the
+affected object. Do not develop the site, scrape the DOM, infer a click/URL success, coerce an
+unapproved type, or invent a fallback.
 
-Keep configuration/base tags from sending an automatic page view by default.
+## 6. Design and preflight the object graph
 
-Default to:
+Choose the smallest understandable architecture that satisfies the approved requirement:
 
-- one exact approved Custom Event trigger per business action; when the approved input authorizes a new source contract, default to a vendor-neutral event;
-- separate destination tags that consume the same event where semantics match;
-- a separate page-view event instead of an automatic page view from a config/base tag;
-- reusable constants for stable IDs or values where a reference is clearer;
-- direct DLVs for compatible source values;
-- lookup or regex tables only for real deterministic multi-scenario mappings;
-- Custom JavaScript only for a necessary, documented transformation;
-- explicit tag sequencing only when the template/vendor lifecycle requires it.
+Justify every create or update by a current approved requirement or documented implementation
+constraint. Do not create speculative future helpers.
 
-Justify every new object by a current requirement, a documented destination/template constraint, or the absence of a semantically compatible existing object. Do not create a helper variable, settings object, trigger, base tag, or page-view tag merely to normalize the container or anticipate a hypothetical future need.
+1. Reuse or create a shallow folder when several related objects benefit from grouping.
+2. Prefer direct template fields/DLVs, then clear constants or shared settings variables.
+3. Use LUTs or RLTs for real deterministic multi-scenario mappings with a safe no-match result.
+4. Use narrow Custom JavaScript only for a required array/object or multi-step conversion.
+5. Create precise normal triggers and the smallest reusable basic-consent block set.
+6. Create or update one compatible initialization path and separate requested event tags.
+7. Reconcile automatic/manual page views and business events before adding another event source.
 
-For every reused object, prove that architecture, terminal output, source, type/shape, timing,
-consent, consumers, template/version, environment, and future change path remain compatible. A name
-or current value match is insufficient. If a nonconformant existing object would conflict with the
-best-practice implementation, update or disable it only when authorized; otherwise block the
-affected requirement. Never knowingly add a parallel duplicate.
+For ecommerce, preserve every required item and exact destination type/shape. Establish catalog/feed
+identifier mapping explicitly. Do not silently drop invalid items. A transformation that returns
+`undefined`, `{}`, or `[]` does not itself stop a tag; add the smallest explicit native eligibility
+condition or narrow validity guard when the tag could otherwise send an invalid required payload.
 
-Check duplicate automatic/manual events and page-view timing before finalizing.
+Follow the default naming convention unless the analyst supplied another clear convention. An
+existing coherent convention may be retained for presentation, never for architecture.
 
-## 10. Present the plan when risk requires it
+Before the first write:
 
-For every analytics tracking-plan implementation, present the concise discrepancy report before the
-first write. A zero-discrepancy result needs no additional approval. An advisory states that the
-default is faithful implementation. A blocking error stops the affected requirement until an amended
-approved input is supplied.
+- report analytics documentation discrepancies concisely;
+- surface advanced consent, first-party data, new template permissions, Default Workspace use,
+  non-dataLayer fallbacks, and unresolved duplicate architecture for the required decision;
+- compare the approved analytics contract with the intended event and field set and require zero
+  unauthorized additions, removals, substitutions, or timing changes;
+- capture stable IDs, fingerprints, pre-change state for updates, and mutation dependencies.
 
-Run the approved-to-intended collection-contract conformance check before mutation. Require identical
-scope, requirement IDs, events, business timing, fields, sources, and literals, with zero unauthorized
-additions, removals, or substitutions. Keep implementation infrastructure in a separate manifest.
+## 7. Mutate in dependency order
 
-Before mutation, surface decisions that materially affect data collection or architecture, including:
+Prefer a purpose-built GTM MCP, then the GTM API, and use the UI only for unavailable semantic fields
+or controlled fallback. Discover the adapter's actual actions, pagination, limits, returned fields,
+and conflict behavior before mutation.
 
-- advanced consent instead of the default strict/basic route;
-- automatic or manual first-party user-data collection;
-- adding/updating a community template or accepting new permissions;
-- a non-dataLayer trigger fallback;
-- use of the Default Workspace;
-- unresolved automatic-event or page-view duplication.
+Apply only the requested configuration in this order:
 
-Obtain the necessary approval; do not broaden the original authorization.
-
-## 11. Mutate only the approved scope
-
-Prefer a purpose-built GTM MCP or API. Use UI only when a required operation is unavailable or for visual verification.
-
-Before the first write, finalize the object change manifest, capture IDs/fingerprints and exact pre-change state for modified objects, record pre-existing workspace changes, inspect workspace synchronization/conflicts, and confirm that rerunning the same contract will not create duplicates.
-
-Apply dependency order:
-
-1. folders or templates when approved;
-2. constants, DLVs, tables, settings variables, and transformations;
+1. approved templates and folders;
+2. constants, DLVs, settings variables, LUTs/RLTs, transformations, and validity variables;
 3. normal and blocking triggers;
 4. base/configuration tags;
-5. event/conversion/remarketing tags;
-6. sequencing and consent settings.
+5. event, conversion, and remarketing tags;
+6. sequencing, firing settings, and consent settings.
 
-Re-read every saved object, compare it with the manifest, inspect references, preserve unrelated changes, and record current-run created, modified, reused, and untouched objects separately from pre-existing workspace changes and final workspace totals. Re-evaluate the manifest after an unexpected saved field, consumer, or fingerprint. Never publish or create a version.
+After each logical save, re-read the object and compare its stored fields and references. Stop
+dependent writes on an unexpected fingerprint, consumer, normalized field, template change,
+conflict, authentication failure, or partial write. Never retry an uncertain create blindly; first
+read back by stable parent, identity, and semantics to avoid a duplicate.
 
-## 12. Validate and hand off
+## 8. Read back, correct, and hand off
 
-Apply the acceptance reference. Separate:
+Before `Configured`:
 
-- approved-to-intended and approved-to-saved collection-contract conformance results;
-- source-scope classifications, blocking errors, advisories, and implementation notes;
-- pre-existing workspace changes, current-run changes, and final workspace totals;
-- documentation- and static configuration-verified assertions;
-- the explicit boundary that runtime validation was not performed or claimed;
-- blockers and missing dataLayer requirements;
-- external site, CMP, GA4-administration, and advertising-platform dependencies;
-- explicitly deferred server-side or deduplication work.
+- re-read every created, updated, and reused object from the target workspace;
+- prove analytics approved-to-saved event, timing, field, source, and literal equality;
+- prove media brief-to-official-schema and source-to-template mappings;
+- confirm normal triggers, consent blocks/settings, firing options, sequencing, folders, naming, and
+  template fields;
+- resolve every GTM reference and known in-scope duplicate/conflict;
+- distinguish pre-existing workspace changes from current-run writes and final totals;
+- recompute the intended actions so an identical rerun is entirely `reuse` or `untouched`.
 
-If no mutation tool is available, return the complete object-level specification as `Specification complete` and state clearly that no live configuration changed.
+Correct safe current-operation differences before finishing. Use `Partial` for an exact saved partial
+state and stop its dependent writes. Use `Blocked` when a critical input or mutation path prevents
+configuration. Use `Deferred` only for the explicitly future server-side/deduplication capability.
+
+Return a concise handoff containing the workspace, configured objects, conformance result,
+discrepancies, blockers/partial state, and external dependencies. State that runtime recette was not
+performed and that no publication or version action occurred.

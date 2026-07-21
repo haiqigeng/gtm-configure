@@ -11,7 +11,35 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SEMVER = re.compile(r"^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$")
-CURRENT_RELEASE = "2.1.0"
+CURRENT_RELEASE = "3.0.0"
+REFERENCE_LAYERS = {
+    "01-orientation": {
+        "official-source-policy.md",
+        "utility-contract.md",
+    },
+    "02-execution": {
+        "analytics-tags.md",
+        "cmp-consent.md",
+        "configuration-contract.md",
+        "data-contract-and-transformations.md",
+        "first-party-data.md",
+        "google-consent-mode.md",
+        "implementation-workflow.md",
+        "media-google-ads.md",
+        "media-meta.md",
+        "media-microsoft-ads.md",
+        "media-snapchat.md",
+        "media-tags.md",
+        "media-tiktok.md",
+        "naming-and-reuse.md",
+        "template-governance.md",
+        "tool-adapters.md",
+        "tracking-plan-fidelity-and-conformance.md",
+        "triggers-and-variables.md",
+        "vendor-consent-modes.md",
+    },
+    "03-judgement": {"acceptance-and-handoff.md"},
+}
 REQUIRED_FILES = (
     "SKILL.md",
     "agents/openai.yaml",
@@ -128,6 +156,41 @@ def check_links() -> list[str]:
     return errors
 
 
+def check_reference_structure() -> list[str]:
+    errors: list[str] = []
+    references = ROOT / "references"
+    actual_layers = {path.name for path in references.iterdir() if path.is_dir()}
+    expected_layers = set(REFERENCE_LAYERS)
+    for layer in sorted(expected_layers - actual_layers):
+        errors.append(f"missing reference layer: references/{layer}")
+    for layer in sorted(actual_layers - expected_layers):
+        errors.append(f"unexpected reference layer: references/{layer}")
+
+    for layer, expected_files in REFERENCE_LAYERS.items():
+        root = references / layer
+        if not root.exists():
+            continue
+        actual_files = {path.name for path in root.iterdir() if path.is_file()}
+        for filename in sorted(expected_files - actual_files):
+            errors.append(f"missing {layer} reference: {filename}")
+        for filename in sorted(actual_files - expected_files):
+            errors.append(f"unexpected {layer} reference: {filename}")
+        nested = [path for path in root.rglob("*") if path.is_file() and path.parent != root]
+        errors.extend(
+            f"reference must be directly inside its layer: {path.relative_to(ROOT)}"
+            for path in nested
+        )
+
+    skill = read("SKILL.md")
+    headings = ["## 01 - Orientation", "## 02 - Execution", "## 03 - Judgement"]
+    positions = [skill.find(heading) for heading in headings]
+    if any(position < 0 for position in positions):
+        errors.append("SKILL.md must contain orientation, execution, and judgement headings")
+    elif positions != sorted(positions):
+        errors.append("SKILL.md reference layers are not ordered orientation/execution/judgement")
+    return errors
+
+
 def check_required_files() -> list[str]:
     errors = [
         f"missing required file: {path}" for path in REQUIRED_FILES if not (ROOT / path).exists()
@@ -173,37 +236,39 @@ def check_content() -> list[str]:
         "01 - Orientation",
         "02 - Execution",
         "03 - Judgement",
-        "dedicated GTM workspace",
-        "Server-side GTM",
-        "browser/server deduplication",
-        "media-team brief",
-        "strict/basic CMP gating",
-        "Classify consent behavior per browser product",
-        "Create an object only for a current requirement",
-        "smallest authorized, statically verifiable",
+        "Operationally implement an approved analytics tracking plan",
+        "saved, verified GTM object graph",
+        "explicit media implementation brief",
+        "Default every in-scope analytics and media product to strict/basic CMP blocking",
+        "installed template version",
+        "Inspect only the objects related to the requested implementation",
+        "LUTs/RLTs for real deterministic",
+        "shallow folder",
+        "smallest explicit eligibility condition",
         "configuration-contract.md",
-        "Do not require or claim runtime execution",
-        "Implement an approved analytics tracking plan faithfully",
         "never as proof of best practice",
+        "never publish",
+        "future extensions",
     )
     errors.extend(
         f"SKILL.md missing required term: {term}" for term in required_terms if term not in skill
     )
     utility_terms = (
         "## Audience",
-        "## Objective",
-        "## Current use cases",
-        "## Inputs",
-        "## Outputs",
+        "## North star",
+        "## Operational quality",
+        "## Intake",
+        "## Operational output",
+        "## Workspace authority",
         "## Boundaries",
     )
     errors.extend(
         f"utility contract missing section: {term}" for term in utility_terms if term not in utility
     )
     contract_terms = (
-        "Use different primary inputs for analytics and media",
-        "Human media-team brief",
-        "Current official media-vendor documentation",
+        "Keep analytics and media business inputs separate",
+        "Explicit human media-team brief",
+        "Current official vendor browser documentation",
     )
     errors.extend(
         f"utility contract missing requirement authority: {term}"
@@ -211,29 +276,27 @@ def check_content() -> list[str]:
         if term not in utility
     )
     configuration_contract_terms = (
-        "## Collection and implementation contracts",
-        "## Source scope and discrepancies",
-        "## Evidence grades",
+        "# Operational configuration map",
+        "## Keep business and implementation decisions separate",
+        "## Use one concise record per requirement",
+        "## Retain critical provenance",
         "`approved-input`",
         "`official-current`",
         "`container-confirmed`",
         "`contract-sample`",
-        "## Requirement record",
-        "## Field mapping",
-        "## Object change manifest",
-        "## Contract conformance",
-        "## Consent and external dependencies",
-        "## Result statuses",
+        "## Map fields and event eligibility",
+        "## Map GTM object actions",
+        "## Prove analytics conformance",
+        "## Record consent and external dependencies",
+        "## Apply operational statuses",
         "`Configured`",
-        "`Specification complete`",
         "`Partial`",
         "`Blocked`",
         "`Deferred`",
-        "## Static completion invariants",
-        "authoritative current-workspace readback",
-        "idempotency",
-        "approved-to-intended",
-        "approved-to-saved",
+        "## Completion invariants",
+        "Authoritative current-workspace readback",
+        "identical rerun",
+        "smallest explicit native",
     )
     errors.extend(
         f"configuration contract missing requirement: {term}"
@@ -255,12 +318,15 @@ def check_content() -> list[str]:
         if term not in sources
     )
     workflow_terms = (
-        "For media, treat the media-team brief as the primary business input",
-        "Inspect the container as integration evidence",
-        "Preserve the approved contract for an advisory",
-        "Default to strict/basic behavior",
-        "Keep configuration/base tags from sending an automatic page view by default",
-        "Justify every new object by a current requirement",
+        "# Operational implementation workflow",
+        "Resolve only blocking inputs",
+        "Research the product and installed template",
+        "Inspect relevant container integration",
+        "Build the configuration map",
+        "Design and preflight the object graph",
+        "Mutate in dependency order",
+        "Read back, correct, and hand off",
+        "smallest explicit native eligibility",
     )
     errors.extend(
         f"workflow missing contract: {term}" for term in workflow_terms if term not in workflow
@@ -364,11 +430,12 @@ def check_content() -> list[str]:
         if term in combined_logic or term in readme
     )
     judgement_terms = (
-        "## Static completion definition",
-        "## Judgement statuses",
-        "## Static validation matrix",
+        "## Configured means saved and verified",
+        "## Operational statuses",
+        "## Configuration judgement matrix",
+        "## Analytics conformance proof",
         "## Consent configuration proof",
-        "## Handoff output",
+        "## Concise handoff",
     )
     errors.extend(
         f"judgement reference missing section: {term}"
@@ -393,7 +460,7 @@ def check_content() -> list[str]:
         if term not in triggers
     )
     adapter_terms = (
-        "configuration contract as the adapter input",
+        "operational configuration map as the adapter input",
         "current fingerprint",
         "Do not mutate from an informal prose summary",
         "Prove idempotency",
@@ -409,8 +476,8 @@ def check_content() -> list[str]:
     )
     fidelity_terms = (
         "measurement design and optimization",
-        "authorized **collection contract**",
-        "**implementation contract**",
+        "Treat these as approved analytics semantics",
+        "Treat these as GTM implementation choices",
         "Visibility is evidence, not authority",
         "`blocking-error`",
         "`advisory`",
@@ -426,7 +493,11 @@ def check_content() -> list[str]:
         ("data mapping", "After selecting the target pattern", data_contract),
         ("reuse", "Existing prevalence is not evidence of best", naming),
         ("reuse conflict", "clean parallel implementation", naming),
-        ("acceptance architecture", "skill reference architecture is selected first", judgement),
+        (
+            "acceptance architecture",
+            "Select the best-practice architecture before considering container reuse",
+            judgement,
+        ),
         ("workspace attribution", "pre-existing workspace changes", judgement),
         ("workspace totals", "final workspace totals", judgement),
     )
@@ -478,13 +549,26 @@ def check_content() -> list[str]:
             errors.append(f"{label} does not match the current release")
     if re.search(r"Scope excludes[^.]*\b(server-side|deduplication)\b", skill, re.I):
         errors.append("server-side/deduplication appears in the permanent exclusion sentence")
-    if "future extensions of this skill" not in skill.lower():
+    if "future extensions" not in skill.lower():
         errors.append("future capability boundary is not explicit")
     if len(skill.splitlines()) >= 500:
         errors.append("SKILL.md exceeds the 500-line guidance limit")
     release_text = "\n".join(read(path) for path in ("SKILL.md", "README.md", "CHANGELOG.md"))
     if re.search(r"TODO|\[TODO\]", release_text, re.I):
         errors.append("release-facing files contain placeholders")
+    runtime_contract = "\n".join(
+        read(path)
+        for path in (
+            "SKILL.md",
+            "README.md",
+            *(
+                path.relative_to(ROOT).as_posix()
+                for path in sorted((ROOT / "references").rglob("*.md"))
+            ),
+        )
+    )
+    if "Specification complete" in runtime_contract:
+        errors.append("obsolete planning-only success status remains in runtime documentation")
     return errors
 
 
@@ -568,6 +652,7 @@ def main() -> int:
     except ValueError as exc:
         errors.append(str(exc))
     errors.extend(check_required_files())
+    errors.extend(check_reference_structure())
     errors.extend(check_links())
     errors.extend(check_content())
     if args.tag:

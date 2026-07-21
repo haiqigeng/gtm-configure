@@ -63,6 +63,14 @@ TikTok documents a Pixel cookie-consent mode and cookie enable/disable controls.
 
 Use a TikTok-native limited-data route only when explicitly requested and current official product/template documentation establishes the complete denied-state request, storage, data-use, and revocation behavior approved by the client. Otherwise retain the strict/basic block. Do not assume that enabling Google Consent Mode alone gates or changes a third-party TikTok template.
 
+## Verify the saved TikTok setup
+
+Re-read the Pixel base/event tags, template version and fields, destination constant, ecommerce
+mapping and eligibility, normal and blocking triggers, advanced-matching settings, automatic/Event
+Builder overlap, firing options, folders, and references. Confirm one initialization path, every
+required item, and an idempotent rerun. Keep platform-side Event Builder, catalog, optimization, and
+publication work separate.
+
 ## Official entry points
 
 - https://ads.tiktok.com/help/article/standard-events-parameters

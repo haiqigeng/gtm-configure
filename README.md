@@ -1,151 +1,191 @@
 # Configure GTM
 
-An agent-neutral skill for expert web analysts using Codex, Claude, or another capable AI agent to create and modify minimal, statically verifiable, traceable, officially documented, and consent-controlled client-side Google Tag Manager configurations.
+An agent-neutral operational skill for expert web analysts using Codex, Claude, or another capable
+AI agent to configure clean, well-organized, technically correct, best-practice, and
+consent-controlled client-side Google Tag Manager workspaces.
 
 ## Who It Serves
 
-- Expert web analysts and analytics consultants.
-- GTM specialists configuring the supported analytics and browser media platforms.
-- Analysts translating an approved analytics tracking plan, direct requirement, or media-team brief into GTM objects.
-- AI agents that can use a GTM MCP, API, export, or signed-in UI.
+- Expert web analysts, analytics consultants, and GTM specialists.
+- Analysts implementing approved analytics tracking plans.
+- Media specialists requesting browser tags through an explicit implementation brief.
+- AI agents with a GTM MCP, API, authorized export/import path, or signed-in UI.
 
 ## Utility Objective
 
-Convert an approved implementation requirement into the smallest authorized, statically verifiable, traceable, and consent-controlled client-side GTM change set. Preserve an approved analytics collection contract exactly, use current official documentation to detect errors and advisories without silently redesigning it, select the implementation from the skill's best-practice playbooks, reuse only conformant objects, apply explicit consent behavior, and report exactly what changed.
+Operationally implement an approved analytics tracking plan and, when requested, an explicit media
+implementation brief inside a client-side GTM workspace. Create, update, or reuse every required
+tag, trigger, variable, template, folder, setting, and transformation; use current official
+documentation and installed-template capabilities; preserve approved analytics semantics exactly;
+support platform-specific media and consent requirements; verify every saved change; and never
+publish.
 
-Runtime access is not required for configuration completion and the skill never presents static inspection as observed browser behavior. Interactive Preview, network, CMP-journey, and vendor-diagnostics validation belongs to a separate recette workflow.
+The unit of success is the saved, verified GTM object graph—not a plan, recommendation, or
+specification. Governance and static proof protect configuration quality but do not replace actual
+configuration.
 
-Use different requirement authorities:
+Use these meanings:
 
-- For analytics, use the approved tracking plan or exact direct analytics decision as the collection authority. Measurement-plan creation and optimization remain outside this skill.
-- For media, use the human media-team brief as the primary business input. Use a tracking plan only to discover reusable source events and values.
-
-The objective is implementation quality and traceability, not legal advice or a claim of legal compliance.
+- **Clean:** no avoidable duplicate, known unresolved conflict, redundant helper, or speculative
+  future object within the requested setup; no authority for general cleanup.
+- **Well organized:** clear default or approved naming, shallow folders where useful, understandable
+  references, and semantic reuse.
+- **Correct:** faithful inputs, current official technical validity, compatible source and template
+  fields, correct trigger/consent logic, and saved-state readback; not runtime certification.
+- **Optimal:** the smallest maintainable best-practice GTM architecture within the approved
+  requirements; never tracking-plan optimization.
+- **Consent controlled:** strict/basic CMP blocking by default and advanced/native behavior only
+  when explicitly requested and proven for the exact product.
 
 ## Current Client-Side Use Cases
 
-- Create or modify tags, normal triggers, blocking triggers, variables, settings variables, and transformations.
-- Configure Google tag and GA4 events.
-- Configure Google Ads conversions, remarketing, dynamic remarketing, and explicitly approved enhanced conversions.
-- Configure Microsoft Advertising UET, Meta Pixel, TikTok Pixel, and Snap Pixel browser tags.
-- Configure another browser media vendor by researching its current official documentation.
-- Implement strict/basic CMP blocking by default.
-- Implement product-specific Google, Microsoft, or vendor-native advanced/cookieless/anonymous consent only when explicitly requested, approved, and officially documented.
-- Validate the available dataLayer contract and produce missing-data requirements without developing the site.
+- Configure Google tag and GA4 events from an approved tracking plan or exact direct analytics
+  decision.
+- Configure Google Ads conversion/remarketing, Microsoft Advertising UET, Meta Pixel, TikTok Pixel,
+  Snap Pixel, and another officially documented browser media product from a human brief.
+- Create or update tags, normal and blocking triggers, DLVs, constants, settings variables, LUTs,
+  RLTs, narrow transformations, folders, templates, and advanced tag settings.
+- Implement basic CMP gating by default and explicitly requested Google, Microsoft, or
+  vendor-native advanced/cookieless/anonymous consent behavior.
+- Configure explicitly requested first-party user-data features with controlled sources and consent.
+- Handle ecommerce arrays, catalog/feed identifiers, source-to-destination shape conversion, and
+  fail-closed event eligibility.
+- Reuse compatible objects and reconcile relevant duplicate/conflict risks without auditing or
+  cleaning unrelated container content.
 
 ## Inputs
 
-Inputs can be supplied by the analyst, discovered by the agent, or required only for the chosen route. They do not all need to exist at intake.
+The skill discovers safe information before asking. Applicable inputs are:
 
-- Analytics tracking-plan row or direct analytics requirement.
-- Source-scope decisions for included, reference-only, excluded, or ambiguous workbook content.
-- Media-team brief: platform, business action, destination use, and available account/pixel/conversion identifiers.
-- Target account, web container, environment, workspace, and mutation authority.
-- Existing tags, triggers, variables, templates, folders, and workspace state as integration evidence, not best-practice authority.
-- Current official platform, template, and CMP documentation.
-- dataLayer event, fields, types, cardinality, timing, and representative payloads.
-- CMP state and client-approved basic/strict or advanced consent policy.
-- Conditional feed, catalog, conversion-label, user-data, or environment details.
+- Target GTM account and web container; a dedicated workspace name is optional.
+- Approved tracking-plan scope or exact direct analytics event/fields/source/timing.
+- Explicit media brief: platform, business action, destination use, and identity.
+- Exact dataLayer event and required paths; representative payloads only when a transformation or
+  ambiguous shape requires them.
+- Installed or named CMP and its documented grant state; basic blocking is the default.
+- Explicit advanced-consent or first-party-data request with the required policy/source details.
+- Conditional conversion labels, catalog/feed conventions, matching fields, or environment mapping.
 
-The agent should derive safe values and block only when a critical authorization, business, destination, data, template, or consent decision cannot be established.
+An actual request to configure a named container implies read access and create/update/reuse
+authority for its in-scope GTM objects in a dedicated workspace. It does not authorize deletion,
+general cleanup, another container, publication, or changes outside GTM.
 
 ## Outputs
 
-For every route, return one adapter-neutral configuration contract containing:
+A successful run returns:
 
-- one status per requirement or tag family: `Configured`, `Specification complete`, `Partial`, `Blocked`, or `Deferred`;
-- target account, container, environment, workspace, authorization, and synchronization state;
-- requirement records, field-level source-to-destination maps, and an object change manifest;
-- normalized source scope, documentation discrepancy report, and exact collection-contract conformance results;
-- pre-existing workspace changes, current-run created/modified/reused/intentionally untouched/blocked/deferred objects, and final workspace totals;
-- template identity/version and relevant permissions;
-- `approved-input`, `official-current`, `container-confirmed`, `contract-sample`, and `assumption` evidence grades;
-- official source URLs, titles, access dates, extracted decisions, and contradictions;
-- normal triggers and expected consent eligibility per browser product/vendor;
-- static invariants, idempotency result, blockers, external dependencies, and deferred capabilities;
-- confirmation that no publication or GTM version occurred.
+- a dedicated workspace containing the complete saved configuration;
+- created, updated, reused, and intentionally untouched in-scope GTM objects;
+- exact analytics approved-to-saved conformance or media brief/official-schema mapping;
+- saved source variables, template fields, event eligibility, normal triggers, consent route, firing
+  settings, naming, and folders;
+- installed-template version and relevant permissions/defaults;
+- authoritative object readback, resolved references, fingerprints, workspace conflict state, and
+  idempotent rerun result;
+- concise documentation discrepancies, partial state, blockers, and external dependencies;
+- confirmation that runtime recette and publication did not occur.
 
-`Configured` requires authoritative current-workspace readback proving that the saved state matches the approved contract; no write is required when the state already matches. When writes are required, they must be authorized, saved, re-read, and compared with the manifest. For planning, export-only, or unavailable-tool work, return `Specification complete` only when the same static contract is complete, without claiming current saved state. Runtime validation is neither an input nor an unfinished configuration status.
+Use `Configured`, `Partial`, `Blocked`, or `Deferred`. If mutation access or a critical decision is
+missing, use `Blocked`; do not convert the run into a successful specification workflow.
 
 ## Workflow Architecture
 
-The runtime package has three layers:
+The runtime package remains organized around three layers:
 
-1. Orientation defines utility, requirement authority, inputs/outputs, boundaries, and official-source policy.
-2. Execution separates approved collection semantics from implementation infrastructure, classifies documentation discrepancies, selects a best-practice reference architecture, reconciles safe container integration, and performs mutation.
-3. Judgement proves collection-contract equality, implementation readback, static acceptance, result status, consent configuration, external dependencies, and handoff.
+1. **Orientation** defines the north star, operational quality, requirement authority, minimal
+   intake, boundaries, and official-source priority.
+2. **Execution** uses one internal configuration loop, then loads detailed analytics, media,
+   consent, data, trigger, template, naming, and adapter playbooks only when required.
+3. **Judgement** assigns an operational status from authoritative saved state and returns a concise
+   handoff without claiming runtime behavior.
 
-`SKILL.md` routes directly to every reference so an agent loads only the applicable platform and feature files.
+`SKILL.md` directly routes every reference. The workflow is deliberately short; sophistication
+lives in conditional configuration requirements and implementation traps.
 
-## Key Defaults
+## Key Defaults And Traps
 
-- Use vendor-neutral dataLayer Custom Events for business actions.
-- Implement approved analytics event names, outgoing fields, source mappings, literals, and business timing exactly. Report documented alternatives; never substitute or enrich them automatically.
-- Select the target GTM architecture from the applicable skill playbook and current official/template documentation. Use container state only for capabilities, conflicts, consumers, and candidates that pass the current conformance gate.
-- Use a dedicated workspace and avoid the Default Workspace.
-- Use relative GTM references rather than repeated hard-coded IDs or values when they improve clarity.
-- Create an object only for a current requirement or documented platform/template constraint; prefer a direct field or DLV over a helper variable.
-- Never reproduce a legacy pattern or add a clean parallel implementation around a known conflicting tag. Resolve it within authority or block the affected requirement.
-- Keep config/base tags from sending an automatic page view by default; implement page view separately unless a vendor has a documented inherent exception.
-- Use the smallest reusable set of CMP blocks that expresses the complete approved category/purpose, vendor, product, and initialization predicate. Independent required grants need OR-denial behavior across separate reusable blocks.
-- Make unknown, uninitialized, and denied consent block.
-- Make each block's event scope cover every consumer firing path, and gate any tag sequence at its initiating tag.
-- Test the CMP's documented vendor-state variable directly through one native negative blocking condition. Do not create a consent CJS, JavaScript, table, or Boolean helper; block an unsupported CMP contract instead.
-- Treat revocation as a separate vendor-behavior decision; a GTM block does not unload a script that already ran.
-- Classify consent per browser product; use advanced/native consent and first-party user-data features only after explicit approval and official denied-state proof.
-- Reconcile per-product consent choices with shared Google tags and helpers; one execution unit cannot carry incompatible basic and advanced policies.
-- Preserve every ecommerce item and exact vendor array/object shape.
-- Select Data Layer Variable Version 1 or Version 2 deliberately from the approved source contract; do not treat their merge behavior as interchangeable.
-- Inspect firing-trigger OR semantics, filter-row AND semantics, blocking-trigger precedence, tag firing option, priority, schedule, live-only behavior, pause state, and sequencing.
+- Preserve every approved analytics event, outgoing field, literal, source, filter, and success
+  moment. Report documented alternatives without silently changing them.
+- Use an explicit media brief for media business intent and current official browser documentation
+  for each platform's schema.
+- Inspect the installed template version before designing its fields or transformations.
+- Select best-practice architecture before container reuse. Existing prevalence is not authority.
+- Inspect only relevant objects for destinations, consumers, conflicts, duplicates, CMP signals,
+  folders, and reuse.
+- Use direct DLVs first, named constants for stable reusable values, settings variables for genuinely
+  shared fields, LUT/RLT for real deterministic mappings, and CJS only for required shape changes.
+- Follow the default naming convention and group several related objects in a shallow folder. Keep a
+  coherent existing convention only as presentation.
+- Keep base/config tags from sending page views by default and reconcile all known automatic/manual,
+  Enhanced Measurement, Event Builder, SPA, plugin, partner, and hard-coded paths.
+- Preserve every required ecommerce item. Do not assume analytics IDs match media catalogs, silently
+  drop invalid items, coerce unapproved types, or invent content/value/currency fields.
+- Treat a transform returning empty/undefined as data, not as a firing gate. Add the smallest explicit
+  eligibility condition when required data could otherwise produce a partial event.
+- Default to strict/basic CMP blocks that cover every consumer event and block unknown,
+  uninitialized, and denied states. Independent grants require OR-denial across reusable blocks.
+- Use advanced consent or first-party data only after explicit request and current product/template
+  proof.
+- Create/reuse a dedicated workspace, preserve pre-existing changes, mutate dependencies first,
+  re-read every save, and make the identical rerun a no-op.
 - Never publish or create a GTM version.
 
 ## Official Documentation Policy
 
-The playbooks contain stable research and decision procedures, not frozen event catalogues. For every implementation, reopen the current official vendor pages and installed template. Record exact event/field requirements, types, shapes, consent behavior, source mapping, and access date. For approved analytics plans, classify findings as blocking errors, advisories, or implementation notes; documentation validates but does not authorize a plan rewrite.
+Reopen current official vendor, GTM, CMP, and installed-template sources for every implementation.
+The skill stores durable decision procedures and traps, not permanent event catalogues.
 
-If a platform has no dedicated playbook, research its official browser implementation, event, parameter, consent, matching, and template documentation before configuration. Never infer one vendor's schema from GA4 or another media platform.
+For analytics, the approved tracking plan controls business semantics; current official
+documentation validates technical appropriateness and feasibility. A valid recommended alternative
+is advisory. An invalid/reserved/missing-required/incompatible requirement blocks the affected tag.
+
+For media, the brief controls business intent and current official platform documentation controls
+the destination schema. Never infer one vendor from another.
 
 ## Workspace And Mutation Policy
 
-For authorized changes, reuse a compatible dedicated workspace or create one when possible. Explain the constraint and obtain approval before using the Default Workspace.
+Prefer a GTM MCP, then API, then an authorized complete export/import path, and use the UI for
+unavailable semantic operations. Discover exact adapter actions, pagination, limits, return shapes,
+and conflict behavior before writing.
 
-Prefer a connected GTM MCP, then the GTM API. Use the UI for unsupported operations or visual verification. Discover the adapter's exact action schema, pagination, page limits, returned fields, and batch/quota behavior before mutation. Before writing, synchronize the workspace, inspect conflicts, record IDs/fingerprints, exact pre-change state, and pre-existing workspace changes, then finalize the object manifest. Re-read every saved object, prove exact approved-to-saved collection equality and an idempotent rerun, and preserve unrelated work.
-
-## Maturity
-
-The skill is release-grade for expert-supervised static specification and authorized mutation within its bounded client-side scope. It has explicit requirement authority, evidence grades, object-graph and consent invariants, deterministic adapter rules, failure statuses, and scenario-backed release checks.
-
-It is not an autonomous end-to-end measurement-certification system. Execution maturity still depends on the connected MCP/API/UI adapter exposing the required fields and on the analyst supplying approved business, source-data, consent, and destination decisions. Runtime behavior, publication, platform administration, and legal approval remain separate responsibilities.
+Resolve the dedicated workspace by stable ID, capture pre-existing changes and fingerprints, build
+the full object graph, write in dependency order, and read each object back. On an uncertain write,
+read before retrying. On partial failure, stop dependent writes and preserve the exact saved recovery
+boundary. Do not publish to expose a mutation.
 
 ## Boundaries
 
-This skill does not create tracking plans, develop the website/dataLayer, audit or clean containers, run a full interactive GTM Preview recette, make legal consent decisions, configure advertising-platform settings without separate authorization, publish, or create GTM versions.
+The skill performs client-side GTM configuration only. It does not create or optimize tracking
+plans, develop a site/dataLayer, run a general container audit or cleanup, execute Preview/browser/
+network/CMP recette, make legal decisions, complete external platform administration, publish, or
+create GTM versions.
 
-Server-side GTM, Conversions API, browser/server deduplication, and event-ID architecture remain future extensions of this skill. They are deferred current-scope capabilities, not permanent exclusions.
-
-The vendor consent-capability map does not add analytics implementation support beyond Google tag/GA4. Its Matomo and Piwik PRO entries are classification references only in this release.
+Server-side GTM, Conversions API, browser/server deduplication, and event-ID architecture remain
+future extensions. Consent-capability entries for unsupported analytics products do not add new
+analytics tag-configuration routes.
 
 ## Repository Map
 
-- `SKILL.md`: runtime entrypoint and direct routing.
+- `SKILL.md`: operational entrypoint and direct routing.
 - `agents/openai.yaml`: OpenAI interface metadata.
-- `references/01-orientation/`: utility and evidence authority.
-- `references/02-execution/`: fidelity, workflow, platform, consent, data, template, tool, architecture, naming, and reuse rules.
-- `references/03-judgement/`: acceptance and handoff.
-- `scripts/validate_contract_conformance.py`: deterministic normalized collection-contract comparator.
-- `scripts/check_release.py`: dependency-free structure/content checks.
+- `references/01-orientation/`: north star, intake, authority, boundaries, and official sources.
+- `references/02-execution/`: operational workflow and detailed configuration playbooks.
+- `references/03-judgement/`: saved-state acceptance and concise handoff.
+- `scripts/validate_contract_conformance.py`: deterministic analytics contract comparator.
+- `scripts/check_release.py`: dependency-free structure/content/release checks.
 - `scripts/build_skill_package.py`: deterministic runtime archive.
-- `tests/`: regression checks for release tooling and critical skill contracts.
+- `tests/`: code and configuration-trap regression checks.
 
 ## Related Skills
 
 - GA4 tracking-plan skill: create or review the measurement plan.
-- GTM container audit/cleanup skill: inspect hygiene, correctness, and cleanup.
+- GTM container audit/cleanup skill: audit hygiene and perform approved cleanup.
 - GTM Preview recette skill: execute interactive runtime validation.
 
 ## Install The Skill
 
-Copy runtime files `SKILL.md`, `agents/`, `references/`, and `scripts/validate_contract_conformance.py` into the target agent's supported skill directory. Keep `LICENSE` with redistributed copies. Repository metadata, tests, and release tooling are not required at runtime.
+Copy `SKILL.md`, `agents/`, `references/`, `scripts/validate_contract_conformance.py`, and `LICENSE`
+into the target agent's skill directory. Repository tests and release tooling are not runtime files.
 
 ## Release Checks
 
@@ -155,11 +195,13 @@ Run:
 python -m pip install -e ".[dev]"
 python -m ruff format --no-cache --check scripts tests
 python -m ruff check --no-cache scripts tests
-python scripts/check_release.py --tag v2.1.0 --release-notes CHANGELOG.md
+python scripts/check_release.py --tag v3.0.0 --release-notes CHANGELOG.md
 python -m unittest discover -s tests -v
 python -m compileall -q scripts
-python scripts/build_skill_package.py --output dist/configure-gtm-v2.1.0.zip
+python scripts/build_skill_package.py --output dist/configure-gtm-v3.0.0.zip
 git diff --check
 ~~~
 
-Beginning with `v2.0.0`, releases use Semantic Versioning: `vMAJOR.MINOR.PATCH`. Increment MAJOR for incompatible skill/output-contract changes, MINOR for backward-compatible capability additions, and PATCH for backward-compatible fixes. Earlier date-based tags remain historical releases.
+Releases use Semantic Versioning: `vMAJOR.MINOR.PATCH`. Increment MAJOR for incompatible skill or
+output-contract changes, MINOR for backward-compatible capability additions, and PATCH for
+backward-compatible fixes.

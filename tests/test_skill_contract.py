@@ -10,41 +10,82 @@ def read(relative: str) -> str:
     return (ROOT / relative).read_text(encoding="utf-8")
 
 
+def compact(text: str) -> str:
+    return " ".join(text.split())
+
+
 class SkillContractTest(unittest.TestCase):
-    def test_openai_interface_metadata_matches_north_star(self) -> None:
+    def test_openai_interface_metadata_matches_operational_north_star(self) -> None:
         metadata = read("agents/openai.yaml")
         self.assertIn('display_name: "Configure Google Tag Manager"', metadata)
+        self.assertIn('short_description: "Operational client-side GTM configuration"', metadata)
         self.assertIn('default_prompt: "Use $configure-gtm', metadata)
-        short_line = next(line for line in metadata.splitlines() if "short_description:" in line)
-        short_description = short_line.split('"', 2)[1]
-        self.assertGreaterEqual(len(short_description), 25)
-        self.assertLessEqual(len(short_description), 64)
+        self.assertIn("saved setup", metadata)
+        self.assertIn("never publish", metadata)
 
-    def test_entrypoint_routes_the_configuration_contract(self) -> None:
+    def test_entrypoint_defines_saved_object_graph_as_success(self) -> None:
         skill = read("SKILL.md")
-        self.assertIn("smallest authorized, statically verifiable", skill)
-        self.assertIn("configuration-contract.md", skill)
-        self.assertIn("for every request", skill)
-        self.assertIn("Do not require or claim runtime execution", skill)
+        self.assertIn("Operationally implement an approved analytics tracking plan", skill)
+        self.assertIn("saved, verified GTM object graph as the unit of success", skill)
+        self.assertIn("Create, update, or reuse every required GTM object", compact(skill))
+        self.assertNotIn("Specification complete", skill)
+
+    def test_reference_structure_is_orientation_execution_judgement(self) -> None:
+        skill = read("SKILL.md")
+        headings = ("## 01 - Orientation", "## 02 - Execution", "## 03 - Judgement")
+        positions = [skill.index(heading) for heading in headings]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(
+            {path.name for path in (ROOT / "references").iterdir() if path.is_dir()},
+            {"01-orientation", "02-execution", "03-judgement"},
+        )
+
+    def test_one_internal_workflow_reaches_real_mutation(self) -> None:
+        utility = read("references/01-orientation/utility-contract.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        self.assertIn(
+            "Do not ask whether the analyst wants read-only, planning, or mutation", utility
+        )
+        for step in (
+            "Resolve only blocking inputs",
+            "Create or reuse the workspace",
+            "Research the product and installed template",
+            "Inspect relevant container integration",
+            "Build the configuration map",
+            "Design and preflight the object graph",
+            "Mutate in dependency order",
+            "Read back, correct, and hand off",
+        ):
+            self.assertIn(step, workflow)
+
+    def test_operational_statuses_prevent_planning_only_success(self) -> None:
+        contract = read("references/02-execution/configuration-contract.md")
+        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
+        combined = contract + acceptance
+        for status in ("Configured", "Partial", "Blocked", "Deferred"):
+            self.assertIn(f"`{status}`", contract)
+            self.assertIn(f"`{status}`", acceptance)
+        self.assertNotIn("Specification complete", combined)
+        self.assertIn("No specification status substitutes", combined)
+        self.assertIn("Authoritative saved-workspace readback", acceptance)
 
     def test_analytics_and_media_keep_distinct_business_authorities(self) -> None:
         utility = read("references/01-orientation/utility-contract.md")
-        workflow = read("references/02-execution/implementation-workflow.md")
         self.assertIn("Approved tracking plan or exact direct analytics requirement", utility)
-        self.assertIn("Human media-team brief", utility)
-        self.assertIn("supporting evidence for reusable business events", utility)
-        self.assertIn("Do not copy a GA4 destination name", workflow)
+        self.assertIn("Explicit human media-team brief", utility)
+        self.assertIn("supporting evidence for a media source event", utility)
+        self.assertIn("never copy a GA4 destination name", utility)
 
-    def test_tracking_plan_fidelity_prevents_silent_analytics_redesign(self) -> None:
+    def test_tracking_plan_fidelity_prevents_silent_redesign(self) -> None:
         skill = read("SKILL.md")
         fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
         analytics = read("references/02-execution/analytics-tags.md")
         acceptance = read("references/03-judgement/acceptance-and-handoff.md")
-        self.assertIn("Implement an approved analytics tracking plan faithfully", skill)
+        self.assertIn("Implement approved analytics event names", skill)
         self.assertIn("measurement design and optimization", fidelity)
         self.assertIn("never substitute it automatically", analytics)
-        self.assertIn("Valid custom event with documented recommended alternative", acceptance)
-        self.assertIn("Recommended or optional field absent from plan", acceptance)
+        self.assertIn("Valid custom analytics event with a recommended alternative", acceptance)
+        self.assertIn("Recommended/optional field absent from plan", acceptance)
 
     def test_official_documentation_detects_discrepancies_without_authorizing_changes(self) -> None:
         sources = read("references/01-orientation/official-source-policy.md")
@@ -52,92 +93,101 @@ class SkillContractTest(unittest.TestCase):
         workflow = read("references/02-execution/implementation-workflow.md")
         for term in ("blocking-error", "advisory", "implementation-note"):
             self.assertIn(f"`{term}`", fidelity)
-            self.assertIn(f"`{term}`", workflow)
         self.assertIn("never use documentation as permission to substitute", sources)
-        self.assertIn("Preserve the approved contract for an advisory", workflow)
+        self.assertIn("Preserve a technically valid advisory by default", compact(workflow))
 
-    def test_collection_and_implementation_contracts_remain_separate(self) -> None:
-        contract = read("references/02-execution/configuration-contract.md")
-        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
-        self.assertIn("## Collection and implementation contracts", contract)
-        self.assertIn("authorized **collection contract**", fidelity)
-        self.assertIn("**implementation contract**", fidelity)
-        self.assertIn("must equal the approved field set", contract)
-        self.assertIn("requires a missing field", contract)
-
-    def test_scope_and_contract_conformance_are_proven_before_and_after_mutation(self) -> None:
-        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
-        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
-        self.assertIn("Visibility is evidence, not authority", fidelity)
-        self.assertIn("approved-to-intended", acceptance)
-        self.assertIn("approved-to-saved", acceptance)
-        self.assertIn("scripts/validate_contract_conformance.py", fidelity)
-
-    def test_critical_facts_have_static_evidence_grades(self) -> None:
-        contract = read("references/02-execution/configuration-contract.md")
-        required_grades = (
-            "approved-input",
-            "official-current",
-            "container-confirmed",
-            "contract-sample",
-            "assumption",
-        )
-        for grade in required_grades:
-            self.assertIn(f"`{grade}`", contract)
-        self.assertIn("Never use for a critical mutation decision", contract)
-        self.assertIn("without requesting runtime access", contract)
-
-    def test_result_statuses_match_static_configuration_scope(self) -> None:
-        contract = read("references/02-execution/configuration-contract.md")
-        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
-        for status in (
-            "Configured",
-            "Specification complete",
-            "Partial",
-            "Blocked",
-            "Deferred",
-        ):
-            self.assertIn(f"`{status}`", contract)
-            self.assertIn(f"`{status}`", acceptance)
-        combined = contract + acceptance
-        self.assertNotIn("Needs runtime QA", combined)
-        self.assertIn("Runtime execution is outside this skill", combined)
-        self.assertIn("saved state already matched the approved contract", combined)
-
-    def test_configuration_contract_covers_field_and_object_graphs(self) -> None:
-        contract = read("references/02-execution/configuration-contract.md")
-        for term in (
-            "Requirement record",
-            "Field mapping",
-            "Object change manifest",
-            "Consent and external dependencies",
-            "Static completion invariants",
-            "pre-change state",
-            "idempotency",
-        ):
-            self.assertIn(term, contract)
-
-    def test_official_documentation_remains_current_authority_for_schema(self) -> None:
+    def test_current_official_and_installed_template_evidence_are_mandatory(self) -> None:
         sources = read("references/01-orientation/official-source-policy.md")
-        media = read("references/02-execution/media-tags.md")
+        templates = read("references/02-execution/template-governance.md")
         self.assertIn("Never rely on memory", sources)
         self.assertIn("Do not copy an event catalogue into the skill", sources)
+        self.assertIn("installed template/version", sources)
         self.assertIn(
-            "Lack of a dedicated skill file never permits memory-based configuration", media
+            "Confirm that the installed template actually supports every required field", templates
         )
-        self.assertIn("source evidence grade", sources)
+        self.assertIn(
+            "If official vendor documentation and the installed template disagree", templates
+        )
+
+    def test_configuration_map_is_lightweight_and_exact(self) -> None:
+        contract = read("references/02-execution/configuration-contract.md")
+        self.assertIn("# Operational configuration map", contract)
+        self.assertIn("Keep business and implementation decisions separate", contract)
+        self.assertIn("Use one concise record per requirement", contract)
+        self.assertIn("Retain critical provenance", contract)
+        self.assertIn("Map fields and event eligibility", contract)
+        self.assertIn("Map GTM object actions", contract)
+        self.assertIn("exact outgoing parameter/property/item-field set equality", contract)
+        self.assertIn("identical rerun", contract)
+
+    def test_scope_is_relevant_configuration_not_general_audit(self) -> None:
+        skill = read("SKILL.md")
+        utility = read("references/01-orientation/utility-contract.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        self.assertIn("Inspect only the objects related to the requested implementation", skill)
+        self.assertIn("does not authorize general cleanup", utility)
+        self.assertIn("Inspect only objects that can supply, consume, duplicate", workflow)
+        self.assertIn(
+            "do not turn the exercise into a tracking-plan or container audit",
+            compact(workflow),
+        )
+
+    def test_best_practice_architecture_precedes_container_reuse(self) -> None:
+        skill = read("SKILL.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        naming = read("references/02-execution/naming-and-reuse.md")
+        data = read("references/02-execution/data-contract-and-transformations.md")
+        self.assertIn("never as proof of best practice", skill)
+        self.assertIn("before evaluating local reuse", workflow)
+        self.assertIn("Existing prevalence is not evidence of best", naming)
+        self.assertIn("After selecting the target pattern", data)
+        self.assertIn("Do not reproduce a legacy pattern", compact(workflow))
+
+    def test_naming_folders_and_advanced_variables_are_deliberate(self) -> None:
+        skill = read("SKILL.md")
+        naming = read("references/02-execution/naming-and-reuse.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        self.assertIn("Follow the default naming convention", skill)
+        self.assertIn("Actively evaluate a LUT/RLT", naming)
+        self.assertIn("create or reuse one shallow folder", naming)
+        self.assertIn("LUTs or RLTs for real deterministic multi-scenario mappings", workflow)
+        self.assertIn("narrow Custom JavaScript", skill)
+
+    def test_media_brief_and_official_schema_drive_media_tags(self) -> None:
+        media = read("references/02-execution/media-tags.md")
+        self.assertIn("Treat the media brief as the primary business input", media)
+        self.assertIn("Template UI field", media)
+        self.assertIn("current official standard event", media)
+        self.assertIn("Do not transform merely because the source uses GA4-style names", media)
+        self.assertIn("map every eligible item rather than selecting item zero", media)
+        self.assertIn("Verify the saved media setup", media)
+
+    def test_ecommerce_transformations_preserve_items_and_fail_closed(self) -> None:
+        skill = read("SKILL.md")
+        data = read("references/02-execution/data-contract-and-transformations.md")
+        media = read("references/02-execution/media-tags.md")
+        meta = read("references/02-execution/media-meta.md")
+        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
+        self.assertIn("Preserve every required ecommerce item", skill)
+        self.assertIn("Do not assume that an analytics `item_id`", data)
+        self.assertIn("Fail closed on invalid required media data", media)
+        self.assertIn("content_ids", meta)
+        self.assertIn("contents", meta)
+        self.assertIn("Do not assume analytics `item_id` is the Meta catalog ID", meta)
+        self.assertIn("invalid required items fail closed", acceptance)
+        self.assertIn("Empty/undefined output", acceptance)
 
     def test_compound_consent_predicates_use_native_or_denial_graph(self) -> None:
         skill = read("SKILL.md")
         consent = read("references/02-execution/cmp-consent.md")
         triggers = read("references/02-execution/triggers-and-variables.md")
         acceptance = read("references/03-judgement/acceptance-and-handoff.md")
-        self.assertIn("smallest reusable set of blocking triggers", skill)
-        self.assertIn("category/purpose", consent)
+        self.assertIn("smallest reusable set of CMP blocking/exception triggers", consent)
         self.assertIn("independent required grants each need OR-denial behavior", consent)
         self.assertIn("any matching blocking/exception trigger prevents", triggers)
-        self.assertIn("Compound consent predicate", acceptance)
+        self.assertIn("Compound CMP predicate", acceptance)
         self.assertIn("Do not create a Custom JavaScript", consent)
+        self.assertIn("strict/basic CMP blocking", skill)
 
     def test_strict_consent_lifecycle_remains_complete(self) -> None:
         consent = read("references/02-execution/cmp-consent.md")
@@ -150,7 +200,6 @@ class SkillContractTest(unittest.TestCase):
             "does not unload a vendor script",
             "logical AND",
             "documented CMP state variable directly",
-            "does not contain <exact documented vendor token>",
         ):
             self.assertIn(term, consent)
 
@@ -158,14 +207,16 @@ class SkillContractTest(unittest.TestCase):
         registry = read("references/02-execution/vendor-consent-modes.md")
         google = read("references/02-execution/google-consent-mode.md")
         self.assertIn("per browser product, not only per vendor", registry)
-        self.assertIn("strict/basic blocked", registry)
-        self.assertIn("native stop/hold", registry)
-        self.assertIn("native cookie-control", registry)
-        self.assertIn("advanced consent-aware", registry)
-        self.assertIn("adaptive/anonymous analytics", registry)
+        for route in (
+            "strict/basic blocked",
+            "native stop/hold",
+            "native cookie-control",
+            "advanced consent-aware",
+            "adaptive/anonymous analytics",
+        ):
+            self.assertIn(route, registry)
         self.assertIn("Use advanced behavior only when the analyst explicitly requests", google)
         self.assertIn("does not execute runtime recette", google)
-        self.assertIn("static configuration expectation", google)
 
     def test_google_shared_execution_units_cannot_mix_routes(self) -> None:
         google = read("references/02-execution/google-consent-mode.md")
@@ -176,19 +227,10 @@ class SkillContractTest(unittest.TestCase):
         self.assertIn("shared Google tag destinations", analytics)
         self.assertIn("shared with GA4", google_ads)
 
-    def test_google_blocks_reuse_semantically_compatible_objects(self) -> None:
-        google = read("references/02-execution/google-consent-mode.md")
-        self.assertIn("semantically compatible", google)
-        self.assertIn("do not duplicate an otherwise compatible block", google)
-
-    def test_consent_registry_does_not_expand_analytics_scope(self) -> None:
-        utility = read("references/01-orientation/utility-contract.md")
-        registry = read("references/02-execution/vendor-consent-modes.md")
-        self.assertIn("does not add an analytics tag-configuration route", utility)
-        self.assertIn("classify consent capability only", registry)
-
-    def test_trigger_and_tag_execution_settings_are_explicit(self) -> None:
+    def test_trigger_pageview_and_advanced_settings_are_explicit(self) -> None:
         triggers = read("references/02-execution/triggers-and-variables.md")
+        analytics = read("references/02-execution/analytics-tags.md")
+        media = read("references/02-execution/media-tags.md")
         for term in (
             "firing triggers on one tag are alternatives",
             "filter rows within one trigger are cumulative",
@@ -196,58 +238,41 @@ class SkillContractTest(unittest.TestCase):
             "Version 2 nested-path",
             "priority",
             "custom schedule",
-            "live-only behavior",
             "firing option",
         ):
             self.assertIn(term, triggers)
-
-    def test_page_view_remains_separate_from_initialization(self) -> None:
-        analytics = read("references/02-execution/analytics-tags.md")
-        media = read("references/02-execution/media-tags.md")
         self.assertIn("Keep page view separate by default", analytics)
-        self.assertIn("revalidate every page parameter", analytics)
         self.assertIn("Do not make a base/configuration tag send a page view by default", media)
 
     def test_every_new_object_requires_a_current_justification(self) -> None:
         skill = read("SKILL.md")
         workflow = read("references/02-execution/implementation-workflow.md")
         contract = read("references/02-execution/configuration-contract.md")
-        self.assertIn("Create an object only for a current requirement", skill)
-        self.assertIn("Justify every new object by a current requirement", workflow)
+        self.assertIn("Build the smallest understandable object graph", skill)
+        self.assertIn("Justify every create or update", workflow)
         self.assertIn("requirement or documented constraint that justifies", contract)
 
-    def test_best_practice_architecture_precedes_container_reuse(self) -> None:
-        skill = read("SKILL.md")
-        workflow = read("references/02-execution/implementation-workflow.md")
-        naming = read("references/02-execution/naming-and-reuse.md")
-        data = read("references/02-execution/data-contract-and-transformations.md")
-        self.assertIn("never as proof of best practice", skill)
-        self.assertIn("Inspect the container as integration evidence", workflow)
-        self.assertIn("Existing prevalence is not evidence of best", naming)
-        self.assertIn("After selecting the target pattern", data)
-        self.assertIn("Never knowingly add a parallel duplicate", workflow)
-
-    def test_adapter_contract_is_manifest_driven_and_idempotent(self) -> None:
+    def test_adapter_contract_mutates_safely_and_is_idempotent(self) -> None:
         adapters = read("references/02-execution/tool-adapters.md")
-        self.assertIn("Translate the change manifest deterministically", adapters)
+        self.assertIn("operational configuration map as the adapter input", adapters)
         self.assertIn("current fingerprint", adapters)
         self.assertIn("complete pre-change representation", adapters)
-        self.assertIn("Prove idempotency", adapters)
-        self.assertIn("second run that proposes another create", adapters)
-        self.assertIn("workspace", adapters)
         self.assertIn("Discover exact actions and pagination", adapters)
         self.assertIn("Do not guess a generic action alias", adapters)
-        self.assertIn("first page", adapters)
         self.assertIn("Maintain a current-operation journal", adapters)
+        self.assertIn("Prove idempotency", adapters)
+        self.assertIn("Stop when mutation is unavailable", adapters)
+        self.assertIn("mark the affected requirement `Blocked`", adapters)
 
-    def test_handoff_separates_workspace_state_from_current_run(self) -> None:
+    def test_handoff_separates_workspace_state_and_never_publishes(self) -> None:
         contract = read("references/02-execution/configuration-contract.md")
         acceptance = read("references/03-judgement/acceptance-and-handoff.md")
         adapters = read("references/02-execution/tool-adapters.md")
-        for text in (contract, acceptance, adapters):
+        for text in (acceptance, adapters):
             self.assertIn("pre-existing workspace changes", text)
             self.assertIn("current-run", text)
             self.assertIn("final workspace totals", text)
+        self.assertIn("no runtime claim, publication, Submit, or GTM version action", contract)
 
     def test_external_administration_is_not_silently_claimed(self) -> None:
         analytics = read("references/02-execution/analytics-tags.md")
@@ -261,28 +286,25 @@ class SkillContractTest(unittest.TestCase):
 
     def test_priority_media_playbooks_exist_and_route_from_skill(self) -> None:
         skill = read("SKILL.md")
-        platforms = (
+        for platform in (
             "media-google-ads.md",
             "media-microsoft-ads.md",
             "media-meta.md",
             "media-tiktok.md",
             "media-snapchat.md",
-        )
-        for platform in platforms:
+        ):
             self.assertIn(platform, skill)
             self.assertTrue((ROOT / "references" / "02-execution" / platform).exists())
 
-    def test_arrays_user_data_and_server_boundary_remain_guarded(self) -> None:
-        meta = read("references/02-execution/media-meta.md")
-        data = read("references/02-execution/data-contract-and-transformations.md")
+    def test_user_data_runtime_and_future_boundaries_remain_guarded(self) -> None:
         user_data = read("references/02-execution/first-party-data.md")
+        data = read("references/02-execution/data-contract-and-transformations.md")
         utility = read("references/01-orientation/utility-contract.md")
-        self.assertIn("content_ids", meta)
-        self.assertIn("contents", meta)
-        self.assertIn("zero-item, one-item, and multi-item", data)
         self.assertIn("Do not enable automatic or manual collection by default", user_data)
         self.assertIn("Do not create a browser/server event ID", data)
-        self.assertIn("deferred in the current client-side version", utility)
+        self.assertIn("execute GTM Preview", utility)
+        self.assertIn("never publish", utility.lower())
+        self.assertIn("future extensions", utility)
 
 
 if __name__ == "__main__":

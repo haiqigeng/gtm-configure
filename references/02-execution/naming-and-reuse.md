@@ -1,5 +1,15 @@
 # Naming and reuse
 
+## Contents
+
+- [Follow type, owner, and purpose](#follow-type-owner-and-purpose)
+- [Name source and destination independently](#name-source-and-destination-independently)
+- [Reuse by semantic equivalence](#reuse-by-semantic-equivalence)
+- [Prefer references over repeated literals](#prefer-references-over-repeated-literals)
+- [Use lookup tables only when applicable](#use-lookup-tables-only-when-applicable)
+- [Organize folders clearly](#organize-folders-clearly)
+- [Add notes where they preserve non-obvious decisions](#add-notes-where-they-preserve-non-obvious-decisions)
+
 ## Follow type, owner, and purpose
 
 Use an explicit analyst naming decision when supplied. Otherwise use the skill patterns below.
@@ -72,7 +82,8 @@ Do not force a constant for every literal. Keep an event-specific value on the t
 
 ## Use lookup tables only when applicable
 
-Create a LUT/RLT only when:
+Actively evaluate a LUT/RLT whenever multiple environments, hostnames, destinations, currencies,
+event families, product groups, or other real inputs map deterministically. Create one when:
 
 - multiple real input scenarios exist;
 - the mapping is deterministic;
@@ -82,13 +93,18 @@ Create a LUT/RLT only when:
 
 Apply the same rule to analytics and media. Do not use a table for a single mapping or force unrelated scenarios together.
 
-## Organize folders sparingly
+## Organize folders clearly
 
 Follow an existing folder model only when it is coherent and compatible with the selected
-best-practice architecture. Otherwise, when the change is large enough to benefit, prefer a shallow
-structure by vendor/platform or implementation workstream.
+best-practice architecture. For a configuration that creates or owns several related objects,
+create or reuse one shallow folder by vendor/platform or implementation workstream. Keep tags,
+triggers, and variables together when one workstream owns them unless the coherent container model
+separates object families.
 
-Do not create a folder for one isolated object. Do not move unrelated existing objects merely to make the new workspace look tidy; that is cleanup scope.
+Do not create a folder for one isolated object when it adds no clarity. Do not create deep nesting,
+duplicate an equivalent folder, or move unrelated existing objects merely to make the workspace
+look tidy; that is cleanup scope. Record the intended folder in the configuration map before
+mutation and verify the saved folder reference.
 
 ## Add notes where they preserve non-obvious decisions
 

@@ -1,226 +1,195 @@
-# Configuration contract
+# Operational configuration map
 
 ## Contents
 
 - [Purpose and priority](#purpose-and-priority)
-- [Collection and implementation contracts](#collection-and-implementation-contracts)
-- [Source scope and discrepancies](#source-scope-and-discrepancies)
-- [Evidence grades](#evidence-grades)
-- [Requirement record](#requirement-record)
-- [Field mapping](#field-mapping)
-- [Object change manifest](#object-change-manifest)
-- [Contract conformance](#contract-conformance)
-- [Consent and external dependencies](#consent-and-external-dependencies)
-- [Result statuses](#result-statuses)
-- [Static completion invariants](#static-completion-invariants)
+- [Keep business and implementation decisions separate](#keep-business-and-implementation-decisions-separate)
+- [Use one concise record per requirement](#use-one-concise-record-per-requirement)
+- [Retain critical provenance](#retain-critical-provenance)
+- [Map fields and event eligibility](#map-fields-and-event-eligibility)
+- [Map GTM object actions](#map-gtm-object-actions)
+- [Prove analytics conformance](#prove-analytics-conformance)
+- [Record consent and external dependencies](#record-consent-and-external-dependencies)
+- [Apply operational statuses](#apply-operational-statuses)
+- [Completion invariants](#completion-invariants)
 
 ## Purpose and priority
 
-Translate every approved requirement into one adapter-neutral configuration contract before
-creating or modifying GTM objects. Use the contract as the common source for the human plan,
-MCP/API/UI mutations, saved-object verification, and handoff.
+Build a concise internal requirement-to-object map before the first write. Use the same map for
+MCP/API/UI mutation, saved-object comparison, idempotency, and the concise handoff. It is an
+operational control, not a separate planning deliverable.
 
 Resolve tradeoffs in this order:
 
-1. authorization, data handling, and consent safety;
-2. exact fidelity to the approved analytics collection contract or media business authority;
-3. technical validity against current official destination and template documentation;
-4. the applicable skill reference architecture and smallest semantically correct GTM object graph;
-5. conformant reuse, maintainability, and field-level traceability;
-6. completion of the authorized static configuration.
+1. data handling and consent safety;
+2. exact fidelity to the approved analytics contract or explicit media business authority;
+3. technical validity against current official product and installed-template documentation;
+4. the smallest clean and maintainable best-practice GTM object graph;
+5. compatible reuse, organization, and critical traceability;
+6. completion of the saved client-side configuration.
 
-Do not weaken a higher-priority requirement to obtain a tidier container or a more complete
-change set.
+Do not weaken a higher priority to obtain a tidier container or a more complete-looking result.
+When a technically invalid analytics requirement conflicts with fidelity, stop that requirement and
+request an amended approved input; never redesign it automatically.
 
-For analytics, a conflict between fidelity and critical technical validity does not authorize an
-automatic redesign. Block the affected requirement, report the discrepancy, and wait for an amended
-approved input. A documented recommended alternative to a still-valid approved event or field is an
-advisory, not a substitution instruction.
-
-## Collection and implementation contracts
-
-Keep two layers in the same configuration record:
+## Keep business and implementation decisions separate
 
 | Layer | Authority | Contents |
 | --- | --- | --- |
-| Collection contract | Approved tracking plan or exact direct analytics decision; media brief plus official media schema for the media route | In-scope business action, destination event, outgoing fields/literals, source event and paths, success timing, repeatability, and business filters. |
-| Implementation contract | Applicable skill playbook, current official documentation, installed template, approved consent/source contracts, and confirmed integration constraints | Workspace, destination identity, GTM objects/references, DLV version, consent, firing options, sequencing, adapter operations, and validation. |
+| Approved collection decision | Analytics tracking plan or exact direct analytics requirement; for media, explicit brief plus the current official destination schema | Business action, event/conversion, outgoing fields and literals, source event/paths, success timing, repeatability, and business filters. |
+| GTM implementation decision | Applicable playbook, current official documentation, installed template, source values, consent requirement, and relevant container integration | Workspace, object actions, names/folders, DLV version, mappings, triggers, consent, firing settings, sequencing, adapter fields, and readback. |
 
-Do not use an implementation source to add or change an analytics collection field. A technical ID,
-trigger reference, consent setting, or template field is not payload enrichment, but it still needs a
-current requirement or documented implementation constraint.
+Do not use implementation infrastructure to add or change an analytics payload. Technical IDs,
+folder references, consent settings, trigger references, and template mechanics are not payload
+enrichment, but each must serve the current configuration or a documented product constraint.
 
-## Source scope and discrepancies
+## Use one concise record per requirement
 
-For a workbook or multi-part input, record every relevant sheet, table, row group, or requirement as
-`included`, `reference-only`, `excluded`, or `ambiguous`, with its source reference and reason. Do not
-infer scope from visibility alone. Preserve an explicit analyst scope decision as `approved-input`.
+Create one record per independently configurable business action and destination. Keep separate
+records when destination, business meaning, consent route, source timing, environment, ownership, or
+future change path differs.
 
-For each tracking-plan/documentation difference, record:
+Capture only what mutation and verification need:
 
-- approved value and source reference;
-- current official finding, URL, title, access date, and installed-template relevance;
-- class: `blocking-error`, `advisory`, or `implementation-note`;
-- impact, default action, analyst decision when supplied, and resulting requirement status.
+- stable requirement/source reference and `included`, `reference-only`, `excluded`, or `ambiguous`
+  scope when the supplied artifact contains multiple relevant parts;
+- analytics tracking-plan decision or media objective and exact success moment;
+- source event and required fields with type/shape, timing, lifetime, and missing-data rule;
+- destination product/ID, official event or conversion, configured outgoing field set, and intended
+  use;
+- installed tag/template identity, version, fields, defaults, and relevant permissions;
+- GTM field resolution, normal trigger, consent mechanism, firing option, and folder;
+- object actions and dependencies;
+- discrepancy, blocker, external dependency, and final operational status.
 
-Report discrepancies before the first write. Preserve valid approved analytics choices for
-advisories. Stop invalid, reserved, missing-required, type/shape-incompatible, or unsupported
-requirements instead of inventing, omitting, or substituting collection semantics.
+Do not force a large worksheet-style record for a direct one-field mapping. Add detail in proportion
+to transformation, consent, shared-consumer, template, or mutation risk.
 
-## Evidence grades
+## Retain critical provenance
 
-Assign an evidence grade to every fact that affects a configuration decision:
+Keep source attribution for facts that determine a write:
 
-| Grade | Meaning | Permitted use |
-| --- | --- | --- |
-| `approved-input` | Approved tracking plan, direct analytics requirement, media brief, client consent policy, or explicit analyst decision. | Establish business intent, authorization, destination use, and approved policy. |
-| `official-current` | Current official platform, GTM, CMP, or installed-template documentation inspected for this implementation. | Establish destination schema, template behavior, and supported consent capability. |
-| `container-confirmed` | Current target-container/workspace object, export, API/MCP response, template definition, ID, fingerprint, or consumer graph. | Establish integration constraints, reuse evidence, stored fields, conflicts, consumers, and mutation preconditions. Never establish best practice merely because a pattern exists. |
-| `contract-sample` | Analyst-supplied dataLayer specification or representative payload, including type, timing, cardinality, and null behavior. | Establish the static source contract when it is sufficiently explicit. |
-| `assumption` | Inference not established by an approved, official, container, or sample source. | Record for non-critical context only. Never use for a critical mutation decision. |
-
-Runtime execution is outside this skill. Configure from the approved source contract and state any
-external site dependency without requesting runtime access or treating runtime QA as an unfinished
-configuration status.
-
-## Requirement record
-
-Create one record per independently judgeable business action and destination family. Capture:
-
-- stable requirement ID;
-- source-scope classification and exact workbook sheet/cell, table, row, or direct-decision reference;
-- route: analytics, media, consent, or combined;
-- primary business authority and authorization state;
-- business action, exact success moment, intended reporting/optimization/audience use;
-- source `event`, timing contract, repeatability, state-reset behavior, and representative payload;
-- source fields with paths, types, formats, scopes, cardinality, null/undefined rules, and evidence;
-- destination product, account/tag/pixel/dataset identity, environment, template, and version;
-- exact approved analytics destination event and fields, plus official standard, custom, reserved, deprecated, required, recommended, optional, or conditional findings and discrepancy class;
-- base/configuration and automatic-event behavior;
-- consent product, selected mode, approved policy source, CMP signal, and expected static logic;
-- first-party user-data scope and authorization when applicable;
-- external platform/site dependencies and explicitly untouched settings;
-- result status and exact blocker or deferral reason.
-
-Do not merge requirements merely because they currently share an event name. Keep them separate
-when business meaning, destination, consent, environment, ownership, or future change path differs.
-
-## Field mapping
-
-Map every configured destination field through these layers:
-
-| Layer | Required record |
+| Provenance | Permitted decision |
 | --- | --- |
-| Business meaning | Why the value is needed for the approved use. |
-| Source contract | Exact dataLayer/configuration path, event, evidence grade, and representative input. |
-| GTM resolution | DLV, constant, settings variable, table, transformation, or direct literal with output type and null behavior. |
-| Template field | Exact visible field and installed template/version. |
-| Destination contract | Official parameter name, requirement status, type, format, enum, scope, and cardinality. |
-| Representative result | Static resolved value or shape using non-sensitive sample data. |
+| `approved-input` | Analytics semantics, media objective, client policy, and explicit analyst decisions. |
+| `official-current` | Destination schema, GTM behavior, template expectations, and supported consent capability. |
+| `container-confirmed` | Installed objects/templates, stable IDs, consumers, conflicts, fingerprints, and saved fields. It never proves best practice. |
+| `contract-sample` | dataLayer/source timing, type, shape, cardinality, null behavior, and representative transformation input. |
 
-Classify a destination field as `mapped`, `intentionally omitted`, `external`, or `blocked`.
-Preserve zero and `false` when valid. Do not convert an absent required value into an empty
-string, placeholder, guessed identifier, or invented default.
+An assumption may explain non-critical context but may not supply a destination ID, required source,
+field type/shape, consent predicate, template capability, or mutation target. Ask for or discover the
+critical fact instead. Preserve official URLs, titles, and access dates for schema, discrepancy,
+template, and consent decisions; do not produce a citation ledger for routine self-evident object
+names.
 
-For an approved analytics tracking plan, the outgoing field set must equal the approved field set.
-Do not add an official recommended or optional field that the plan omits. If current documentation
-requires a missing field, classify the affected requirement as a blocking discrepancy; do not add it
-without a new approved decision.
+## Map fields and event eligibility
 
-## Object change manifest
+For every outgoing field, preserve these distinct layers:
 
-Create the complete object graph before mutation. For every relevant object, record:
+| Layer | Required decision |
+| --- | --- |
+| Source | Exact dataLayer/configuration path, event timing, type/shape, and representative value when needed. |
+| GTM resolution | Direct value, DLV, constant, settings variable, LUT/RLT, or narrow transformation with missing-data behavior. |
+| Template | Exact installed-template field and stored type. |
+| Destination | Official parameter, requirement status, type, format, enum, scope, and cardinality. |
 
-- action: `create`, `update`, `reuse`, `untouched`, or explicitly authorized `remove`;
-- object type, intended name, existing ID/path and fingerprint when applicable;
-- requirement or documented constraint that justifies the object;
-- exact intended fields and references;
-- dependencies, consumers, environment/hostname scope, and consent route;
-- pre-change state for every modified existing object;
-- dependency order and expected saved-object verification;
-- reason a similar existing object is or is not semantically compatible;
-- selected skill reference architecture and the conformance gate result for every reused object;
-- pre-existing workspace changes, current-operation mutations, and expected final workspace totals as separate records.
+Use `mapped`, `intentionally omitted`, `external`, or `blocked` for exceptional field states. Preserve
+valid zero and `false`. Never turn an absent required value into an empty string, placeholder,
+guessed ID, invented literal, or silent item omission.
 
-A second execution against the same saved state must produce `reuse` or `untouched`, not duplicate
-objects. Treat that idempotency check as part of adapter design.
+Define tag eligibility separately from transformation output. If a required event-level value or
+required item contract is invalid and the tag could still execute, add the smallest explicit native
+trigger condition/exception. Use a narrow validity variable only when native source conditions
+cannot express the documented rule cleanly. Returning `undefined`, `{}`, or `[]` from another
+variable does not prove that the tag is ineligible.
 
-Select the target pattern before adopting local implementation choices. Reuse only when the object
-passes the same architecture, source, type/shape, timing, consent, consumer, template, environment,
-and static-acceptance checks as a new object. Harmless naming debt may remain when behavior is fully
-conformant. Do not reuse a nonconformant object or create a parallel implementation around a known
-duplicate; update/disable within authority or block the affected requirement.
+For arrays, define the empty, one-item, multi-item, and invalid-item result. Preserve every required
+item. Default to failing the complete affected media event when a required item identifier is absent
+unless current official documentation and the explicit media requirement authorize partial-item
+delivery.
 
-## Contract conformance
+## Map GTM object actions
 
-Before mutation, compare the normalized approved collection contract with the intended object graph.
-After mutation, compare it with authoritative current-workspace readback. Record:
+Create the complete in-scope object graph before mutation. For each object record:
 
-- expected and actual requirement counts;
-- missing and extra requirement IDs;
-- source-scope differences;
-- event-name, source-event, timing, business-filter, parameter, source-path, literal, and type/shape mismatches;
-- zero unauthorized additions, removals, substitutions, or hidden-scope inclusions;
-- the separate implementation manifest and infrastructure justifications.
+- `create`, `update`, `reuse`, or `untouched`;
+- object type, intended name/folder, stable existing ID/path, and fingerprint when applicable;
+- requirement or documented constraint that justifies it;
+- exact intended fields, references, consent route, and dependencies;
+- compatible consumers and relevant environment/hostname scope;
+- exact pre-change representation for an update;
+- expected saved-object comparison.
 
-Use `scripts/validate_contract_conformance.py` when normalized JSON is available. The agent interprets
-the client-specific source; the script verifies equality and must not guess workbook semantics. A
-non-zero semantic difference blocks the affected mutation unless an explicit approved decision
-updates the collection contract.
+Use `remove` only after explicit destructive authorization and confirmed ownership. A repeated run
+against the final saved state must resolve every completed object to `reuse` or `untouched`.
 
-## Consent and external dependencies
+Select the target architecture before reuse. A matching name or current value is insufficient.
+Require compatible output, source, type/shape, timing, consent, consumers, template/version,
+environment, and future change path. Keep harmless naming debt when reuse is otherwise correct; do
+not inherit functional debt or add a parallel duplicate.
 
-Express the approved consent predicate before translating it into GTM triggers or consent APIs.
-Include every applicable CMP initialization state, category/purpose, vendor identity, Google or
-vendor consent type, product-specific mode, and environment/region decision supplied by the
-approved policy.
+## Prove analytics conformance
 
-Record external dependencies separately, including:
+Before the first analytics write, compare the approved contract with the intended event tags. After
+mutation, compare it with authoritative workspace readback. Require:
 
-- site/dataLayer delivery obligations;
-- GA4 custom definitions, key-event designation, data-stream, Enhanced Measurement, Google tag,
-  or other administration outside the authorized GTM change;
-- advertising-platform conversion goals/actions, custom conversions, feeds/catalogs, account
-  options, and terms/settings;
-- CMP configuration or website code changes;
-- publication.
+- identical included requirement IDs;
+- identical destination and source events;
+- identical business timing and filters;
+- exact outgoing parameter/property/item-field set equality;
+- exact approved source or literal for every field;
+- zero unauthorized additions, removals, substitutions, or hidden-scope inclusions.
 
-Do not silently treat an external dependency as completed GTM work.
+Use `scripts/validate_contract_conformance.py` when the approved, intended, or saved representations
+can be normalized to JSON. Keep implementation metadata outside `scope` and `requirements`. A
+non-zero semantic difference blocks the affected write or `Configured` result until corrected or
+supported by an explicit amended analytics decision.
 
-## Result statuses
+## Record consent and external dependencies
 
-Apply one status per requirement or tag family:
+For each browser product, record the normal trigger and either:
+
+- strict/basic CMP block predicate, event scope, unknown/denied behavior, and initial/later grant
+  opportunity; or
+- explicitly approved advanced/native feature, defaults/updates, denied-state behavior, template
+  fields, and product-specific official evidence.
+
+Keep independent CMP grants as OR-denial across the smallest reusable block set. Reconcile consent
+with every consumer of a shared execution unit.
+
+Record but do not silently perform external work, including site/dataLayer changes, CMP setup, GA4
+custom definitions or key events, Google tag/data-stream settings, advertising conversion actions,
+catalog/feed work, platform account settings, publication, and server-side/deduplication work.
+
+## Apply operational statuses
+
+Use one status per requirement or tag family:
 
 | Status | Meaning |
 | --- | --- |
-| `Configured` | Authoritative current-workspace readback proves the saved state already matched the approved contract or that authorized changes were applied; every relevant saved object passes the static invariants. |
-| `Specification complete` | The object-level contract is complete, but mutation was not authorized or no mutation path was available. No live-change claim is made. |
-| `Partial` | The current authorized operation changed some objects but could not finish. The exact saved partial state and recovery boundary are recorded. |
-| `Blocked` | A critical authorization, business, destination, source, template, consent, or mutation fact cannot be established safely. |
-| `Deferred` | The requirement belongs to an intentionally future capability such as server-side GTM, CAPI, or browser/server deduplication. |
+| `Configured` | Authoritative current-workspace readback proves that the saved object graph matches the approved requirement and all applicable completion invariants. The graph may have already matched without a write. |
+| `Partial` | This run saved some in-scope objects but could not complete their dependent graph; the exact saved state and recovery boundary are known. |
+| `Blocked` | A critical business, source, destination, template, consent, conflict, access, or mutation fact prevents safe configuration. No specification status substitutes for the missing write path. |
+| `Deferred` | The requirement belongs to the intentionally future server-side GTM, CAPI, browser/server deduplication, or event-ID capability. |
 
-Do not use `Complete` as a synonym for browser-validated. This skill establishes static GTM
-configuration; it does not execute or certify runtime behavior.
+Do not use `Configured` as a synonym for runtime-tested or published. Runtime recette and publication
+remain separate.
 
-## Static completion invariants
+## Completion invariants
 
-Before assigning `Configured` or `Specification complete`, prove from the contract and available
-static evidence that:
+Before `Configured`, prove from current workspace readback that:
 
-1. every approved requirement has one explicit status;
-2. every critical fact has a non-assumption evidence grade;
-3. the source-scope manifest has no unresolved in-scope ambiguity and every destination field is mapped, intentionally omitted, external, or blocked;
-4. every source type, shape, scope, cardinality, and null rule is compatible with its destination;
-5. every tag has a valid normal trigger and selected consent mechanism;
-6. every reference resolves to an existing, reused, or planned dependency;
-7. every created, updated, or reused object conforms to the selected skill reference architecture, has a current justification, and has a compatible consumer graph;
-8. known automatic/manual, base-tag, environment, and destination duplicates are resolved;
-9. first-party user data remains limited to the explicitly approved destinations and sources;
-10. approved-to-intended and approved-to-saved collection-contract comparisons show no missing, extra, substituted, or mismatched semantics for `Configured`;
-11. authoritative current-workspace readback matches the intended implementation fields for `Configured`, including after any mutation;
-12. pre-existing workspace changes, current-run changes, and final workspace totals are distinguished;
-13. blockers, advisories, external dependencies, and untouched settings are explicit;
-14. no publish, Submit, or GTM version action occurred.
-
-Describe these as configuration assertions. Never present them as observed browser, network, CMP,
-or vendor-platform behavior unless such evidence was separately supplied.
+1. every included requirement has an accurate status and no unresolved in-scope ambiguity;
+2. every critical mutation fact has approved, official, container, or supplied-source provenance;
+3. analytics collection semantics match exactly, or media fields match the explicit brief and
+   current official destination schema;
+4. every required source type/shape/timing and eligibility rule is compatible with the destination;
+5. every tag has the intended normal trigger, consent route, firing option, and initialization path;
+6. every GTM reference resolves and every reused consumer remains compatible;
+7. known in-scope automatic/manual, destination, environment, and conflict duplicates are resolved;
+8. first-party data remains limited to explicitly approved fields, sources, destinations, and
+   consent states;
+9. intended and saved fields match after every mutation, and an identical rerun is a no-op;
+10. pre-existing workspace changes and current-run writes are distinguished;
+11. blockers, external dependencies, and partial or deferred work are explicit;
+12. no runtime claim, publication, Submit, or GTM version action occurred.

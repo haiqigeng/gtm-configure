@@ -8,7 +8,8 @@
 - [Prefer the least-complex mapping](#prefer-the-least-complex-mapping)
 - [Preserve arrays and object schemas](#preserve-arrays-and-object-schemas)
 - [Write narrow Custom JavaScript](#write-narrow-custom-javascript)
-- [Test transformations](#test-transformations)
+- [Make invalid events ineligible](#make-invalid-events-ineligible)
+- [Statically verify transformations](#statically-verify-transformations)
 - [Defer event-ID architecture](#defer-event-id-architecture)
 
 ## Establish the source event contract
@@ -47,11 +48,16 @@ Require the approved source contract to place the value on the same GTM event th
 - object versus array;
 - empty string, zero, false, null, and undefined;
 - decimal and currency formatting;
-- item identifiers and catalog/feed alignment;
+- item identifiers and explicit catalog/feed alignment;
 - duplicate or stale ecommerce state;
 - SPA navigation timing.
 
 If a critical required value is unavailable or incompatible, block the affected tag design and specify the required dataLayer change. Do not develop the site within this skill.
+
+Do not assume that an analytics `item_id` is the identifier used by a media catalog or feed. Do not
+coerce a numeric string, derive a total, choose a default currency, or synthesize `content_type`
+unless the approved source/media requirement and current destination documentation establish that
+rule.
 
 ## Prefer the least-complex mapping
 
@@ -61,7 +67,8 @@ current official/template documentation before considering local container patte
 1. direct template field or DLV for an already compatible approved source;
 2. constant for a stable configuration value or approved fixed semantic value;
 3. supported settings variable for a coherent set of genuinely shared fields;
-4. lookup/regex table for a real deterministic multi-scenario mapping;
+4. lookup/regex table for a real deterministic multi-scenario mapping when it makes environment,
+   destination, currency, event, or other configuration logic clearer than repeated conditions;
 5. Custom JavaScript for a required destination transformation that built-in variables cannot express cleanly.
 
 After selecting the target pattern, reuse an existing variable only when it implements that pattern
@@ -92,6 +99,11 @@ For ecommerce and content arrays:
 
 Do not silently select item zero. Do not silently drop an item with a missing required identifier and still report the event as valid; expose the data-quality failure or block the tag according to the approved rule.
 
+Default to failing the complete affected media event when any item lacks a destination-required
+identifier. Permit partial-item delivery only when current official documentation allows it and the
+explicit media requirement defines that policy. Do not apply this media eligibility rule to enrich
+or alter an approved analytics payload.
+
 ## Write narrow Custom JavaScript
 
 Use one output purpose per variable. Make the function:
@@ -107,9 +119,33 @@ Name it `CJS - <Vendor> - <output>`, for example `CJS - Meta - contents`.
 
 Avoid a broad `try/catch` that hides contract defects. Catch only a specifically anticipated error and preserve a visible validation failure.
 
-## Test transformations
+## Make invalid events ineligible
 
-Use supplied non-sensitive payloads as static test vectors and record at least:
+A transformation output does not control tag firing by itself. Returning `undefined`, `{}`, or `[]`
+can still leave the tag eligible and send value, currency, event name, or another partial payload.
+
+When a required event-level field or item contract can be invalid:
+
+1. Prefer a direct native trigger condition on the documented source when it expresses validity
+   exactly.
+2. Otherwise reuse the transformation's narrow validity result or create one narrow Boolean
+   eligibility variable; do not build a generic validation framework.
+3. Make the normal trigger require validity or attach an exception that activates for every invalid
+   and unknown path on the same GTM event.
+4. Confirm the eligibility guard covers empty arrays, invalid item IDs, wrong types, and any paired
+   value/currency requirement established by current documentation.
+5. Block the configuration when the required rule cannot be represented safely from the approved
+   source.
+
+Name a necessary validity variable for its vendor and purpose, for example
+`CJS - Meta - purchase valid`. Keep the transformation and validity logic together only when one
+narrow variable can expose the exact terminal result required by the installed template; do not
+duplicate parsing across several helpers.
+
+## Statically verify transformations
+
+Use supplied non-sensitive payloads as small static vectors for each transformation actually
+created. This is configuration verification, not a test mode or runtime recette. Check at least:
 
 | Input case | Required check |
 | --- | --- |
@@ -119,6 +155,9 @@ Use supplied non-sensitive payloads as static test vectors and record at least:
 | Multiple items | Every item is retained and correctly mapped. |
 | Zero value/quantity | Zero is not mistaken for missing. |
 | Invalid type | Transformation fails safely and visibly. |
+
+Also verify that the related eligibility condition prevents the event tag from becoming eligible
+when a required output is invalid. Do not claim that these static vectors prove browser execution.
 
 ## Defer event-ID architecture
 

@@ -3,17 +3,19 @@
 ## Contents
 
 - [Treat the media brief as the primary business input](#treat-the-media-brief-as-the-primary-business-input)
-- [Normalize the media brief](#normalize-the-media-brief)
+- [Resolve only required media inputs](#resolve-only-required-media-inputs)
 - [Use a four-authority model](#use-a-four-authority-model)
 - [Build a field-level implementation map](#build-a-field-level-implementation-map)
 - [Choose standard versus custom events](#choose-standard-versus-custom-events)
 - [Separate base/configuration and event behavior](#separate-baseconfiguration-and-event-behavior)
 - [Transform only for the documented schema](#transform-only-for-the-documented-schema)
 - [Preserve ecommerce cardinality](#preserve-ecommerce-cardinality)
+- [Fail closed on invalid required media data](#fail-closed-on-invalid-required-media-data)
 - [Govern first-party user data](#govern-first-party-user-data)
 - [Apply consent](#apply-consent)
 - [Record external platform dependencies](#record-external-platform-dependencies)
 - [Handle an undocumented vendor](#handle-an-undocumented-vendor)
+- [Verify the saved media setup](#verify-the-saved-media-setup)
 - [Current client-side boundary](#current-client-side-boundary)
 
 ## Treat the media brief as the primary business input
@@ -22,7 +24,7 @@ Expect media implementation requests to arrive directly from a media team rather
 
 Use any tracking plan only to discover reusable business events and source fields. Do not require the requested media event to appear in that plan, and do not assume that a media event should use a GA4 name or schema.
 
-## Normalize the media brief
+## Resolve only required media inputs
 
 Derive or request only what the selected feature needs:
 
@@ -38,12 +40,19 @@ Derive or request only what the selected feature needs:
 
 Do not create a tag from an informal label such as "purchase pixel" or "lead conversion" alone. Establish the destination identity and official event contract first.
 
+Discover installed destination IDs, templates, source variables, triggers, CMP objects, and existing
+initialization before asking. Ask only for a missing feature-specific value that cannot be derived
+and blocks the actual configuration. Do not require the media team to produce an analytics-style
+tracking plan.
+
 ## Use a four-authority model
 
 1. Use the media brief for business intent and requested destination use.
 2. Use current official vendor documentation for the destination event and parameter schema.
 3. Use the approved source contract, tracking plan, representative payloads, and target container for source availability and timing.
-4. Use the installed GTM template/version for actual UI fields and execution behavior.
+4. Use the installed GTM template/version for actual UI fields and execution behavior. Lock this
+   capability snapshot before designing fields or transformations; do not design against the latest
+   upstream template when the container has an older version.
 
 Never configure one media platform by analogy with GA4 or another media vendor.
 
@@ -93,6 +102,10 @@ Prefer a direct DLV, constant, lookup table, or regex table when it yields the e
 
 Make each Custom JavaScript variable deterministic, null-safe, narrowly scoped, free of invented fallbacks, and tested with representative source data. Name it for the vendor and output, for example `CJS - Meta - contents`.
 
+Do not transform merely because the source uses GA4-style names. Transform only when the terminal
+source shape is incompatible with the exact current media schema or installed-template field. Do
+not silently coerce types or add a documented optional field that the media brief does not need.
+
 ## Preserve ecommerce cardinality
 
 When the vendor requires an array:
@@ -104,6 +117,21 @@ When the vendor requires an array:
 - test empty, one-item, and multi-item payloads.
 
 Treat similarly named fields such as `content_id`, `content_ids`, `contents`, `items`, and product arrays as separate vendor contracts. Never flatten, stringify, or reshape them by analogy.
+
+Establish the catalog/feed identifier convention explicitly. Do not assume that analytics
+`item_id`, SKU, product ID, item-group ID, or variant ID are interchangeable. Preserve all items;
+do not silently drop an item that lacks a destination-required identifier.
+
+## Fail closed on invalid required media data
+
+Determine required event-level and item-level eligibility from current official browser
+documentation, the explicit media use, and the installed template. If a required value or item
+contract is invalid, prevent the affected tag from becoming eligible.
+
+Do not rely on a transformation returning an empty object, empty array, or `undefined` to stop the
+tag. Prefer a direct native source condition; use one narrow validity variable only when necessary.
+Default to blocking the complete event when any required item identifier is invalid. Use partial
+item delivery only when officially supported and explicitly selected by the media owner.
 
 ## Govern first-party user data
 
@@ -136,6 +164,20 @@ If no dedicated playbook exists:
 4. Block any critical field or behavior that official documentation does not establish.
 
 Lack of a dedicated skill file never permits memory-based configuration.
+
+## Verify the saved media setup
+
+After mutation, re-read and compare:
+
+- template identity/version and every stored field type;
+- destination ID, official event/conversion, base/event separation, and automatic behavior;
+- source variables, transformations, validity guard, and all zero/one/many item shapes when used;
+- normal trigger, basic block or approved advanced consent settings, firing option, and sequencing;
+- folders, naming, stable IDs/fingerprints, references, and existing initialization consumers;
+- a recomputed no-op rerun with no duplicate base or event tag.
+
+Record platform-side conversion, optimization, catalog, audience, or account work separately. A
+saved browser tag does not prove that those objects exist or that runtime delivery succeeded.
 
 ## Current client-side boundary
 

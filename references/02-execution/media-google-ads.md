@@ -11,6 +11,7 @@
 - [Configure enhanced conversions only explicitly](#configure-enhanced-conversions-only-explicitly)
 - [Apply consent](#apply-consent)
 - [Prevent automatic-event duplication](#prevent-automatic-event-duplication)
+- [Verify the saved Google Ads setup](#verify-the-saved-google-ads-setup)
 - [Official entry points](#official-entry-points)
 
 ## Establish the requested Google Ads product
@@ -74,6 +75,10 @@ Map:
 
 Do not create a browser/server event ID in the current client-side scope.
 
+When current documentation makes a conversion field or value/currency pair required for the
+selected use, make the tag ineligible when that contract is invalid. Do not rely on an unresolved
+variable to suppress execution, and do not invent a zero, empty currency, or random transaction ID.
+
 ## Design remarketing
 
 For standard remarketing, verify whether a site-wide Google tag or remarketing tag already supplies the required behavior. Avoid duplicate site-wide implementations.
@@ -108,6 +113,14 @@ Use advanced Google Consent Mode only when explicitly requested. In that route, 
 ## Prevent automatic-event duplication
 
 Do not make the Google Ads config/base tag send a business page view by default. Inspect Google tag destinations, automatic event detection, remarketing behavior, GA4 imports, and hard-coded Google tags before adding a tag.
+
+## Verify the saved Google Ads setup
+
+Re-read the saved Google tag/conversion/remarketing/linker objects and confirm destination IDs,
+labels, event fields, feed mapping, value/currency eligibility, installed-template fields, normal and
+consent triggers, shared consumers, firing settings, references, and an idempotent rerun. Keep the
+external conversion action, imported-event choice, feed, enhanced-conversion account settings, and
+publication explicitly separate.
 
 ## Official entry points
 

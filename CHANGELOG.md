@@ -1,5 +1,91 @@
 # Changelog
 
+## 3.0.0
+
+### Why This Release Matters
+
+- Reorients the skill around its operational north star: implement a clean,
+  well-organized, technically correct, best-practice, consent-controlled setup
+  in an actual client-side GTM workspace.
+- Makes the saved, verified GTM object graph the unit of success. A plan or
+  complete specification no longer substitutes for configuration.
+- Preserves the existing analytics, media, consent, data, trigger, template,
+  naming, adapter, conflict, and idempotency expertise while moving complexity
+  out of mandatory process and into conditionally routed playbooks.
+
+### What Changed
+
+- Replace multiple planning/read-only/specification paths with one internal
+  configuration loop: resolve blocking inputs, create/reuse the workspace,
+  research official sources and installed templates, inspect relevant
+  integration, map objects, mutate, read back, and hand off.
+- Define clean, well-organized, correct, optimal, and consent-controlled in
+  operational GTM terms so they cannot authorize tracking-plan redesign or
+  general container cleanup.
+- Treat an actual named-container configuration request as in-scope read/write
+  authority for required create/update/reuse operations, while retaining strict
+  no-delete, no-cleanup, no-publish, and no-external-system boundaries.
+- Replace the heavy mandatory configuration contract with a proportional
+  internal requirement-to-object map used directly for mutation, saved-state
+  comparison, and idempotency.
+- Remove `Specification complete`; use `Configured`, `Partial`, `Blocked`, or
+  `Deferred`, with `Configured` requiring authoritative workspace readback.
+- Prioritize current official documentation for technical validity and schema,
+  then lock the installed template version/capabilities before tag or
+  transformation design.
+- Restrict container inspection to objects relevant to destinations, sources,
+  consumers, conflicts, duplicates, consent, templates, folders, and reuse.
+- Strengthen clean architecture with default naming, shallow folder grouping,
+  active LUT/RLT consideration for real deterministic mappings, direct DLV
+  preference, and narrow CJS only for required shape conversions.
+- Add fail-closed media ecommerce rules: explicit catalog/feed identifiers,
+  no silent item dropping or unapproved coercion, and a separate validity
+  condition when empty/undefined transformation output would not stop a tag.
+- Deepen operational readback for GA4, Google Ads, Microsoft Advertising,
+  Meta, TikTok, Snap, templates, consent, references, fingerprints, conflicts,
+  uncertain writes, partial failures, and no-op reruns.
+- Keep basic CMP blocking as the default and advanced/native denied-state
+  behavior as an explicit, product-specific, officially proven requirement.
+- Reduce the default handoff to the configured workspace, exact changes,
+  conformance, consent route, blockers/partial state, and external dependencies.
+
+### What Users Should Do
+
+- Provide the target GTM container and approved analytics tracking plan; add an
+  explicit media brief when media tags are required.
+- Expect the skill to discover container/template/CMP facts first and ask only
+  for missing inputs that block actual configuration.
+- State advanced consent and first-party-data requirements explicitly; otherwise
+  the skill applies strict/basic CMP blocking.
+- Use the separate audit/cleanup and Preview recette skills for those tasks, and
+  authorize publication independently after configuration review.
+
+### Validation
+
+- Contract tests protect the operational north star, one workflow, four-status
+  model, orientation/execution/judgement structure, official-source priority,
+  relevant-only inspection, naming/folders, advanced variables, fail-closed
+  ecommerce, saved readback, and no-publication boundary.
+- Generic configuration scenarios retain all v2.1 capability coverage and add
+  exact no-enrichment analytics, Meta invalid-item eligibility, installed-
+  template version gating, deterministic LUT/RLT selection, naming/folder
+  organization, and unavailable-mutation blocking.
+- Comparator, packaging, release, formatting, lint, compile, and deterministic
+  archive checks gate the release.
+
+### Known Limits
+
+- Static saved-state verification does not replace browser, network, CMP, or
+  vendor-platform runtime recette.
+- The skill cannot finish when critical source, destination, consent, template,
+  conflict, or mutation access is unavailable; it reports `Blocked` rather than
+  completing a specification workflow.
+- Vendor event catalogues and field schemas remain live official-source lookups,
+  not frozen skill content.
+- Publication, site/dataLayer development, general audit/cleanup, server-side
+  GTM, CAPI, event-ID architecture, and browser/server deduplication remain
+  outside this release.
+
 ## 2.1.0
 
 ### Why This Release Matters

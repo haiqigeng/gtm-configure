@@ -11,7 +11,10 @@
 
 ## Principle
 
-Use current primary documentation at execution time. Never rely on memory, analogy, an old implementation, or an informal media event label for a vendor event, parameter, type, array shape, accepted value, template field, consent capability, CMP event, CMP variable, or vendor identity.
+Use current primary documentation at execution time. Give it priority for technical validity,
+destination schemas, GTM behavior, and consent capability. Never rely on memory, analogy, an old
+implementation, or an informal media event label for a vendor event, parameter, type, array shape,
+accepted value, template field, consent capability, CMP event, CMP variable, or vendor identity.
 
 Use an approved analytics tracking plan or exact direct analytics decision to establish the authorized analytics collection contract. Use current official documentation to validate its classification, requirements, types, shapes, limits, and technical feasibility; never use documentation as permission to substitute or enrich a valid approved analytics contract. For media, use the media brief for the business objective and current official media documentation to establish the destination event and field schema. Use the applicable skill playbook, installed template, approved source contract, and representative payloads to design the static implementation. Use target-container state only for integration constraints, conflicts, consumers, and conformant reuse candidates. Runtime evidence is outside this skill and is not an input requirement.
 
@@ -42,14 +45,16 @@ For each platform, product, and CMP involved:
 4. For an approved analytics contract, compare those findings with the exact approved event, fields, sources, literals, types, and timing. Classify each difference as `blocking-error`, `advisory`, or `implementation-note`; do not modify the approved contract.
 5. For consent work, establish whether denied state blocks, holds, suppresses cookies, or transmits a documented limited payload; record storage, identifiers, data use, modeling, defaults, updates, and revocation.
 6. Inspect the installed GTM template and map documentation concepts to its visible fields.
-7. Establish source values, timing, state lifetime, and CMP signals from an approved contract and representative payload.
-8. Assign the applicable evidence grade from the configuration contract and record the source URL, page title, access date, discrepancy class, decisions, and unresolved contradictions.
+7. Establish source values, timing, state lifetime, and CMP signals from approved inputs and any
+   representative payload required by the mapping.
+8. Retain critical provenance from the configuration map and record the source URL, page title,
+   access date, discrepancy class, decision, and unresolved contradiction.
 
 Do not copy an event catalogue into the skill and treat it as permanent. Re-open the live catalogue for every implementation because vendors change standard events, parameters, requirements, templates, and consent features.
 
 ## Research record
 
-Record for each configured tag:
+Record only the technical facts needed to configure and verify each tag:
 
 - official URL, page title, and access date;
 - browser/client-side product and installed template/version;
@@ -58,9 +63,10 @@ Record for each configured tag:
 - exact field names and required, recommended, optional, or conditional status;
 - accepted type, format, enum, and cardinality;
 - source dataLayer key or configuration value;
-- source evidence grade and representative non-sensitive input;
+- source provenance and representative non-sensitive input when mapping or transformation risk
+  requires it;
 - GTM variable and template field;
-- transformation and representative resolved output;
+- transformation, explicit event eligibility, and representative resolved output when applicable;
 - consent support, per-product classification, denied-state request/storage behavior, selected mode, and CMP mechanism;
 - unresolved contradiction or unavailable evidence.
 

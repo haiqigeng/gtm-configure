@@ -72,6 +72,14 @@ If Clarity is present, do not treat it as merely part of UET. Inspect whether it
 
 Under strict/basic policy, apply the separately approved Clarity block. Under advanced Clarity behavior, do not attach that block merely because UET is blocked. Do not broaden a Microsoft Advertising request into new Clarity collection without explicit scope and approval.
 
+## Verify the saved Microsoft setup
+
+Re-read the UET base and event tags, destination constant, variables, triggers, consent blocks or
+approved defaults/updates, installed-template fields, automatic SPA option, firing settings, and
+references. Confirm the base's inherent page-load behavior has no manual duplicate and an identical
+rerun is a no-op. Keep Microsoft Advertising goals and any separate Clarity configuration outside
+the GTM completion claim.
+
 ## Official entry points
 
 - https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_conc_uetv2customevent

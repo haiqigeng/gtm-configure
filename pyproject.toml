@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "configure-gtm"
-version = "2.1.0"
-description = "Agent-neutral, statically verifiable client-side GTM configuration skill for expert web analysts"
+version = "3.0.0"
+description = "Operational client-side GTM configuration skill for expert web analysts"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"

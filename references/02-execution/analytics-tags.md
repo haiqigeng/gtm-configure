@@ -9,6 +9,7 @@
 - [Govern user properties and identifiers](#govern-user-properties-and-identifiers)
 - [Record external Google and GA4 administration](#record-external-google-and-ga4-administration)
 - [Apply consent](#apply-consent)
+- [Verify the saved analytics setup](#verify-the-saved-analytics-setup)
 - [Naming examples](#naming-examples)
 
 ## Use the analytics requirement as the business contract
@@ -48,6 +49,10 @@ Use current Google documentation to distinguish:
 - a Google tag Event Settings variable;
 - GA4 event tags and event-specific parameters;
 - settings managed in the GA4 data stream or Google tag destination UI.
+
+Inspect the actual installed/native tag fields and current connected destinations before designing
+or updating settings. Do not configure a field because it exists in a newer documentation surface
+when the target container cannot store or apply it.
 
 Use these naming patterns unless the analyst supplies an explicit naming decision or the relevant
 object family has a consistent, equally clear presentation convention. Naming compatibility never
@@ -131,6 +136,17 @@ Use strict/basic gating by default:
 Use advanced Google Consent Mode only when explicitly requested and approved. In that route, follow the dedicated consent reference and do not attach a blocking trigger that suppresses the documented denied-state behavior.
 
 If a Google tag also serves Google Ads, Floodlight, or another destination with a different consent route, follow the shared-execution-unit rule in the Google consent reference. Do not let a GA4 block silently disable an approved advanced destination or let that destination's advanced route expose GA4 contrary to its selected basic policy.
+
+## Verify the saved analytics setup
+
+Re-read the saved Google tag, event tags, variables, settings, normal and blocking triggers, folders,
+and all references. Confirm the exact approved event, timing, filter, field set, source/literal, item
+scope, DLV versions, `send_page_view`, consent route, firing option, connected destinations, and
+idempotent rerun. Re-run approved-to-saved conformance before `Configured`.
+
+Keep custom definitions, key-event designation, Enhanced Measurement, data-stream, Google tag
+destination, and publication work separate from the GTM completion claim. Do not claim browser or
+GA4 reporting behavior from saved configuration.
 
 ## Naming examples
 

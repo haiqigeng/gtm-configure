@@ -50,6 +50,14 @@ Use strict/basic CMP gating by default for the Snap base and all event tags. Att
 
 Use a native consent capability only when explicitly requested and its complete denied-state request, storage, and data-use behavior is established by current official Snap browser documentation. A template consent field alone does not establish advanced behavior. Follow the vendor consent-mode capability reference and do not infer Google Consent Mode behavior.
 
+## Verify the saved Snap setup
+
+Re-read the Pixel initialization/event tags, template version and fields, destination constant,
+product mapping and eligibility, matching settings, normal and blocking triggers, firing options,
+folders, and references. Confirm one initialization path, all required items, no known duplicate,
+and an idempotent rerun. Keep catalog, optimization, matching account settings, and publication
+outside the GTM completion claim.
+
 ## Official entry points
 
 - https://developers.snap.com/marketing-api/Ads-API/snap-pixel

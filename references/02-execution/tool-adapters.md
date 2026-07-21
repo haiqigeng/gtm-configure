@@ -9,10 +9,11 @@
 - [Apply read-before-write discipline](#apply-read-before-write-discipline)
 - [Maintain a current-operation journal](#maintain-a-current-operation-journal)
 - [Prove idempotency](#prove-idempotency)
+- [Handle authentication, quotas, and uncertain writes](#handle-authentication-quotas-and-uncertain-writes)
 - [Handle partial failure](#handle-partial-failure)
 - [Use export/import safely](#use-exportimport-safely)
 - [Use the UI as a controlled fallback](#use-the-ui-as-a-controlled-fallback)
-- [Return a specification when blocked](#return-a-specification-when-blocked)
+- [Stop when mutation is unavailable](#stop-when-mutation-is-unavailable)
 - [Official entry points](#official-entry-points)
 
 ## Use a capability-first execution order
@@ -21,9 +22,8 @@ Prefer:
 
 1. a purpose-built GTM MCP connected to the correct Google account;
 2. the GTM API with appropriate container/workspace access;
-3. a complete container export for read-only design or import-ready specification;
-4. the signed-in GTM UI for unavailable operations or visual verification;
-5. an object-level implementation specification when no mutation path is available.
+3. an authorized complete export/import path when it can preserve the required workspace schema;
+4. the signed-in GTM UI for unavailable operations or visual verification.
 
 Do not open a browser merely because one exists when a connected semantic GTM tool can perform and verify the operation. Do not claim a mutation from an export-only or read-only source.
 
@@ -61,7 +61,7 @@ expose credentials while diagnosing compatibility.
 
 ## Translate the change manifest deterministically
 
-Use the configuration contract as the adapter input. For each manifest row, resolve:
+Use the operational configuration map as the adapter input. For each object row, resolve:
 
 - stable parent path and intended workspace;
 - action, object type, existing ID/path, and current fingerprint;
@@ -70,7 +70,9 @@ Use the configuration contract as the adapter input. For each manifest row, reso
 - dependencies and creation order;
 - complete pre-change representation for every update.
 
-Do not mutate from an informal prose summary. If the adapter cannot represent a required field or preserve the intended type/shape, stop that object and use another approved adapter or return `Specification complete`.
+Do not mutate from an informal prose summary. If the adapter cannot represent a required field or
+preserve the intended type/shape, stop that object and use another authorized adapter or mark the
+affected configuration `Blocked`.
 
 For analytics, use the normalized collection contract and zero-difference conformance result as an
 additional adapter precondition. Keep technical infrastructure fields separate so the adapter does
@@ -115,6 +117,20 @@ update fails acceptance until matching, equivalence, or stored-field normalizati
 
 Do not use names alone as idempotency keys. Compare stable IDs where present and the semantic dimensions defined by the naming-and-reuse reference.
 
+## Handle authentication, quotas, and uncertain writes
+
+- Stop immediately on wrong-account, wrong-container, expired-authentication, or permission errors;
+  never fall back to another visible container or account.
+- Honor documented retry or quota guidance for throttling and transient server errors. Use bounded
+  retries and keep the user informed during a long retry window.
+- Do not retry a create, update, import, or template operation blindly after a timeout or ambiguous
+  response. First list/read back the exact parent workspace and compare stable identity, semantics,
+  fingerprints, and saved fields to determine whether the write succeeded.
+- Stop dependent writes when readback cannot distinguish success from failure. Record the uncertain
+  object and recovery action instead of risking a duplicate.
+- Re-discover the adapter capability profile after an unsupported-field or schema-drift error; do
+  not remove an intended field merely to make the adapter accept the request.
+
 ## Handle partial failure
 
 If a mutation fails:
@@ -133,7 +149,9 @@ Do not publish to make an API/MCP change visible.
 
 Treat an export as complete evidence only when it includes all relevant tags, triggers, variables, templates, folders, consent settings, and references from the intended workspace/version.
 
-For an import-ready specification, preserve container/object schema and clearly distinguish create, merge, overwrite, and delete behavior. Do not import automatically when the analyst authorized only configuration design.
+For an authorized export/import operation, preserve container/object schema and clearly distinguish
+create, merge, overwrite, and delete behavior. Do not import when the adapter cannot target the
+dedicated workspace or cannot avoid an unapproved overwrite, delete, version, or publication.
 
 ## Use the UI as a controlled fallback
 
@@ -146,19 +164,17 @@ When UI work is required:
 - never click Submit, Publish, or Create Version;
 - record any UI-only field that the semantic adapter could not verify.
 
-## Return a specification when blocked
+## Stop when mutation is unavailable
 
-If authentication, permissions, tool availability, or workspace limits prevent mutation, provide:
+If authentication, permissions, tool availability, or workspace limits prevent mutation:
 
-- exact object type and name;
-- complete configuration fields;
-- normal and blocking trigger references;
-- dependencies and creation order;
-- official source evidence;
-- validation and acceptance matrix;
-- explicit statement that no live GTM object changed.
+- mark the affected requirement `Blocked`;
+- state the exact account, access, capability, workspace, or adapter condition required;
+- preserve any safe research and concise intended-object information needed to resume;
+- state explicitly that no affected GTM object changed, or report the exact partial saved state.
 
-Classify the result as `Specification complete` when every static decision is resolved, or `Blocked` when a critical decision remains unresolved.
+Do not turn the run into a successful specification or planning workflow. Configuration remains the
+required outcome.
 
 ## Official entry points
 
