@@ -11,13 +11,13 @@ An agent-neutral skill for expert web analysts using Codex, Claude, or another c
 
 ## Utility Objective
 
-Convert an approved implementation requirement into the smallest authorized, statically verifiable, traceable, and consent-controlled client-side GTM change set. Preserve business intent, validate every destination schema against current official documentation, reuse compatible objects, apply explicit consent behavior, and report exactly what changed.
+Convert an approved implementation requirement into the smallest authorized, statically verifiable, traceable, and consent-controlled client-side GTM change set. Preserve an approved analytics collection contract exactly, use current official documentation to detect errors and advisories without silently redesigning it, select the implementation from the skill's best-practice playbooks, reuse only conformant objects, apply explicit consent behavior, and report exactly what changed.
 
 Runtime access is not required for configuration completion and the skill never presents static inspection as observed browser behavior. Interactive Preview, network, CMP-journey, and vendor-diagnostics validation belongs to a separate recette workflow.
 
 Use different requirement authorities:
 
-- For analytics, use the tracking plan or direct analytics requirement as the primary business input.
+- For analytics, use the approved tracking plan or exact direct analytics decision as the collection authority. Measurement-plan creation and optimization remain outside this skill.
 - For media, use the human media-team brief as the primary business input. Use a tracking plan only to discover reusable source events and values.
 
 The objective is implementation quality and traceability, not legal advice or a claim of legal compliance.
@@ -38,9 +38,10 @@ The objective is implementation quality and traceability, not legal advice or a 
 Inputs can be supplied by the analyst, discovered by the agent, or required only for the chosen route. They do not all need to exist at intake.
 
 - Analytics tracking-plan row or direct analytics requirement.
+- Source-scope decisions for included, reference-only, excluded, or ambiguous workbook content.
 - Media-team brief: platform, business action, destination use, and available account/pixel/conversion identifiers.
 - Target account, web container, environment, workspace, and mutation authority.
-- Existing tags, triggers, variables, templates, folders, and workspace state.
+- Existing tags, triggers, variables, templates, folders, and workspace state as integration evidence, not best-practice authority.
 - Current official platform, template, and CMP documentation.
 - dataLayer event, fields, types, cardinality, timing, and representative payloads.
 - CMP state and client-approved basic/strict or advanced consent policy.
@@ -55,7 +56,8 @@ For every route, return one adapter-neutral configuration contract containing:
 - one status per requirement or tag family: `Configured`, `Specification complete`, `Partial`, `Blocked`, or `Deferred`;
 - target account, container, environment, workspace, authorization, and synchronization state;
 - requirement records, field-level source-to-destination maps, and an object change manifest;
-- created, modified, reused, intentionally untouched, blocked, and deferred objects;
+- normalized source scope, documentation discrepancy report, and exact collection-contract conformance results;
+- pre-existing workspace changes, current-run created/modified/reused/intentionally untouched/blocked/deferred objects, and final workspace totals;
 - template identity/version and relevant permissions;
 - `approved-input`, `official-current`, `container-confirmed`, `contract-sample`, and `assumption` evidence grades;
 - official source URLs, titles, access dates, extracted decisions, and contradictions;
@@ -70,17 +72,20 @@ For every route, return one adapter-neutral configuration contract containing:
 The runtime package has three layers:
 
 1. Orientation defines utility, requirement authority, inputs/outputs, boundaries, and official-source policy.
-2. Execution defines workspace handling, analytics/media branching, data contracts, consent architecture, platform playbooks, templates, tools, naming, and mutation.
-3. Judgement defines static acceptance, result status, consent-configuration proof, external dependencies, and handoff.
+2. Execution separates approved collection semantics from implementation infrastructure, classifies documentation discrepancies, selects a best-practice reference architecture, reconciles safe container integration, and performs mutation.
+3. Judgement proves collection-contract equality, implementation readback, static acceptance, result status, consent configuration, external dependencies, and handoff.
 
 `SKILL.md` routes directly to every reference so an agent loads only the applicable platform and feature files.
 
 ## Key Defaults
 
 - Use vendor-neutral dataLayer Custom Events for business actions.
+- Implement approved analytics event names, outgoing fields, source mappings, literals, and business timing exactly. Report documented alternatives; never substitute or enrich them automatically.
+- Select the target GTM architecture from the applicable skill playbook and current official/template documentation. Use container state only for capabilities, conflicts, consumers, and candidates that pass the current conformance gate.
 - Use a dedicated workspace and avoid the Default Workspace.
 - Use relative GTM references rather than repeated hard-coded IDs or values when they improve clarity.
 - Create an object only for a current requirement or documented platform/template constraint; prefer a direct field or DLV over a helper variable.
+- Never reproduce a legacy pattern or add a clean parallel implementation around a known conflicting tag. Resolve it within authority or block the affected requirement.
 - Keep config/base tags from sending an automatic page view by default; implement page view separately unless a vendor has a documented inherent exception.
 - Use the smallest reusable set of CMP blocks that expresses the complete approved category/purpose, vendor, product, and initialization predicate. Independent required grants need OR-denial behavior across separate reusable blocks.
 - Make unknown, uninitialized, and denied consent block.
@@ -96,7 +101,7 @@ The runtime package has three layers:
 
 ## Official Documentation Policy
 
-The playbooks contain stable research and decision procedures, not frozen event catalogues. For every implementation, reopen the current official vendor pages and installed template. Record exact event/field requirements, types, shapes, consent behavior, source mapping, and access date.
+The playbooks contain stable research and decision procedures, not frozen event catalogues. For every implementation, reopen the current official vendor pages and installed template. Record exact event/field requirements, types, shapes, consent behavior, source mapping, and access date. For approved analytics plans, classify findings as blocking errors, advisories, or implementation notes; documentation validates but does not authorize a plan rewrite.
 
 If a platform has no dedicated playbook, research its official browser implementation, event, parameter, consent, matching, and template documentation before configuration. Never infer one vendor's schema from GA4 or another media platform.
 
@@ -104,7 +109,7 @@ If a platform has no dedicated playbook, research its official browser implement
 
 For authorized changes, reuse a compatible dedicated workspace or create one when possible. Explain the constraint and obtain approval before using the Default Workspace.
 
-Prefer a connected GTM MCP, then the GTM API. Use the UI for unsupported operations or visual verification. Before writing, synchronize the workspace, inspect conflicts, record IDs/fingerprints and exact pre-change state, and finalize the object manifest. Re-read every saved object, prove an identical rerun is idempotent, and preserve unrelated work.
+Prefer a connected GTM MCP, then the GTM API. Use the UI for unsupported operations or visual verification. Discover the adapter's exact action schema, pagination, page limits, returned fields, and batch/quota behavior before mutation. Before writing, synchronize the workspace, inspect conflicts, record IDs/fingerprints, exact pre-change state, and pre-existing workspace changes, then finalize the object manifest. Re-read every saved object, prove exact approved-to-saved collection equality and an idempotent rerun, and preserve unrelated work.
 
 ## Maturity
 
@@ -125,8 +130,9 @@ The vendor consent-capability map does not add analytics implementation support 
 - `SKILL.md`: runtime entrypoint and direct routing.
 - `agents/openai.yaml`: OpenAI interface metadata.
 - `references/01-orientation/`: utility and evidence authority.
-- `references/02-execution/`: workflow, platform, consent, data, template, tool, and naming rules.
+- `references/02-execution/`: fidelity, workflow, platform, consent, data, template, tool, architecture, naming, and reuse rules.
 - `references/03-judgement/`: acceptance and handoff.
+- `scripts/validate_contract_conformance.py`: deterministic normalized collection-contract comparator.
 - `scripts/check_release.py`: dependency-free structure/content checks.
 - `scripts/build_skill_package.py`: deterministic runtime archive.
 - `tests/`: regression checks for release tooling and critical skill contracts.
@@ -139,7 +145,7 @@ The vendor consent-capability map does not add analytics implementation support 
 
 ## Install The Skill
 
-Copy runtime files `SKILL.md`, `agents/`, and `references/` into the target agent's supported skill directory. Keep `LICENSE` with redistributed copies. Repository metadata, tests, and release tooling are not required at runtime.
+Copy runtime files `SKILL.md`, `agents/`, `references/`, and `scripts/validate_contract_conformance.py` into the target agent's supported skill directory. Keep `LICENSE` with redistributed copies. Repository metadata, tests, and release tooling are not required at runtime.
 
 ## Release Checks
 
@@ -149,10 +155,10 @@ Run:
 python -m pip install -e ".[dev]"
 python -m ruff format --no-cache --check scripts tests
 python -m ruff check --no-cache scripts tests
-python scripts/check_release.py --tag v2.0.0 --release-notes CHANGELOG.md
+python scripts/check_release.py --tag v2.1.0 --release-notes CHANGELOG.md
 python -m unittest discover -s tests -v
 python -m compileall -q scripts
-python scripts/build_skill_package.py --output dist/configure-gtm-v2.0.0.zip
+python scripts/build_skill_package.py --output dist/configure-gtm-v2.1.0.zip
 git diff --check
 ~~~
 

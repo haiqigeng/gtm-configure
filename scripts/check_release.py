@@ -11,13 +11,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SEMVER = re.compile(r"^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$")
-CURRENT_RELEASE = "2.0.0"
+CURRENT_RELEASE = "2.1.0"
 REQUIRED_FILES = (
     "SKILL.md",
     "agents/openai.yaml",
     "references/01-orientation/utility-contract.md",
     "references/01-orientation/official-source-policy.md",
     "references/02-execution/configuration-contract.md",
+    "references/02-execution/tracking-plan-fidelity-and-conformance.md",
     "references/02-execution/implementation-workflow.md",
     "references/02-execution/analytics-tags.md",
     "references/02-execution/media-tags.md",
@@ -48,9 +49,11 @@ REQUIRED_FILES = (
     ".github/workflows/release.yml",
     "scripts/check_release.py",
     "scripts/build_skill_package.py",
+    "scripts/validate_contract_conformance.py",
     "tests/test_release.py",
     "tests/test_skill_contract.py",
     "tests/test_configuration_scenarios.py",
+    "tests/test_contract_conformance.py",
     "tests/fixtures/configuration_scenarios.json",
 )
 STALE_FILES = (
@@ -147,6 +150,7 @@ def check_content() -> list[str]:
     utility = read("references/01-orientation/utility-contract.md")
     sources = read("references/01-orientation/official-source-policy.md")
     configuration_contract = read("references/02-execution/configuration-contract.md")
+    fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
     workflow = read("references/02-execution/implementation-workflow.md")
     analytics = read("references/02-execution/analytics-tags.md")
     media = read("references/02-execution/media-tags.md")
@@ -154,6 +158,8 @@ def check_content() -> list[str]:
     google_consent = read("references/02-execution/google-consent-mode.md")
     vendor_consent = read("references/02-execution/vendor-consent-modes.md")
     triggers = read("references/02-execution/triggers-and-variables.md")
+    data_contract = read("references/02-execution/data-contract-and-transformations.md")
+    naming = read("references/02-execution/naming-and-reuse.md")
     adapters = read("references/02-execution/tool-adapters.md")
     judgement = read("references/03-judgement/acceptance-and-handoff.md")
     readme = read("README.md")
@@ -177,6 +183,8 @@ def check_content() -> list[str]:
         "smallest authorized, statically verifiable",
         "configuration-contract.md",
         "Do not require or claim runtime execution",
+        "Implement an approved analytics tracking plan faithfully",
+        "never as proof of best practice",
     )
     errors.extend(
         f"SKILL.md missing required term: {term}" for term in required_terms if term not in skill
@@ -203,6 +211,8 @@ def check_content() -> list[str]:
         if term not in utility
     )
     configuration_contract_terms = (
+        "## Collection and implementation contracts",
+        "## Source scope and discrepancies",
         "## Evidence grades",
         "`approved-input`",
         "`official-current`",
@@ -211,6 +221,7 @@ def check_content() -> list[str]:
         "## Requirement record",
         "## Field mapping",
         "## Object change manifest",
+        "## Contract conformance",
         "## Consent and external dependencies",
         "## Result statuses",
         "`Configured`",
@@ -221,6 +232,8 @@ def check_content() -> list[str]:
         "## Static completion invariants",
         "authoritative current-workspace readback",
         "idempotency",
+        "approved-to-intended",
+        "approved-to-saved",
     )
     errors.extend(
         f"configuration contract missing requirement: {term}"
@@ -229,6 +242,7 @@ def check_content() -> list[str]:
     )
     source_terms = (
         "Never rely on memory",
+        "never use documentation as permission to substitute",
         "Do not copy an event catalogue into the skill",
         "Microsoft Advertising UET",
         "Microsoft Clarity Consent Mode",
@@ -242,6 +256,8 @@ def check_content() -> list[str]:
     )
     workflow_terms = (
         "For media, treat the media-team brief as the primary business input",
+        "Inspect the container as integration evidence",
+        "Preserve the approved contract for an advisory",
         "Default to strict/basic behavior",
         "Keep configuration/base tags from sending an automatic page view by default",
         "Justify every new object by a current requirement",
@@ -254,6 +270,8 @@ def check_content() -> list[str]:
         "GA4 - Event Setting",
         "send_page_view",
         "Block - <CMP> - GA4 denied",
+        "never substitute it automatically",
+        "exact approved parameter set",
     )
     errors.extend(
         f"analytics reference missing contract: {term}"
@@ -380,12 +398,41 @@ def check_content() -> list[str]:
         "Do not mutate from an informal prose summary",
         "Prove idempotency",
         "synchronize workspace state",
+        "Discover exact actions and pagination",
+        "Do not guess a generic action alias",
+        "Maintain a current-operation journal",
     )
     errors.extend(
         f"tool-adapter reference missing contract: {term}"
         for term in adapter_terms
         if term not in adapters
     )
+    fidelity_terms = (
+        "measurement design and optimization",
+        "authorized **collection contract**",
+        "**implementation contract**",
+        "Visibility is evidence, not authority",
+        "`blocking-error`",
+        "`advisory`",
+        "`implementation-note`",
+        "scripts/validate_contract_conformance.py",
+    )
+    errors.extend(
+        f"tracking-plan fidelity reference missing contract: {term}"
+        for term in fidelity_terms
+        if term not in fidelity
+    )
+    architecture_terms = (
+        ("data mapping", "After selecting the target pattern", data_contract),
+        ("reuse", "Existing prevalence is not evidence of best", naming),
+        ("reuse conflict", "clean parallel implementation", naming),
+        ("acceptance architecture", "skill reference architecture is selected first", judgement),
+        ("workspace attribution", "pre-existing workspace changes", judgement),
+        ("workspace totals", "final workspace totals", judgement),
+    )
+    for label, term, text in architecture_terms:
+        if term not in text:
+            errors.append(f"{label} contract missing: {term}")
     readme_terms = (
         "## Who It Serves",
         "## Utility Objective",

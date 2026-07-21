@@ -55,17 +55,27 @@ If a critical required value is unavailable or incompatible, block the affected 
 
 ## Prefer the least-complex mapping
 
-Use this order:
+Select the target mapping from the approved collection contract, applicable skill playbook, and
+current official/template documentation before considering local container patterns. Use this order:
 
-1. reuse a semantically compatible existing variable;
-2. direct DLV for an already compatible source;
-3. constant for a stable configuration value or fixed semantic value;
+1. direct template field or DLV for an already compatible approved source;
+2. constant for a stable configuration value or approved fixed semantic value;
+3. supported settings variable for a coherent set of genuinely shared fields;
 4. lookup/regex table for a real deterministic multi-scenario mapping;
-5. Custom JavaScript for a required transformation that built-in variables cannot express cleanly.
+5. Custom JavaScript for a required destination transformation that built-in variables cannot express cleanly.
+
+After selecting the target pattern, reuse an existing variable only when it implements that pattern
+and passes current source, type/shape, null, timing, consumer, consent, environment, and static
+acceptance checks. Do not preserve or reproduce a helper merely because the container already uses
+that pattern. Harmless naming debt can remain; functional debt cannot become the new architecture.
 
 Do not hard-code a measurement ID, pixel ID, conversion label, currency, or repeated semantic value when a clear named reference improves maintenance. Do not create a constant for a one-off literal when it adds no clarity or reuse.
 
 Do not use Custom JavaScript to reinterpret routine CMP vendor consent when the documented CMP state can be tested directly in a native trigger condition. An undocumented or invalid CMP shape is a source-contract blocker, not a transformation requirement.
+
+For analytics, do not create a mapping for a destination field absent from the approved collection
+contract. A documented required field missing from the plan is a blocking discrepancy, while a
+recommended or optional field remains omitted unless the analyst explicitly amends the input.
 
 ## Preserve arrays and object schemas
 

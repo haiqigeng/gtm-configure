@@ -1,5 +1,80 @@
 # Changelog
 
+## 2.1.0
+
+### Why This Release Matters
+
+- Makes approved analytics tracking-plan fidelity explicit: the configuration
+  skill implements the collection contract and does not optimize or redesign it.
+- Keeps current official documentation essential for validity, discrepancy
+  detection, and technical configuration without treating it as authorization
+  to substitute events or enrich payloads.
+- Makes the skill's best-practice playbooks authoritative for GTM architecture;
+  existing container state is integration evidence, not a precedent to copy.
+
+### What Changed
+
+- Add a dedicated tracking-plan fidelity and conformance contract covering
+  collection versus implementation semantics, workbook/source scope,
+  documentation discrepancies, preflight decisions, and exact equality proof.
+- Classify plan/documentation differences as `blocking-error`, `advisory`, or
+  `implementation-note`. Preserve valid approved custom events and omitted
+  optional fields; block invalid/reserved events and missing required fields
+  instead of substituting or inventing values.
+- Require approved-to-intended conformance before mutation and
+  approved-to-saved conformance before `Configured`, including exact scope,
+  event, timing, parameter, source, and literal equality.
+- Add a dependency-free normalized JSON comparator that reports missing, extra,
+  and mismatched requirements and scope with deterministic exit codes.
+- Select the target implementation from the applicable skill playbook and
+  current official/template documentation before evaluating local reuse.
+- Classify reuse candidates as conformant, conformant with naming debt,
+  nonconformant, conflicting, or unknown. Never copy a legacy pattern or add a
+  parallel implementation around a known conflict.
+- Keep naming conventions as presentation compatibility only when consistent
+  and clear; they never determine implementation architecture.
+- Add adapter schema/action discovery, complete pagination, page-limit and
+  quota handling, plus a current-operation journal that separates pre-existing
+  workspace changes, current-run mutations, and final totals.
+- Expand handoff and static acceptance to include source scope, discrepancy
+  classes, deterministic conformance output, best-practice reuse proof, and
+  exact workspace change attribution.
+
+### What Users Should Do
+
+- Supply an approved analytics tracking plan or exact direct analytics decision.
+- Review blocking discrepancies before the affected requirement is configured;
+  treat advisories as information unless the approved input is explicitly
+  amended by the analyst or tracking-plan owner.
+- Expect the skill to inspect the container for conflicts and safe reuse without
+  reproducing legacy architecture or performing unauthorized cleanup.
+- Preserve the normalized conformance reports with the implementation handoff.
+
+### Validation
+
+- Contract tests protect tracking-plan fidelity, discrepancy classification,
+  collection/infrastructure separation, best-practice-first architecture,
+  constrained reuse, pagination discovery, and workspace change attribution.
+- Structured scenarios cover valid custom-event advisories, blocking plan
+  errors, omitted optional fields, mixed legacy patterns, conflicting existing
+  implementations, and explicit source-scope classification.
+- Comparator tests prove order-independent equality and detection of event
+  substitutions, unauthorized parameters, scope differences, missing/extra
+  requirements, and invalid normalized input.
+- Formatting, lint, unit tests, Python compilation, release checks,
+  deterministic package contents, and whitespace checks gate the release.
+
+### Known Limits
+
+- The comparator validates normalized JSON equality; it does not interpret
+  arbitrary client workbooks or decide analytics semantics.
+- The skill reports analytics-plan optimization opportunities but leaves plan
+  creation and revision to the tracking-plan analyst or tracking-plan skill.
+- Existing container conflicts can block an affected requirement when updating
+  or disabling the conflicting object is outside the authorized scope.
+- Runtime recette, publication, server-side GTM, CAPI, event-ID architecture,
+  and browser/server deduplication remain outside this release.
+
 ## 2.0.0
 
 ### Why This Release Matters

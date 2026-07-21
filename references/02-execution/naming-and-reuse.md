@@ -2,7 +2,11 @@
 
 ## Follow type, owner, and purpose
 
-Preserve an established compatible container convention. Otherwise use:
+Use an explicit analyst naming decision when supplied. Otherwise use the skill patterns below.
+Preserve an existing container convention only as a presentation choice when it is consistent within
+the relevant object family, clearly communicates type/owner/purpose, and does not weaken the skill
+standard. Do not infer a global convention from a few legacy objects or let naming determine the
+technical architecture.
 
 | Object type | Pattern | Example |
 | --- | --- | --- |
@@ -29,7 +33,17 @@ Name a vendor transformation after its output, not its input. For example, use `
 
 ## Reuse by semantic equivalence
 
-Before creating an object, inspect candidates and all their consumers. Reuse only when these dimensions align:
+Select the target implementation from the applicable skill playbook and current official/template
+documentation before adopting local patterns. Then inspect candidates and all their consumers.
+Classify each candidate as:
+
+- `conformant`: passes the selected reference architecture and every applicable static criterion;
+- `conformant-with-naming-debt`: functionally conformant, with only harmless naming inconsistency;
+- `nonconformant`: uses an outdated, brittle, over-complex, unsupported, or incorrect pattern;
+- `conflicting`: would duplicate, suppress, broaden, or otherwise interfere with the target design;
+- `unknown`: critical behavior or consumers cannot be established.
+
+Reuse only `conformant` or `conformant-with-naming-debt` candidates, and only when these dimensions align:
 
 - object type and terminal output;
 - business and vendor ownership;
@@ -40,7 +54,15 @@ Before creating an object, inspect candidates and all their consumers. Reuse onl
 - environment/hostname scope;
 - expected future change path.
 
-Matching names or values alone are insufficient. Two IDs with the same current string can require separate constants when they belong to different destinations or owners. Conversely, do not duplicate a compatible object merely because its name is imperfect; reuse it and report naming debt unless renaming is authorized.
+Matching names or values alone are insufficient. Existing prevalence is not evidence of best
+practice. Two IDs with the same current string can require separate constants when they belong to
+different destinations or owners. Conversely, do not duplicate a fully conformant object merely
+because its name is imperfect; reuse it and report naming debt unless renaming is authorized.
+
+Do not reuse a nonconformant or unknown object. Do not add a clean parallel implementation around a
+known conflicting tag, trigger, consent path, or automatic event. Update or disable the conflicting
+object only when the authorized scope permits it; otherwise block the affected requirement and state
+the exact decision needed. This is safe integration, not container cleanup.
 
 ## Prefer references over repeated literals
 
@@ -62,7 +84,9 @@ Apply the same rule to analytics and media. Do not use a table for a single mapp
 
 ## Organize folders sparingly
 
-Follow the container's existing folder model. When no useful model exists and the change is large enough to benefit, prefer a shallow structure by vendor/platform or implementation workstream.
+Follow an existing folder model only when it is coherent and compatible with the selected
+best-practice architecture. Otherwise, when the change is large enough to benefit, prefer a shallow
+structure by vendor/platform or implementation workstream.
 
 Do not create a folder for one isolated object. Do not move unrelated existing objects merely to make the new workspace look tidy; that is cleanup scope.
 

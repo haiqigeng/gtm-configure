@@ -16,7 +16,11 @@
 
 ## Prefer dataLayer Custom Events
 
-Use one exact vendor-neutral Custom Event per business action whenever the dataLayer can provide the success signal. Reuse the same normal trigger across analytics and media tags when event timing and semantics are identical.
+Use the exact approved dataLayer event and timing. When an approved input authorizes a new source
+contract, default to one exact vendor-neutral Custom Event per business action whenever the dataLayer
+can provide the success signal. Reuse the same normal trigger across analytics and media tags only
+when event timing and semantics are identical and the selected reference architectures remain
+compatible.
 
 Create a different trigger type only when:
 

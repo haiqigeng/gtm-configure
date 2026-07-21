@@ -1,4 +1,4 @@
 interface:
   display_name: "Configure Google Tag Manager"
   short_description: "Configure traceable, consent-controlled client-side GTM"
-  default_prompt: "Use $configure-gtm to translate an approved analytics requirement or media-team brief into the smallest authorized, statically verifiable client-side GTM change set using current official documentation and strict/basic consent gating by default; do not require runtime execution or claim publication."
+  default_prompt: "Use $configure-gtm to translate an approved analytics requirement or media-team brief into the smallest authorized, statically verifiable client-side GTM change set. Preserve an approved analytics collection contract exactly, report official-documentation discrepancies without silently redesigning it, select the skill's best-practice architecture before reconciling container integration, and use strict/basic consent gating by default; do not require runtime execution or claim publication."

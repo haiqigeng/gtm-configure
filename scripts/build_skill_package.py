@@ -8,7 +8,13 @@ from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
-INCLUDED = ("SKILL.md", "agents/openai.yaml", "references", "LICENSE")
+INCLUDED = (
+    "SKILL.md",
+    "agents/openai.yaml",
+    "references",
+    "scripts/validate_contract_conformance.py",
+    "LICENSE",
+)
 
 
 def package_files() -> list[Path]:

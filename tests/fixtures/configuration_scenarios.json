@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "description": "Static configuration-contract scenarios for configure-gtm. These are deterministic specification fixtures, not model-output or runtime tests.",
   "allowed_statuses": [
     "Configured",
@@ -155,6 +155,131 @@
       "external_dependencies": ["Platform-side conversion or optimization setup is recorded separately."],
       "expected_invariants": ["generic field-level map", "template permissions recorded", "product-specific consent classification"],
       "forbidden_invariants": ["schema inferred from GA4", "consent inferred from another vendor", "runtime required"]
+    },
+    {
+      "id": "tracking-plan-valid-custom-advisory",
+      "route": "analytics",
+      "request": "Use configure-gtm to produce a read-only GA4 specification from an approved tracking plan that explicitly selects the technically valid custom event account_created. Current official documentation identifies sign_up as a potentially more appropriate recommended event. The approved source contract is complete. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "discrepancies": [
+        {"class": "advisory", "approved": "account_created", "documented": "sign_up may be more appropriate", "default_action": "Preserve account_created."}
+      ],
+      "expected_actions": [
+        {"action": "create", "object_type": "trigger", "name": "CE - account_created", "justification": "Exact approved source event."},
+        {"action": "create", "object_type": "tag", "name": "GA4 - Event - account_created", "justification": "Exact technically valid approved analytics event."}
+      ],
+      "external_dependencies": ["The tracking-plan owner may separately approve a future measurement-plan revision."],
+      "expected_invariants": ["approved custom event preserved", "advisory reported before mutation", "zero semantic deviations"],
+      "forbidden_invariants": ["sign_up substituted", "optional parameter added", "tracking plan optimized by configuration skill"]
+    },
+    {
+      "id": "tracking-plan-blocking-schema-error",
+      "route": "analytics",
+      "request": "Use configure-gtm for an approved analytics row whose requested manual event is established by current official documentation as reserved and unsupported for the requested use. No amended analytics decision exists. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "contract-sample"],
+      "expected_status": "Blocked",
+      "live_state_claim": false,
+      "discrepancies": [
+        {"class": "blocking-error", "approved": "reserved requested event", "documented": "manual use unsupported", "default_action": "Stop the affected requirement."}
+      ],
+      "expected_actions": [],
+      "external_dependencies": ["The tracking-plan owner must supply an amended approved analytics decision."],
+      "expected_invariants": ["official error reported", "affected requirement stopped"],
+      "forbidden_invariants": ["replacement event inferred", "closest recommended event substituted", "invalid event configured"]
+    },
+    {
+      "id": "tracking-plan-optional-field-omitted",
+      "route": "analytics",
+      "request": "Use configure-gtm to produce a read-only GA4 specification from an approved event containing exactly one approved parameter. Current official documentation identifies another compatible field as recommended but not required. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "discrepancies": [
+        {"class": "advisory", "approved": "one-parameter field set", "documented": "another field is recommended", "default_action": "Keep the approved field set unchanged."}
+      ],
+      "expected_actions": [
+        {"action": "create", "object_type": "tag", "name": "GA4 - Event - approved_custom_event", "justification": "Exact approved event and parameter set."}
+      ],
+      "external_dependencies": ["Any parameter addition requires a new explicit analytics decision."],
+      "expected_invariants": ["exact parameter set equality", "recommended field remains absent", "advisory recorded"],
+      "forbidden_invariants": ["recommended field added", "source literal invented", "payload enriched"]
+    },
+    {
+      "id": "tracking-plan-source-scope-manifest",
+      "route": "analytics",
+      "request": "Use configure-gtm to produce a read-only specification from an approved workbook scope containing one visible event sheet, one explicitly approved hidden event sheet, one reference dictionary, and one explicitly excluded legacy sheet. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "source_scope": {"included": ["visible event", "approved hidden event"], "reference_only": ["dictionary"], "excluded": ["legacy sheet"]},
+      "expected_actions": [
+        {"action": "create", "object_type": "tag family", "name": "Two approved event implementations", "justification": "The explicit source-scope manifest includes both event sheets."}
+      ],
+      "external_dependencies": ["Publication remains outside this skill."],
+      "expected_invariants": ["hidden approved event included", "reference sheet not implemented", "legacy sheet explicitly excluded"],
+      "forbidden_invariants": ["hidden means excluded", "visible means automatically included", "reference dictionary becomes event"]
+    },
+    {
+      "id": "legacy-container-pattern-rejected",
+      "route": "analytics",
+      "request": "Use configure-gtm to produce a read-only event specification where the approved source value is directly available through a DLV, but the existing container commonly uses broad Custom JavaScript helpers for similar values. The helper has no required consumer relationship. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "create", "object_type": "variable", "name": "DLV - event.plan_type", "justification": "The best-practice direct mapping is selected before local reuse."},
+        {"action": "untouched", "object_type": "variable", "name": "Existing broad Custom JavaScript helper", "justification": "It is nonconformant and outside cleanup scope."}
+      ],
+      "external_dependencies": ["Existing unrelated helper debt is reported for any separate cleanup review."],
+      "expected_invariants": ["skill reference architecture selected first", "legacy helper not reused", "unrelated object untouched"],
+      "forbidden_invariants": ["container prevalence treated as best practice", "broad CJS copied", "cleanup performed"]
+    },
+    {
+      "id": "conflicting-existing-implementation-blocked",
+      "route": "analytics",
+      "request": "Use configure-gtm for an approved event when a confirmed existing automatic implementation would duplicate the best-practice manual event. Updating or disabling the existing implementation is not authorized. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Blocked",
+      "live_state_claim": false,
+      "expected_actions": [],
+      "external_dependencies": ["The analyst must authorize reconciliation of the conflicting existing implementation."],
+      "expected_invariants": ["duplicate risk recorded", "affected requirement stopped"],
+      "forbidden_invariants": ["parallel tag added", "conflicting object silently disabled", "duplicate accepted"]
+    },
+    {
+      "id": "adapter-pagination-capability-discovery",
+      "route": "combined",
+      "request": "Use configure-gtm for a read-only specification through an adapter whose current schema exposes product-specific action names, a maximum page size of twenty for one object family, cursor pagination, and batch readback limits. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Specification complete",
+      "live_state_claim": false,
+      "expected_actions": [
+        {"action": "reuse", "object_type": "adapter capability profile", "name": "Current-run discovered schema", "justification": "Exact actions, limits, cursors, and returned fields are established before mutation."}
+      ],
+      "external_dependencies": ["An authorized mutation path is required to apply the specification."],
+      "expected_invariants": ["all relevant pages exhausted", "exact action schema used", "batch and quota limits respected"],
+      "forbidden_invariants": ["generic action alias guessed", "page size fifty assumed", "first page treated as complete"]
+    },
+    {
+      "id": "workspace-change-attribution",
+      "route": "analytics",
+      "request": "Use configure-gtm in an authorized dedicated workspace containing two confirmed pre-existing changes. The current operation updates one approved tag, saved readback passes, and the identical rerun is a no-op. No runtime access is available.",
+      "evidence_grades": ["approved-input", "official-current", "container-confirmed", "contract-sample"],
+      "expected_status": "Configured",
+      "live_state_claim": true,
+      "saved_object_readback": true,
+      "idempotent_second_execution": true,
+      "preexisting_workspace_changes": 2,
+      "current_run_changes": 1,
+      "final_workspace_changes": 3,
+      "expected_actions": [
+        {"action": "update", "object_type": "tag", "name": "Approved analytics event", "justification": "The current operation changes only the approved tag."}
+      ],
+      "external_dependencies": ["Publication remains outside this skill."],
+      "expected_invariants": ["pre-existing changes reported separately", "current-run change count one", "final total not attributed to current run"],
+      "forbidden_invariants": ["three changes claimed by agent", "pre-existing work overwritten", "workspace total omitted"]
     },
     {
       "id": "server-side-deduplication-deferred",

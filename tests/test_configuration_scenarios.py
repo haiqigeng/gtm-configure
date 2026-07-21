@@ -15,7 +15,7 @@ class ConfigurationScenarioFixtureTest(unittest.TestCase):
         cls.scenarios = cls.payload["scenarios"]
 
     def test_scenario_corpus_has_expected_north_star_coverage(self) -> None:
-        self.assertEqual(self.payload["version"], 2)
+        self.assertEqual(self.payload["version"], 3)
         self.assertIn("not model-output or runtime tests", self.payload["description"])
         expected_ids = {
             "ga4-tracking-plan-static",
@@ -28,6 +28,14 @@ class ConfigurationScenarioFixtureTest(unittest.TestCase):
             "idempotent-rerun",
             "ga4-external-administration",
             "unlisted-browser-vendor",
+            "tracking-plan-valid-custom-advisory",
+            "tracking-plan-blocking-schema-error",
+            "tracking-plan-optional-field-omitted",
+            "tracking-plan-source-scope-manifest",
+            "legacy-container-pattern-rejected",
+            "conflicting-existing-implementation-blocked",
+            "adapter-pagination-capability-discovery",
+            "workspace-change-attribution",
             "server-side-deduplication-deferred",
         }
         self.assertEqual({scenario["id"] for scenario in self.scenarios}, expected_ids)
@@ -64,6 +72,15 @@ class ConfigurationScenarioFixtureTest(unittest.TestCase):
                     self.assertTrue(action["object_type"])
                     self.assertTrue(action["name"])
                     self.assertTrue(action["justification"])
+
+                for discrepancy in scenario.get("discrepancies", []):
+                    self.assertIn(
+                        discrepancy["class"],
+                        {"blocking-error", "advisory", "implementation-note"},
+                    )
+                    self.assertTrue(discrepancy["approved"])
+                    self.assertTrue(discrepancy["documented"])
+                    self.assertTrue(discrepancy["default_action"])
 
     def test_status_specific_evidence_prevents_false_completion(self) -> None:
         for scenario in self.scenarios:
@@ -104,6 +121,46 @@ class ConfigurationScenarioFixtureTest(unittest.TestCase):
             statuses,
             {"Configured", "Specification complete", "Partial", "Blocked", "Deferred"},
         )
+
+    def test_tracking_plan_scenarios_never_silently_redesign_collection(self) -> None:
+        advisory = next(
+            item for item in self.scenarios if item["id"] == "tracking-plan-valid-custom-advisory"
+        )
+        action_names = {action["name"] for action in advisory["expected_actions"]}
+        self.assertIn("GA4 - Event - account_created", action_names)
+        self.assertNotIn("GA4 - Event - sign_up", action_names)
+        self.assertEqual(advisory["discrepancies"][0]["class"], "advisory")
+
+        blocked = next(
+            item for item in self.scenarios if item["id"] == "tracking-plan-blocking-schema-error"
+        )
+        self.assertEqual(blocked["expected_status"], "Blocked")
+        self.assertEqual(blocked["expected_actions"], [])
+        self.assertEqual(blocked["discrepancies"][0]["class"], "blocking-error")
+
+    def test_container_state_is_integration_evidence_not_architecture_authority(self) -> None:
+        legacy = next(
+            item for item in self.scenarios if item["id"] == "legacy-container-pattern-rejected"
+        )
+        actions = {action["name"]: action["action"] for action in legacy["expected_actions"]}
+        self.assertEqual(actions["DLV - event.plan_type"], "create")
+        self.assertEqual(actions["Existing broad Custom JavaScript helper"], "untouched")
+
+        conflict = next(
+            item
+            for item in self.scenarios
+            if item["id"] == "conflicting-existing-implementation-blocked"
+        )
+        self.assertEqual(conflict["expected_status"], "Blocked")
+        self.assertIn("parallel tag added", conflict["forbidden_invariants"])
+
+    def test_workspace_change_attribution_is_explicit(self) -> None:
+        scenario = next(
+            item for item in self.scenarios if item["id"] == "workspace-change-attribution"
+        )
+        self.assertEqual(scenario["preexisting_workspace_changes"], 2)
+        self.assertEqual(scenario["current_run_changes"], 1)
+        self.assertEqual(scenario["final_workspace_changes"], 3)
 
 
 if __name__ == "__main__":

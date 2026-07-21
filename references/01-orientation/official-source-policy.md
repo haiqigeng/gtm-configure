@@ -13,21 +13,22 @@
 
 Use current primary documentation at execution time. Never rely on memory, analogy, an old implementation, or an informal media event label for a vendor event, parameter, type, array shape, accepted value, template field, consent capability, CMP event, CMP variable, or vendor identity.
 
-Use the requirement to establish business intent. Use official documentation to establish the destination contract. Use the installed template, target-container state, approved source contract, and representative payloads to establish the static implementation. Runtime evidence is outside this skill and is not an input requirement.
+Use an approved analytics tracking plan or exact direct analytics decision to establish the authorized analytics collection contract. Use current official documentation to validate its classification, requirements, types, shapes, limits, and technical feasibility; never use documentation as permission to substitute or enrich a valid approved analytics contract. For media, use the media brief for the business objective and current official media documentation to establish the destination event and field schema. Use the applicable skill playbook, installed template, approved source contract, and representative payloads to design the static implementation. Use target-container state only for integration constraints, conflicts, consumers, and conformant reuse candidates. Runtime evidence is outside this skill and is not an input requirement.
 
 ## Evidence hierarchy by decision
 
 | Decision | Primary authority |
 | --- | --- |
-| Analytics business meaning | Approved tracking plan or direct analytics requirement |
+| Analytics collection selection and business meaning | Approved tracking plan or exact direct analytics decision |
+| Analytics technical validity and documented appropriateness | Current official GA4, Google tag, GTM, and installed-template documentation; report differences without silently changing the approved selection |
 | Media business objective | Current media-team brief |
-| Destination event and field schema | Current official platform documentation |
-| GTM field implementation | Native/installed template documentation, version, and visible field definitions |
+| Media destination event and field schema | Current official platform documentation |
+| GTM reference architecture and field implementation | Applicable skill playbook plus current native/installed-template documentation, version, and visible field definitions |
 | Source values and timing | Approved dataLayer/source contract and representative payloads |
 | Client consent policy | Analyst-provided approved policy |
 | Product consent capability and denied-state behavior | Current official product documentation, installed template, approved policy, and target-container configuration |
 | CMP signal, event lifecycle, and vendor identity | Current official CMP documentation plus the approved site/CMP signal contract and target-container state |
-| Existing local architecture and reuse | Target container and workspace |
+| Existing local integration, conflicts, consumers, and reuse evidence | Target container and workspace; never a best-practice authority |
 
 Treat unofficial articles and community examples as discovery aids only. Do not use them as the sole support for a required value or behavior. Do not let an existing tag override current official documentation.
 
@@ -38,10 +39,11 @@ For each platform, product, and CMP involved:
 1. Open the current official page that directly covers the selected browser implementation.
 2. Confirm that the page applies to client-side web and the installed product/template version.
 3. Extract the official event name, standard/custom/deprecated status, fields, requirement status, types, formats, enumerations, cardinality, and conditional rules.
-4. For consent work, establish whether denied state blocks, holds, suppresses cookies, or transmits a documented limited payload; record storage, identifiers, data use, modeling, defaults, updates, and revocation.
-5. Inspect the installed GTM template and map documentation concepts to its visible fields.
-6. Establish source values, timing, state lifetime, and CMP signals from an approved contract and representative payload.
-7. Assign the applicable evidence grade from the configuration contract and record the source URL, page title, access date, decisions, and unresolved contradictions.
+4. For an approved analytics contract, compare those findings with the exact approved event, fields, sources, literals, types, and timing. Classify each difference as `blocking-error`, `advisory`, or `implementation-note`; do not modify the approved contract.
+5. For consent work, establish whether denied state blocks, holds, suppresses cookies, or transmits a documented limited payload; record storage, identifiers, data use, modeling, defaults, updates, and revocation.
+6. Inspect the installed GTM template and map documentation concepts to its visible fields.
+7. Establish source values, timing, state lifetime, and CMP signals from an approved contract and representative payload.
+8. Assign the applicable evidence grade from the configuration contract and record the source URL, page title, access date, discrepancy class, decisions, and unresolved contradictions.
 
 Do not copy an event catalogue into the skill and treat it as permanent. Re-open the live catalogue for every implementation because vendors change standard events, parameters, requirements, templates, and consent features.
 
@@ -52,6 +54,7 @@ Record for each configured tag:
 - official URL, page title, and access date;
 - browser/client-side product and installed template/version;
 - official event name and classification;
+- approved analytics event/field selection and whether the official finding is conformant, advisory, or blocking;
 - exact field names and required, recommended, optional, or conditional status;
 - accepted type, format, enum, and cardinality;
 - source dataLayer key or configuration value;
@@ -107,10 +110,12 @@ For any unlisted media platform, CMP, template, or supported feature, locate and
 
 When sources disagree:
 
-1. Prefer the current official page that directly covers the selected browser feature.
-2. Confirm template version and visible field behavior.
-3. Confirm the approved source contract, installed template, and saved container fields.
-4. Record the contradiction and its impact.
-5. Stop the affected object as blocked if no authoritative source resolves a critical decision.
+1. Confirm that the current official page directly covers the selected browser feature and template version.
+2. For analytics, preserve the approved selection when it remains technically valid and record a documented recommended alternative as advisory.
+3. Stop the affected analytics object when the approved contract is invalid, reserved, missing a required field, type/shape incompatible, unsupported, or otherwise unsafe; never substitute a different contract automatically.
+4. For media destination schemas and implementation mechanics, prefer the directly applicable current official page over local precedent or analogy.
+5. Confirm the approved source contract, installed template, and saved container fields.
+6. Record the contradiction, class, impact, and exact analyst decision required.
+7. Stop the affected object as blocked if no authoritative source resolves a critical decision.
 
 If an official site is temporarily unavailable, retry or use another official page for the same product. Do not replace unavailable critical documentation with memory or an unofficial tutorial.

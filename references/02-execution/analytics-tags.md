@@ -13,21 +13,31 @@
 
 ## Use the analytics requirement as the business contract
 
-Treat an approved tracking plan or direct analytics requirement as the primary analytics input. Resolve destination semantics from current official documentation.
+Treat an approved tracking plan or exact direct analytics requirement as the authorized collection
+contract. Implement its in-scope event names, outgoing fields, literals, source mappings, and business
+timing faithfully. Use current official documentation to validate classification, appropriateness,
+requirements, types, shapes, limits, and template feasibility; do not silently optimize the plan.
 
 For each event, map:
 
 | Requirement layer | Required decision |
 | --- | --- |
 | Business action | Confirm the exact success moment and intended analysis. |
-| Source event | Use the vendor-neutral dataLayer Custom Event by default. |
+| Source event | Use the exact approved source event and timing. If an approved direct requirement authorizes a new source contract, default to one vendor-neutral dataLayer Custom Event. |
 | Source values | Verify key, event timing, type, cardinality, and sample output. |
-| GA4 event | Prefer the current automatic, enhanced-measurement, recommended, or ecommerce event when applicable; use custom only when none fits. |
-| GA4 parameters | Use exact official names, types, and item/event scope. |
+| GA4 event | Use the exact approved event when technically valid. Report an applicable automatic, enhanced-measurement, recommended, or ecommerce alternative as advisory; never substitute it automatically. |
+| GA4 parameters | Use the exact approved parameter set and validate official names, types, and item/event scope. A missing required parameter blocks; a missing recommended/optional parameter is not permission to add it. |
 | GTM variables | Reuse or create DLVs, constants, settings, tables, or documented transformations. |
 | Consent | Apply strict/basic CMP blocking by default; route explicitly approved advanced Google Consent Mode separately. |
 
 Never copy a source key into GA4 merely because the names look plausible. Map the source field deliberately to an official destination parameter or an approved custom parameter.
+
+If current documentation shows that the approved analytics contract is invalid, reserved, missing a
+required field, type/shape incompatible, unsupported, or impossible to map safely, stop the affected
+requirement and report the exact discrepancy. If the approved custom event remains valid while a
+recommended event appears more appropriate, report the consequence before mutation and preserve the
+custom event by default. Measurement redesign belongs to the tracking-plan analyst or tracking-plan
+skill.
 
 ## Configure the Google tag deliberately
 
@@ -39,7 +49,9 @@ Use current Google documentation to distinguish:
 - GA4 event tags and event-specific parameters;
 - settings managed in the GA4 data stream or Google tag destination UI.
 
-Use these naming patterns when compatible with the container:
+Use these naming patterns unless the analyst supplies an explicit naming decision or the relevant
+object family has a consistent, equally clear presentation convention. Naming compatibility never
+changes the selected technical architecture:
 
 | Object | Name |
 | --- | --- |
@@ -76,11 +88,13 @@ When the tag fires on a CMP event instead of the original `page_view` event, rev
 For each GA4 event:
 
 1. Open the current GA4 event reference.
-2. Confirm automatic, enhanced-measurement, recommended, ecommerce, or custom classification.
+2. Confirm automatic, enhanced-measurement, recommended, ecommerce, or custom classification and compare it with the approved event without substituting it.
 3. Extract each parameter's exact name, requirement status, type, scope, cardinality, and limits.
-4. Validate event-level and item-level placement.
-5. Map each destination parameter to a named GTM variable or documented transformation.
-6. Validate a representative resolved event, including all ecommerce items.
+4. Compare the approved parameter set with required, recommended, optional, and conditional findings. Block a missing required field; report other differences as advisories and preserve the approved field set.
+5. Validate event-level and item-level placement.
+6. Map each approved destination parameter to a named GTM variable or documented transformation.
+7. Validate a representative resolved event, including all ecommerce items.
+8. Prove exact approved-to-intended and approved-to-saved event/parameter equality.
 
 When a source key is misspelled, verify that the approved source contract uses that exact key. Name the DLV for the actual source key, then map it to the correctly spelled official GA4 parameter. Do not propagate source typos into destination fields.
 
@@ -88,7 +102,7 @@ Treat `value` and `currency`, transaction identifiers, and `items` according to 
 
 ## Govern user properties and identifiers
 
-Add a user property only when it is an approved, stable user attribute with a valid analysis use and current GA4 documentation permits it. Keep it in an Event Settings variable only when it genuinely applies across the intended events.
+Add a user property only when it is explicitly approved, stable, has a valid analysis use, and current GA4 documentation permits it. Never add one merely because the source dataLayer exposes it. Keep it in an Event Settings variable only when it genuinely applies across the intended events.
 
 Treat `user_id` as a separately approved identifier contract, not a routine event parameter or user property. Establish its source, authentication lifecycle, reset behavior, consent, and current official requirements before configuration.
 

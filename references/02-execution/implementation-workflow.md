@@ -6,9 +6,9 @@
 - [2. Select the requirement route](#2-select-the-requirement-route)
 - [3. Resolve the workspace](#3-resolve-the-workspace)
 - [4. Form the implementation contract](#4-form-the-implementation-contract)
-- [5. Inspect before designing](#5-inspect-before-designing)
+- [5. Inspect the container as integration evidence](#5-inspect-the-container-as-integration-evidence)
 - [6. Validate the source contract](#6-validate-the-source-contract)
-- [7. Research each destination and CMP](#7-research-each-destination-and-cmp)
+- [7. Research, validate, and classify discrepancies](#7-research-validate-and-classify-discrepancies)
 - [8. Decide consent architecture](#8-decide-consent-architecture)
 - [9. Design the object graph](#9-design-the-object-graph)
 - [10. Present the plan when risk requires it](#10-present-the-plan-when-risk-requires-it)
@@ -31,6 +31,11 @@ Do not mutate for a review or planning request.
 
 For analytics, treat the approved tracking plan or direct analytics requirement as the primary business input.
 
+For an approved tracking plan, preserve its exact in-scope event names, outgoing fields, literals,
+source mappings, and business timing. Do not optimize or redesign it. When a direct analytics request
+does not yet contain an exact collection decision, present the documented choices and obtain the
+analyst's decision before mutation.
+
 For media, treat the media-team brief as the primary business input. Capture at least the platform, requested business action, intended use, and destination identity or identify which of these is still blocking. Use any tracking plan only to discover reusable business events and source fields.
 
 Do not require the media event to exist in the analytics plan. Do not copy a GA4 destination name into another platform.
@@ -51,6 +56,8 @@ Do not create a workspace for a read-only request.
 
 Use the configuration-contract reference and capture:
 
+- a source-scope manifest covering included, reference-only, excluded, and ambiguous source items;
+- the approved collection contract separately from the technical implementation contract;
 - business action, success moment, and expected destination use;
 - vendor-neutral source event and exact timing;
 - source fields, types, cardinality, null behavior, state lifetime, representative payloads, and evidence grades;
@@ -60,10 +67,11 @@ Use the configuration-contract reference and capture:
 - CMP, vendor identity, approved consent model, and denied/unknown behavior;
 - optional first-party user-data feature and its explicit authorization;
 - object change manifest, external dependencies, result status, and static acceptance criteria.
+- the applicable skill reference architecture, preflight discrepancy report, and approved-to-intended conformance result.
 
 Classify every missing input as discoverable, unnecessary for the selected route, or critical and blocking.
 
-## 5. Inspect before designing
+## 5. Inspect the container as integration evidence
 
 Inventory relevant:
 
@@ -77,6 +85,16 @@ Inventory relevant:
 Compare semantics, timing, output, ownership, consent behavior, and consumers rather than names alone.
 When hard-coded code, CMS plugins, CMP configuration, or platform settings cannot be established from the available static evidence, record the external dependency or blocker instead of claiming that no duplicate or conflict exists.
 
+Do not infer the target architecture from the most common or nearest existing pattern. Existing
+container state can establish capabilities, template versions, IDs, consumers, conflicts, duplicate
+risk, saved fields, and candidates for reuse. It cannot establish best practice merely because an
+object already exists.
+
+Use the applicable skill playbook and current official documentation to select the target pattern.
+Classify each reuse candidate as conformant, conformant with harmless naming debt, nonconformant,
+conflicting, or unknown. Reuse only the first two classes. Do not reproduce a legacy helper, trigger,
+consent model, page-view pattern, or tag architecture without passing the current static criteria.
+
 ## 6. Validate the source contract
 
 For every required source value:
@@ -87,9 +105,13 @@ For every required source value:
 4. Distinguish the source key from the DLV name, template field, and destination parameter.
 5. Record missing or incompatible values as a dataLayer requirement/blocker; do not develop the site or invent a fallback.
 
+For analytics, validate that the intended source event, source paths, literals, business filters, and
+timing exactly match the approved collection contract. Do not add a source field merely because an
+official optional or recommended destination parameter could consume it.
+
 Prefer the clean dataLayer contract over DOM scraping, click-text inference, URL inference, or brittle selectors.
 
-## 7. Research each destination and CMP
+## 7. Research, validate, and classify discrepancies
 
 Open current official documentation and verify:
 
@@ -103,6 +125,20 @@ Open current official documentation and verify:
 - CMP lifecycle event, consent-state source, vendor identity, approved predicate, and documented value format.
 
 Record the research evidence before mutation.
+
+For an approved analytics plan, compare the official findings with the exact approved collection
+contract. Classify every difference as:
+
+- `blocking-error` when the plan is invalid, reserved, missing a required field, type/shape
+  incompatible, unsupported, or impossible to implement safely;
+- `advisory` when the approved choice remains valid but a recommended event, field, or convention
+  may be more appropriate;
+- `implementation-note` when documentation guides GTM/template mechanics without changing the
+  collection contract.
+
+Never substitute a recommended event or add a recommended/optional parameter automatically. Stop
+the affected requirement for a blocking error. Preserve the approved contract for an advisory unless
+the analyst explicitly amends it.
 
 ## 8. Decide consent architecture
 
@@ -123,11 +159,15 @@ Make that decision for each browser product, not only for the parent vendor. Use
 
 ## 9. Design the object graph
 
+Select the smallest best-practice reference architecture from the applicable skill playbooks,
+approved consent policy, source contract, installed-template capabilities, and current official
+documentation. Reconcile it with container integration constraints only after selecting that target.
+
 Keep configuration/base tags from sending an automatic page view by default.
 
 Default to:
 
-- one vendor-neutral Custom Event trigger per business action;
+- one exact approved Custom Event trigger per business action; when the approved input authorizes a new source contract, default to a vendor-neutral event;
 - separate destination tags that consume the same event where semantics match;
 - a separate page-view event instead of an automatic page view from a config/base tag;
 - reusable constants for stable IDs or values where a reference is clearer;
@@ -138,9 +178,24 @@ Default to:
 
 Justify every new object by a current requirement, a documented destination/template constraint, or the absence of a semantically compatible existing object. Do not create a helper variable, settings object, trigger, base tag, or page-view tag merely to normalize the container or anticipate a hypothetical future need.
 
+For every reused object, prove that architecture, terminal output, source, type/shape, timing,
+consent, consumers, template/version, environment, and future change path remain compatible. A name
+or current value match is insufficient. If a nonconformant existing object would conflict with the
+best-practice implementation, update or disable it only when authorized; otherwise block the
+affected requirement. Never knowingly add a parallel duplicate.
+
 Check duplicate automatic/manual events and page-view timing before finalizing.
 
 ## 10. Present the plan when risk requires it
+
+For every analytics tracking-plan implementation, present the concise discrepancy report before the
+first write. A zero-discrepancy result needs no additional approval. An advisory states that the
+default is faithful implementation. A blocking error stops the affected requirement until an amended
+approved input is supplied.
+
+Run the approved-to-intended collection-contract conformance check before mutation. Require identical
+scope, requirement IDs, events, business timing, fields, sources, and literals, with zero unauthorized
+additions, removals, or substitutions. Keep implementation infrastructure in a separate manifest.
 
 Before mutation, surface decisions that materially affect data collection or architecture, including:
 
@@ -157,7 +212,7 @@ Obtain the necessary approval; do not broaden the original authorization.
 
 Prefer a purpose-built GTM MCP or API. Use UI only when a required operation is unavailable or for visual verification.
 
-Before the first write, finalize the object change manifest, capture IDs/fingerprints and exact pre-change state for modified objects, inspect workspace synchronization/conflicts, and confirm that rerunning the same contract will not create duplicates.
+Before the first write, finalize the object change manifest, capture IDs/fingerprints and exact pre-change state for modified objects, record pre-existing workspace changes, inspect workspace synchronization/conflicts, and confirm that rerunning the same contract will not create duplicates.
 
 Apply dependency order:
 
@@ -168,12 +223,15 @@ Apply dependency order:
 5. event/conversion/remarketing tags;
 6. sequencing and consent settings.
 
-Re-read every saved object, compare it with the manifest, inspect references, preserve unrelated changes, and record created, modified, reused, and untouched objects. Re-evaluate the manifest after an unexpected saved field, consumer, or fingerprint. Never publish or create a version.
+Re-read every saved object, compare it with the manifest, inspect references, preserve unrelated changes, and record current-run created, modified, reused, and untouched objects separately from pre-existing workspace changes and final workspace totals. Re-evaluate the manifest after an unexpected saved field, consumer, or fingerprint. Never publish or create a version.
 
 ## 12. Validate and hand off
 
 Apply the acceptance reference. Separate:
 
+- approved-to-intended and approved-to-saved collection-contract conformance results;
+- source-scope classifications, blocking errors, advisories, and implementation notes;
+- pre-existing workspace changes, current-run changes, and final workspace totals;
 - documentation- and static configuration-verified assertions;
 - the explicit boundary that runtime validation was not performed or claimed;
 - blockers and missing dataLayer requirements;

@@ -17,9 +17,9 @@ Serve an expert web analyst who uses an AI agent such as Codex, Claude, or anoth
 
 ## Objective
 
-Convert an approved analytics tracking plan, direct analytics requirement, or media-team implementation brief into the smallest authorized, statically verifiable, reusable, officially documented, and consent-controlled client-side GTM change set.
+Convert an approved analytics tracking plan, direct analytics requirement, or media-team implementation brief into the smallest authorized, statically verifiable, best-practice, officially documented, and consent-controlled client-side GTM change set.
 
-Cover Google tag/GA4 analytics, supported browser media platforms, or both. Optimize requirement fidelity, implementation correctness, maintainability, and traceability. Do not claim legal compliance, make the client's legal decisions, require runtime access, or describe static configuration as observed browser behavior.
+Cover Google tag/GA4 analytics, supported browser media platforms, or both. Preserve the approved analytics collection contract exactly, detect documentation discrepancies without redesigning the tracking plan, and optimize implementation correctness, maintainability, and traceability. Do not claim legal compliance, make the client's legal decisions, require runtime access, or describe static configuration as observed browser behavior.
 
 ## Current use cases
 
@@ -27,6 +27,7 @@ Support these client-side use cases:
 
 - create or modify tags, triggers, blocking triggers, variables, Google tag settings, and transformations;
 - configure Google tag and GA4 events from an analytics tracking plan or direct human requirement;
+- normalize approved analytics scope, report plan/documentation discrepancies, and prove exact pre-write and saved-state collection-contract conformance;
 - configure Google Ads, Microsoft Advertising, Meta, TikTok, Snapchat, and other browser media tags from a media-team brief;
 - map standard and custom destination events against current official vendor schemas;
 - configure base/configuration tags, event tags, conversion tags, remarketing tags, and documented browser-side matching features;
@@ -40,12 +41,21 @@ Use different primary inputs for analytics and media:
 
 | Route | Primary business input | Supporting evidence | Technical authority |
 | --- | --- | --- | --- |
-| Analytics | Approved tracking plan or direct analytics requirement | Approved dataLayer contract, representative payloads, and target container | Current official Google tag, GA4, and GTM documentation |
+| Analytics | Approved tracking plan or exact direct analytics requirement | Approved dataLayer contract and representative payloads | Skill reference architecture, current official Google tag/GA4/GTM documentation, and installed-template capabilities; use them to validate and implement, not to silently rewrite the approved collection contract |
 | Media | Human media-team brief | Tracking plan, approved source contract, existing business events, representative payloads, and target container | Current official media-vendor documentation and installed template |
 
 Do not assume that a requested media event appears in the analytics tracking plan or should use the corresponding GA4 destination name. Reuse a vendor-neutral source event where semantics and timing match, but establish each destination schema independently.
 
 Treat a tracking plan as supporting evidence for reusable business events and source values in the media route, not as the authority for the media destination schema.
+
+For the analytics route, keep measurement optimization outside this skill. Preserve every approved
+event, outgoing field, literal, source mapping, and business success moment when technically valid.
+Classify a valid recommended alternative as advisory. Block an invalid, reserved, missing-required,
+type/shape-incompatible, or unsupported requirement instead of substituting or enriching it.
+
+Use existing container and workspace state only to establish integration constraints, consumers,
+conflicts, saved fields, and candidates for reuse. Never treat a local legacy pattern as technical
+authority or proof of best practice.
 
 ## Inputs
 
@@ -53,10 +63,10 @@ Accept incomplete intake. Discover safely derivable information before asking th
 
 | Input class | Examples | Agent behavior |
 | --- | --- | --- |
-| Analytics requirement | Tracking-plan row, business action, GA4 destination, reporting need | Treat as analytics intent; resolve exact destination semantics from official documentation. |
+| Analytics requirement | Approved tracking-plan row or exact direct analytics contract | Preserve the approved collection contract; use official documentation to validate it and report discrepancies before mutation. |
 | Media brief | Platform, pixel/account/destination, requested action, optimization or audience use, conversion label | Treat as media intent; do not treat its informal event label as an official schema. |
 | Target and authority | Account, container, environment, workspace, read/write authorization | Confirm before mutation. |
-| Discoverable configuration | Existing objects, folders, templates, workspace state, destination IDs | Inspect before designing. |
+| Discoverable configuration | Existing objects, folders, templates, workspace state, destination IDs | Inspect as integration evidence; reuse only after the object passes the selected best-practice architecture and static acceptance checks. |
 | Source contract | dataLayer event, fields, types, cardinality, timing, state lifetime, representative payloads | Require an explicit approved contract or sample for every critical value. |
 | Consent | CMP, client-approved product policy, CMP signal contract, basic/strict or explicitly approved advanced/native behavior | Classify each browser product from official documentation, installed template, approved CMP contract, and target-container state. |
 | Conditional media details | Conversion ID/label, feed/business vertical, catalog IDs, first-party user data, advanced matching | Require only when the chosen product or feature needs them. |
@@ -69,9 +79,11 @@ For authorized configuration, produce:
 
 - configured objects in a dedicated workspace whenever possible;
 - one adapter-neutral configuration contract covering every requirement;
+- normalized source-scope manifest and preflight discrepancy report for analytics inputs;
+- exact approved-to-intended and approved-to-saved collection-contract conformance results;
 - target account, container, environment, and workspace;
 - requirement-to-object and source-to-destination maps;
-- created, modified, reused, and intentionally untouched objects;
+- pre-existing workspace changes, current-run created/modified/reused/untouched objects, and final workspace totals reported separately;
 - for every destination field: official name, requirement status, type/shape, source, transformation, and representative resolved value;
 - installed template identity/version and relevant permissions;
 - official source URLs, titles, access dates, and decisions;
@@ -103,7 +115,7 @@ For authorized changes:
 
 Do not use this skill for:
 
-- creating or redesigning an analytics tracking plan;
+- creating, optimizing, or redesigning an analytics tracking plan;
 - developing the website or its dataLayer;
 - auditing, cleaning, or broadly refactoring a container;
 - executing a full interactive GTM Preview recette;

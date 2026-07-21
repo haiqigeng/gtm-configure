@@ -30,10 +30,48 @@ class SkillContractTest(unittest.TestCase):
     def test_analytics_and_media_keep_distinct_business_authorities(self) -> None:
         utility = read("references/01-orientation/utility-contract.md")
         workflow = read("references/02-execution/implementation-workflow.md")
-        self.assertIn("Approved tracking plan or direct analytics requirement", utility)
+        self.assertIn("Approved tracking plan or exact direct analytics requirement", utility)
         self.assertIn("Human media-team brief", utility)
         self.assertIn("supporting evidence for reusable business events", utility)
         self.assertIn("Do not copy a GA4 destination name", workflow)
+
+    def test_tracking_plan_fidelity_prevents_silent_analytics_redesign(self) -> None:
+        skill = read("SKILL.md")
+        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
+        analytics = read("references/02-execution/analytics-tags.md")
+        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
+        self.assertIn("Implement an approved analytics tracking plan faithfully", skill)
+        self.assertIn("measurement design and optimization", fidelity)
+        self.assertIn("never substitute it automatically", analytics)
+        self.assertIn("Valid custom event with documented recommended alternative", acceptance)
+        self.assertIn("Recommended or optional field absent from plan", acceptance)
+
+    def test_official_documentation_detects_discrepancies_without_authorizing_changes(self) -> None:
+        sources = read("references/01-orientation/official-source-policy.md")
+        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        for term in ("blocking-error", "advisory", "implementation-note"):
+            self.assertIn(f"`{term}`", fidelity)
+            self.assertIn(f"`{term}`", workflow)
+        self.assertIn("never use documentation as permission to substitute", sources)
+        self.assertIn("Preserve the approved contract for an advisory", workflow)
+
+    def test_collection_and_implementation_contracts_remain_separate(self) -> None:
+        contract = read("references/02-execution/configuration-contract.md")
+        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
+        self.assertIn("## Collection and implementation contracts", contract)
+        self.assertIn("authorized **collection contract**", fidelity)
+        self.assertIn("**implementation contract**", fidelity)
+        self.assertIn("must equal the approved field set", contract)
+        self.assertIn("requires a missing field", contract)
+
+    def test_scope_and_contract_conformance_are_proven_before_and_after_mutation(self) -> None:
+        fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
+        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
+        self.assertIn("Visibility is evidence, not authority", fidelity)
+        self.assertIn("approved-to-intended", acceptance)
+        self.assertIn("approved-to-saved", acceptance)
+        self.assertIn("scripts/validate_contract_conformance.py", fidelity)
 
     def test_critical_facts_have_static_evidence_grades(self) -> None:
         contract = read("references/02-execution/configuration-contract.md")
@@ -178,6 +216,17 @@ class SkillContractTest(unittest.TestCase):
         self.assertIn("Justify every new object by a current requirement", workflow)
         self.assertIn("requirement or documented constraint that justifies", contract)
 
+    def test_best_practice_architecture_precedes_container_reuse(self) -> None:
+        skill = read("SKILL.md")
+        workflow = read("references/02-execution/implementation-workflow.md")
+        naming = read("references/02-execution/naming-and-reuse.md")
+        data = read("references/02-execution/data-contract-and-transformations.md")
+        self.assertIn("never as proof of best practice", skill)
+        self.assertIn("Inspect the container as integration evidence", workflow)
+        self.assertIn("Existing prevalence is not evidence of best", naming)
+        self.assertIn("After selecting the target pattern", data)
+        self.assertIn("Never knowingly add a parallel duplicate", workflow)
+
     def test_adapter_contract_is_manifest_driven_and_idempotent(self) -> None:
         adapters = read("references/02-execution/tool-adapters.md")
         self.assertIn("Translate the change manifest deterministically", adapters)
@@ -186,6 +235,19 @@ class SkillContractTest(unittest.TestCase):
         self.assertIn("Prove idempotency", adapters)
         self.assertIn("second run that proposes another create", adapters)
         self.assertIn("workspace", adapters)
+        self.assertIn("Discover exact actions and pagination", adapters)
+        self.assertIn("Do not guess a generic action alias", adapters)
+        self.assertIn("first page", adapters)
+        self.assertIn("Maintain a current-operation journal", adapters)
+
+    def test_handoff_separates_workspace_state_from_current_run(self) -> None:
+        contract = read("references/02-execution/configuration-contract.md")
+        acceptance = read("references/03-judgement/acceptance-and-handoff.md")
+        adapters = read("references/02-execution/tool-adapters.md")
+        for text in (contract, acceptance, adapters):
+            self.assertIn("pre-existing workspace changes", text)
+            self.assertIn("current-run", text)
+            self.assertIn("final workspace totals", text)
 
     def test_external_administration_is_not_silently_claimed(self) -> None:
         analytics = read("references/02-execution/analytics-tags.md")

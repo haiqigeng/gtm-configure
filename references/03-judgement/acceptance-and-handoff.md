@@ -5,6 +5,7 @@
 - [Static completion definition](#static-completion-definition)
 - [Judgement statuses](#judgement-statuses)
 - [Static validation matrix](#static-validation-matrix)
+- [Collection-contract conformance proof](#collection-contract-conformance-proof)
 - [Consent configuration proof](#consent-configuration-proof)
 - [Handoff output](#handoff-output)
 
@@ -18,21 +19,25 @@ every applicable condition passes:
    identity.
 2. Create or reuse a dedicated workspace when possible; document and obtain approval for any
    Default Workspace fallback.
-3. Identify the correct analytics or media business authority and create one configuration-contract
-   record per independently judgeable requirement.
+3. Identify the correct analytics or media business authority, classify every relevant source item
+   as included, reference-only, excluded, or ambiguous, and create one configuration-contract record
+   per independently judgeable requirement.
 4. For media, capture the media-team objective independently of any analytics tracking plan.
 5. Give every critical business, source, destination, template, consent, and container fact a
    non-assumption evidence grade.
-6. Consult current official documentation for every destination event, field, template behavior,
-   per-product consent capability, CMP signal, and vendor identity.
+6. For analytics, preserve the approved collection contract exactly and use current official
+   documentation to classify conformant choices, advisories, and blocking errors without silently
+   substituting or enriching the plan. For media, use the official destination schema independently.
 7. Establish the source event, timing contract, type, scope, cardinality, null behavior, state
    lifetime, and representative zero/one/many payloads where applicable.
 8. Map every destination field through business meaning, source contract, GTM resolution, installed
    template field, official destination contract, and representative result.
 9. Inspect the installed template identity/version/permissions and reconcile visible fields and
    hidden behavior with current official documentation.
-10. Complete the object change manifest, reuse semantically compatible objects, avoid known
-    duplicates, and justify every create or update by a current requirement or documented constraint.
+10. Select the target architecture from the applicable skill playbooks and current official/template
+    documentation. Use container state only for integration evidence. Reuse an existing object only
+    after it passes the same architecture and static checks as a new object; never reproduce a legacy
+    pattern or add a parallel implementation around a known conflict.
 11. Prove a static normal firing path and the selected strict/basic or explicitly approved advanced
     consent configuration for every tag without describing it as observed runtime behavior.
 12. Resolve known base/configuration, automatic/manual event, environment, and shared-execution-unit
@@ -41,11 +46,15 @@ every applicable condition passes:
     current vendor requirements, and consent controls.
 14. Record every external site, CMP, GA4-administration, advertising-platform, and publication
     dependency without claiming it was completed by GTM configuration.
-15. Before any mutation, capture stable IDs/fingerprints and exact pre-change state. Whether or not
-    a write is needed, re-read every relevant saved object from the current workspace and compare
-    fields and references with the manifest.
-16. Confirm that a repeated execution against the saved state would reuse or leave objects untouched,
-    and that no publish, Submit, or GTM version action occurred.
+15. Before mutation, prove exact approved-to-intended collection-contract conformance: identical
+    scope, requirement IDs, events, business timing, fields, sources, and literals, with no
+    unauthorized additions, removals, or substitutions.
+16. Capture stable IDs/fingerprints, exact pre-change state, and pre-existing workspace changes.
+    Whether or not a write is needed, re-read every relevant saved object and prove both
+    approved-to-saved collection conformance and intended-to-saved implementation conformance.
+17. Report pre-existing workspace changes, current-run changes, and final workspace totals
+    separately. Confirm that a repeated execution would reuse or leave objects untouched and that no
+    publish, Submit, or GTM version action occurred.
 
 For `Specification complete`, apply the same conditions except live mutation and saved-object
 readback. Provide exact planned fields, dependencies, action semantics, and verification assertions,
@@ -75,13 +84,17 @@ Use every applicable scenario:
 
 | Scenario | Required static assertion |
 | --- | --- |
-| Analytics tracking-plan event | The approved business action maps to the current official analytics event/fields, explicit source contract, and vendor-neutral Custom Event. |
-| Direct analytics request | A missing plan does not block when approved business meaning, intended use, and the complete source contract are otherwise established. |
+| Analytics tracking-plan event | The exact approved event, field set, source contract, and business timing are preserved when technically valid; official findings validate and classify rather than silently redesign the plan. |
+| Direct analytics request | A missing plan does not block when the analyst has explicitly approved the exact event, field set, business timing, intended use, and complete source contract. An informal business action alone does not authorize the skill to design the measurement plan silently. |
 | Media brief absent from tracking plan | The media brief drives the destination; the plan is used only for reusable source evidence. |
 | Informal media label | No tag is configured until the official standard/custom event, destination identity, and field schema are established. |
 | No runtime access | Approved inputs, representative payloads, current documentation, template, and container evidence are graded; runtime is not requested or used as a completion gate. |
 | Critical assumption | The affected requirement is `Blocked`; an assumption never supplies an ID, source timing/type, consent predicate, or required destination field. |
-| Standard versus custom event | A standard event is preferred when semantics fit; custom use, naming limits, and optimization/reporting consequences are documented. |
+| Valid custom event with documented recommended alternative | The approved custom event is preserved, the recommended alternative and consequences are reported as advisory before mutation, and no substitution occurs without a new explicit decision. |
+| Invalid or reserved analytics event | The affected requirement is `Blocked`; the skill reports current official evidence and never substitutes another event automatically. |
+| Missing required analytics field | The affected requirement is `Blocked`; no source, literal, empty value, or optional fallback is invented. |
+| Recommended or optional field absent from plan | The field remains absent and is reported as advisory when useful; it is not added automatically. |
+| Workbook/source scope | Every relevant source item is included, reference-only, excluded, or ambiguous with evidence; hidden does not mean excluded and visible does not mean in scope. |
 | GA4 config | `GA4 - Config` uses a relative measurement-ID reference where appropriate and follows the approved page-view architecture. |
 | GA4 Event Settings | `GA4 - Event Setting` exists only when genuinely shared fields simplify the selected events. |
 | Manual GA4 page view | Known Google tag and Enhanced Measurement settings are reconciled, parameters are available under the source contract, and no known automatic/manual duplicate remains. |
@@ -117,12 +130,35 @@ Use every applicable scenario:
 | SPA page view | Application event, known History Change and Enhanced Measurement settings, and vendor automatic behavior do not create a known duplicate. |
 | Tag sequencing | The initiating tag carries the vendor block and unknown/denied state is statically expected not to start setup or cleanup tags. |
 | Community template | Publisher, version/commit, permissions, fields, update diff, consumers, and explicit approval are recorded. |
-| Existing-object reuse | Output, ownership, timing, consent, consumers, environment, template, and future change path are compatible. |
+| Existing-object reuse | The skill reference architecture is selected first; output, ownership, timing, consent, consumers, environment, template, future change path, and all static criteria are compatible. Existing prevalence alone is irrelevant. |
+| Legacy container pattern | A nonconformant local helper, trigger, consent route, page-view pattern, or tag architecture is not reused or copied merely because it exists. |
+| Conflicting existing implementation | The skill updates/disables only within authority or blocks the affected requirement; it never adds a knowingly duplicate parallel implementation. |
 | Workspace precondition | Dedicated workspace identity, pre-existing changes, synchronization state, conflicts, object IDs, fingerprints, and pre-change state are recorded. |
+| Workspace change attribution | Pre-existing changes, current-run actions, and final workspace totals are reported separately. |
 | Idempotent second execution | The saved state produces `reuse` or `untouched`, not duplicate objects or repeat updates. |
 | Tool unavailable | The complete contract is `Specification complete` and no live-change claim is made. |
 | Partial mutation | Dependent writes stop; saved created/updated objects, untouched work, exact blocker, and safe recovery boundary are recorded. |
 | Deferred server-side dependency | No event-ID or browser/server configuration is added; future work is `Deferred`. |
+
+## Collection-contract conformance proof
+
+For every analytics tracking-plan implementation, record both pre-write and saved-state results:
+
+- expected and actual requirement counts;
+- missing and extra requirement IDs;
+- included/reference-only/excluded scope differences;
+- event-name, source-event, business-timing, filter, parameter, source-path, literal, and type/shape mismatches;
+- unauthorized additions, removals, substitutions, or hidden-scope inclusions;
+- blocking errors, advisories, implementation notes, and explicit analyst amendments.
+
+The approved-to-intended comparison must pass before the first affected write. The
+approved-to-saved comparison must pass before `Configured`. When normalized JSON is available, use
+`scripts/validate_contract_conformance.py` and preserve its JSON result. The comparator proves
+equality only; it does not interpret a client workbook or establish official semantics.
+
+Keep the implementation manifest separate and verify required technical IDs, consent, GTM
+references, template fields, firing options, and adapter state independently. Do not classify
+necessary implementation infrastructure as an unauthorized payload field.
 
 ## Consent configuration proof
 
@@ -163,8 +199,10 @@ Return two layers.
 
 - target account, container, environment, and workspace;
 - authorized scope and primary analytics/media inputs;
+- source-scope result and tracking-plan/documentation blocking errors, advisories, and implementation notes;
 - status by requirement/tag family;
-- created, updated, reused, untouched, partial, blocked, and deferred work;
+- pre-existing workspace changes, current-run created/updated/reused/untouched/partial/blocked/deferred work, and final workspace totals;
+- approved-to-intended and approved-to-saved collection-contract conformance result;
 - external site, CMP, GA4, advertising-platform, publication, and optional validation dependencies;
 - confirmation that runtime execution was not performed or claimed;
 - confirmation that no publication or GTM version occurred.
@@ -172,12 +210,14 @@ Return two layers.
 ### Technical annex
 
 - complete configuration-contract records and evidence grades;
+- normalized source-scope manifest, discrepancy report, explicit analyst amendments, and deterministic conformance output;
 - requirement-to-object graph and ordered change manifest;
 - field-level business-to-source-to-GTM-to-template-to-destination map;
 - current official sources, page titles, access dates, and decisions;
 - product-level consent predicate and capability matrix;
 - template identity/version, permissions, fields, and consumers;
 - object IDs/paths, fingerprints, pre-change state, intended/saved fields, and references;
+- pre-existing workspace snapshot, current-operation mutation journal, and final workspace totals;
 - static validation results and idempotency result;
 - exact partial-state recovery boundary, blockers, external dependencies, and deferrals.
 
