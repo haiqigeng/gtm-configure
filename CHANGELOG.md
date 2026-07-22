@@ -1,5 +1,41 @@
 # Changelog
 
+## 4.0.1
+
+### Why This Release Matters
+
+- Synchronizes repository/package metadata, release checks, CI, contribution guidance, and README
+  instructions with the current v4 client-side GTM configuration surface.
+- Records the latest synthetic-test observations without changing the runtime skill contract.
+
+### What Changed
+
+- Align the package version, release checker, CI validation tag, contribution command, README
+  release commands, and distributable package name at `4.0.1`.
+- Add an explicit current-release statement to the README.
+- Record payload-eligibility helpers, template selection, and browser-versus-server parameter
+  mapping as future evaluation items; no related behavior or playbook rule is changed here.
+
+### What Users Should Do
+
+- Continue using the v4 client-side configuration workflow and review the saved-object handoff
+  before any separate publication decision.
+- Treat the recorded synthetic-test observations as pending future evaluation, not as changes to
+  the current implementation policy.
+
+### Validation
+
+- Preserve the v4.0.0 runtime references, configuration contract, scenarios, and tests unchanged.
+- Run the repository release checks, unit tests, lint/format checks, compilation, and deterministic
+  package build for `v4.0.1`.
+
+### Known Limits
+
+- This is a documentation/repository synchronization release; it does not expand the client-side
+  scope or change payload, template, consent, or firing behavior.
+- Server-side GTM, Conversions API, browser/server deduplication, and event-ID architecture remain
+  outside the current skill.
+
 ## 4.0.0
 
 ### Why This Release Matters

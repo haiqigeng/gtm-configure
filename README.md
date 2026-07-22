@@ -4,6 +4,14 @@ An agent-neutral operational skill for expert web analysts using Codex, Claude, 
 AI agent to configure clean, well-organized, technically correct, best-practice, and
 consent-controlled client-side Google Tag Manager workspaces.
 
+## Current Release
+
+**v4.0.1** is a repository and documentation maintenance release for the v4 client-side GTM
+configuration surface. It does not change runtime skill behavior. The latest synthetic-test
+observations about payload-eligibility helpers, template selection, and browser-versus-server
+parameter mapping are recorded as future evaluation items and are intentionally not implemented
+in this release.
+
 ## Who It Serves
 
 - Expert web analysts, analytics consultants, and GTM specialists.
@@ -214,10 +222,10 @@ Run:
 python -m pip install -e ".[dev]"
 python -m ruff format --no-cache --check scripts tests
 python -m ruff check --no-cache scripts tests
-python scripts/check_release.py --tag v4.0.0 --release-notes CHANGELOG.md
+python scripts/check_release.py --tag v4.0.1 --release-notes CHANGELOG.md
 python -m unittest discover -s tests -v
 python -m compileall -q scripts
-python scripts/build_skill_package.py --output dist/configure-gtm-v4.0.0.zip
+python scripts/build_skill_package.py --output dist/configure-gtm-v4.0.1.zip
 git diff --check
 ~~~
 
