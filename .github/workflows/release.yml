@@ -26,9 +26,33 @@ jobs:
           python -m unittest discover -s tests -v
       - name: Build runtime package
         run: python scripts/build_skill_package.py --output "dist/configure-gtm-$GITHUB_REF_NAME.zip"
+      - name: Prepare current release notes
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+
+          version = os.environ["RELEASE_VERSION"].removeprefix("v")
+          heading = f"## {version}"
+          lines = Path("CHANGELOG.md").read_text(encoding="utf-8").splitlines()
+          try:
+              start = lines.index(heading)
+          except ValueError as exc:
+              raise SystemExit(f"CHANGELOG.md is missing {heading}") from exc
+          end = next(
+              (index for index in range(start + 1, len(lines)) if lines[index].startswith("## ")),
+              len(lines),
+          )
+          Path("dist/release-notes.md").write_text(
+              "\n".join(lines[start:end]).rstrip() + "\n",
+              encoding="utf-8",
+          )
+          PY
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
           generate_release_notes: false
-          body_path: CHANGELOG.md
+          body_path: dist/release-notes.md
           files: dist/configure-gtm-*.zip
