@@ -18,7 +18,7 @@ class SkillContractTest(unittest.TestCase):
     def test_openai_interface_metadata_matches_operational_north_star(self) -> None:
         metadata = read("agents/openai.yaml")
         self.assertIn('display_name: "Configure Google Tag Manager"', metadata)
-        self.assertIn('short_description: "Operational client-side GTM configuration"', metadata)
+        self.assertIn('short_description: "Complete client-side GTM configuration"', metadata)
         self.assertIn('default_prompt: "Use $configure-gtm', metadata)
         self.assertIn("saved setup", metadata)
         self.assertIn("never publish", metadata)
@@ -287,14 +287,75 @@ class SkillContractTest(unittest.TestCase):
     def test_priority_media_playbooks_exist_and_route_from_skill(self) -> None:
         skill = read("SKILL.md")
         for platform in (
+            "media-criteo.md",
+            "media-floodlight.md",
             "media-google-ads.md",
+            "media-linkedin.md",
             "media-microsoft-ads.md",
             "media-meta.md",
+            "media-pinterest.md",
+            "media-reddit.md",
             "media-tiktok.md",
             "media-snapchat.md",
+            "media-x.md",
         ):
             self.assertIn(platform, skill)
             self.assertTrue((ROOT / "references" / "02-execution" / platform).exists())
+
+    def test_complete_client_side_object_surface_is_supported_and_risk_gated(self) -> None:
+        skill = read("SKILL.md")
+        surface = read("references/02-execution/client-side-object-surface.md")
+        adapters = read("references/02-execution/tool-adapters.md")
+        for term in (
+            "Built-in variables",
+            "Google destinations",
+            "Zones",
+            "Environments",
+            "Container settings",
+        ):
+            self.assertIn(term, surface)
+        self.assertIn("explicit authority", surface)
+        self.assertIn("object-family coverage", skill)
+        self.assertIn("capability independently for workspace", adapters)
+
+    def test_ga4_safety_and_multi_destination_routing_fail_closed(self) -> None:
+        safety = read("references/02-execution/ga4-collection-safety.md")
+        routing = read("references/02-execution/multi-destination-routing.md")
+        for term in ("reserved name", "hard collection limit", "PII", "blocking-error"):
+            self.assertIn(term, safety)
+        self.assertIn("safe no-match behavior", routing)
+        self.assertIn("Never use a default production destination", routing)
+        self.assertIn("static vectors", routing)
+
+    def test_non_ga4_analytics_cmp_and_cross_domain_routes_are_first_class(self) -> None:
+        skill = read("SKILL.md")
+        analytics_vendors = read("references/02-execution/analytics-vendors.md")
+        cmp_platforms = read("references/02-execution/cmp-platform-patterns.md")
+        cross_domain = read("references/02-execution/conversion-linker-cross-domain.md")
+        for routed in (
+            "analytics-vendors.md",
+            "cmp-platform-patterns.md",
+            "conversion-linker-cross-domain.md",
+        ):
+            self.assertIn(routed, skill)
+        for vendor in ("Matomo", "Piwik PRO", "Adobe"):
+            self.assertIn(vendor, analytics_vendors)
+        for cmp in ("OneTrust", "Cookiebot", "Didomi"):
+            self.assertIn(cmp, cmp_platforms)
+        self.assertIn("Conversion Linker", cross_domain)
+        self.assertIn("GA4 Admin", cross_domain)
+
+    def test_versioned_contract_and_object_graph_diff_are_runtime_controls(self) -> None:
+        contract = read("references/02-execution/configuration-contract.md")
+        validator = read("scripts/validate_configuration_contract.py")
+        graph_diff = read("scripts/diff_object_graph.py")
+        package = read("scripts/build_skill_package.py")
+        self.assertIn('"schema_version": "4.0"', contract)
+        self.assertIn('SCHEMA_VERSION = "4.0"', validator)
+        self.assertIn("approved-input", validator)
+        self.assertIn("compare_graphs", graph_diff)
+        self.assertIn('"scripts/validate_configuration_contract.py"', package)
+        self.assertIn('"scripts/diff_object_graph.py"', package)
 
     def test_user_data_runtime_and_future_boundaries_remain_guarded(self) -> None:
         user_data = read("references/02-execution/first-party-data.md")

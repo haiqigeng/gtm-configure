@@ -4,7 +4,9 @@
 
 - [Purpose and priority](#purpose-and-priority)
 - [Keep business and implementation decisions separate](#keep-business-and-implementation-decisions-separate)
+- [Use the versioned v4 contract](#use-the-versioned-v4-contract)
 - [Use one concise record per requirement](#use-one-concise-record-per-requirement)
+- [Compact example](#compact-example)
 - [Retain critical provenance](#retain-critical-provenance)
 - [Map fields and event eligibility](#map-fields-and-event-eligibility)
 - [Map GTM object actions](#map-gtm-object-actions)
@@ -43,6 +45,35 @@ Do not use implementation infrastructure to add or change an analytics payload. 
 folder references, consent settings, trigger references, and template mechanics are not payload
 enrichment, but each must serve the current configuration or a documented product constraint.
 
+## Use the versioned v4 contract
+
+When the map is normalized to JSON, use `schema_version: "4.0"` and keep these top-level sections:
+
+| Section | Contents |
+| --- | --- |
+| `route` | `analytics`, `media`, `consent`, or `combined`. |
+| `scope` | Approved included/reference/excluded requirement IDs and source-scope facts only. |
+| `requirements` | Approved analytics semantics or explicit media objective plus official destination schema. In a `combined` contract, every requirement declares `kind` as `analytics`, `media`, or `consent`. |
+| `implementation` | Workspace, object actions, names, IDs, mappings, templates, triggers, consent, routing, readback, and status. |
+| `evidence` | Official-source manifest and container/source evidence needed for the decisions. |
+| `external_dependencies` | Work explicitly outside the saved GTM graph. |
+
+Every requirement needs an `authority` with a permitted provenance grade and a precise non-sensitive
+source locator. Every outgoing analytics parameter, user property, and item field needs its own
+`provenance` locator. Analytics collection fields may use `approved-input`; `official-current` may
+validate them but never authorize an addition. Media destination schema fields may use
+`official-current`, while media business objective, destination identity, and source authorization
+remain `approved-input`. A combined contract applies those rules per declared requirement `kind`;
+it cannot use the broader media rule for an analytics field.
+
+Keep `workspace`, `tag_type`, `template`, `gtm_variable`, object IDs, fingerprints, trigger and
+folder references, consent mechanics, and adapter fields under `implementation`. Do not mark them as
+approved collection semantics and do not make the conformance comparator skip arbitrary fields.
+
+Run `scripts/validate_configuration_contract.py` for a v4 JSON map. The analytics equality
+comparator accepts legacy v3 normalized inputs for compatibility, but every newly created v4 map
+must pass the strict versioned validator.
+
 ## Use one concise record per requirement
 
 Create one record per independently configurable business action and destination. Keep separate
@@ -65,13 +96,66 @@ Capture only what mutation and verification need:
 Do not force a large worksheet-style record for a direct one-field mapping. Add detail in proportion
 to transformation, consent, shared-consumer, template, or mutation risk.
 
+## Compact example
+
+Use this proportional shape; extend it only for real risk:
+
+```json
+{
+  "schema_version": "4.0",
+  "route": "analytics",
+  "scope": {"included": ["REQ-12"], "reference_only": [], "excluded": []},
+  "requirements": [{
+    "id": "REQ-12",
+    "authority": {"grade": "approved-input", "locator": "Tracking Plan / Events / row 12"},
+    "event_name": "generate_lead",
+    "source_event": "form_success",
+    "parameters": {
+      "method": {
+        "source": "event.method",
+        "provenance": {"grade": "approved-input", "locator": "Tracking Plan / Events / row 12 / method"}
+      }
+    }
+  }],
+  "implementation": {
+    "workspace": {
+      "account_id": "account-stable-id",
+      "container_id": "container-stable-id",
+      "id": "workspace-stable-id",
+      "container_type": "web"
+    },
+    "objects": [{
+      "action": "create",
+      "object_type": "tag",
+      "name": "GA4 - Event - generate_lead",
+      "justification": "Implements REQ-12 exactly",
+      "evidence": ["approved-input", "official-current", "container-confirmed"]
+    }]
+  },
+  "evidence": [
+    {
+      "grade": "official-current",
+      "locator": "GA4 generate_lead reference",
+      "url": "https://developers.google.com/analytics/devguides/collection/ga4/reference/events",
+      "title": "GA4 recommended events",
+      "access_date": "YYYY-MM-DD"
+    },
+    {"grade": "container-confirmed", "locator": "account/container/workspace stable IDs"}
+  ],
+  "external_dependencies": []
+}
+```
+
+`lead_type` is absent because no approved locator authorizes it. A convenient implementation idea
+cannot be inserted into `requirements` and cannot pass merely by being labeled infrastructure.
+
 ## Retain critical provenance
 
 Keep source attribution for facts that determine a write:
 
 | Provenance | Permitted decision |
 | --- | --- |
-| `approved-input` | Analytics semantics, media objective, client policy, and explicit analyst decisions. |
+| `approved-input` | Analytics semantics, media objective, destination identity, client policy, and explicit analyst decisions. Include a precise source locator. |
 | `official-current` | Destination schema, GTM behavior, template expectations, and supported consent capability. |
 | `container-confirmed` | Installed objects/templates, stable IDs, consumers, conflicts, fingerprints, and saved fields. It never proves best practice. |
 | `contract-sample` | dataLayer/source timing, type, shape, cardinality, null behavior, and representative transformation input. |
@@ -140,10 +224,12 @@ mutation, compare it with authoritative workspace readback. Require:
 - exact approved source or literal for every field;
 - zero unauthorized additions, removals, substitutions, or hidden-scope inclusions.
 
-Use `scripts/validate_contract_conformance.py` when the approved, intended, or saved representations
-can be normalized to JSON. Keep implementation metadata outside `scope` and `requirements`. A
-non-zero semantic difference blocks the affected write or `Configured` result until corrected or
-supported by an explicit amended analytics decision.
+Use `scripts/validate_configuration_contract.py` to enforce the v4 authority boundary and
+`scripts/validate_contract_conformance.py` to compare approved, intended, or saved analytics
+representations. Keep implementation metadata outside `scope` and `requirements`. Never whitelist
+an arbitrary implementation field out of equality. A non-zero schema or semantic difference blocks
+the affected write or `Configured` result until corrected or supported by an explicit amended
+analytics decision.
 
 ## Record consent and external dependencies
 
@@ -193,3 +279,7 @@ Before `Configured`, prove from current workspace readback that:
 10. pre-existing workspace changes and current-run writes are distinguished;
 11. blockers, external dependencies, and partial or deferred work are explicit;
 12. no runtime claim, publication, Submit, or GTM version action occurred.
+13. the v4 authority boundary, source locators, and official-source manifest are complete;
+14. every applicable client-side object family was configured, compatibly reused, intentionally
+    untouched, or accurately blocked under its authority boundary;
+15. normalized intended-versus-saved object comparison has no unexplained configuration difference.

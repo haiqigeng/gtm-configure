@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "description": "Static intended-to-saved GTM object-graph characterization cases; not browser/runtime tests.",
+  "cases": [
+    {
+      "id": "ga4-metadata-and-trigger-order-normalize",
+      "expected_pass": true,
+      "expected": {
+        "objects": [
+          {
+            "object_type": "tag",
+            "type": "gaawe",
+            "name": "GA4 - Event - generate_lead",
+            "firingTriggerId": ["17"],
+            "blockingTriggerId": ["22", "21"],
+            "fields": {
+              "event_name": "generate_lead",
+              "parameters": {"method": "{{DLV - event.method}}"}
+            }
+          }
+        ]
+      },
+      "saved": {
+        "objects": [
+          {
+            "object_type": "tag",
+            "type": "gaawe",
+            "name": "GA4 - Event - generate_lead",
+            "tagId": "81",
+            "path": "accounts/1/containers/2/workspaces/3/tags/81",
+            "fingerprint": "server-generated",
+            "firingTriggerId": ["17"],
+            "blockingTriggerId": ["21", "22"],
+            "fields": {
+              "parameters": {"method": "{{DLV - event.method}}"},
+              "event_name": "generate_lead"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "unauthorized-lead-type-is-visible",
+      "expected_pass": false,
+      "expected_difference_contains": "lead_type",
+      "expected": {
+        "objects": [
+          {
+            "object_type": "tag",
+            "name": "GA4 - Event - generate_lead",
+            "fields": {
+              "event_name": "generate_lead",
+              "parameters": {"method": "{{DLV - event.method}}"}
+            }
+          }
+        ]
+      },
+      "saved": {
+        "objects": [
+          {
+            "object_type": "tag",
+            "name": "GA4 - Event - generate_lead",
+            "fields": {
+              "event_name": "generate_lead",
+              "parameters": {
+                "method": "{{DLV - event.method}}",
+                "lead_type": "account"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "production-no-match-routing-regression-is-visible",
+      "expected_pass": false,
+      "expected_difference_contains": "default",
+      "expected": {
+        "objects": [
+          {
+            "object_type": "lookup table",
+            "name": "LUT - GA4 measurement_id by hostname",
+            "fields": {
+              "input": "{{Page Hostname}}",
+              "rows": [
+                {"input": "www.example.com", "output": "G-PROD"},
+                {"input": "staging.example.com", "output": "G-STAGE"}
+              ],
+              "default": ""
+            }
+          }
+        ]
+      },
+      "saved": {
+        "objects": [
+          {
+            "object_type": "lookup table",
+            "name": "LUT - GA4 measurement_id by hostname",
+            "fields": {
+              "input": "{{Page Hostname}}",
+              "rows": [
+                {"input": "www.example.com", "output": "G-PROD"},
+                {"input": "staging.example.com", "output": "G-STAGE"}
+              ],
+              "default": "G-PROD"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "idempotent-complete-graph-is-equal",
+      "expected_pass": true,
+      "expected": {
+        "objects": [
+          {
+            "object_type": "variable",
+            "name": "DLV - ecommerce.items",
+            "fields": {"path": "ecommerce.items", "version": 2}
+          },
+          {
+            "object_type": "trigger",
+            "name": "CE - purchase",
+            "fields": {"event_name": "purchase"}
+          }
+        ]
+      },
+      "saved": {
+        "objects": [
+          {
+            "object_type": "trigger",
+            "name": "CE - purchase",
+            "triggerId": "7",
+            "fingerprint": "b",
+            "fields": {"event_name": "purchase"}
+          },
+          {
+            "object_type": "variable",
+            "name": "DLV - ecommerce.items",
+            "variableId": "4",
+            "fingerprint": "a",
+            "fields": {"path": "ecommerce.items", "version": 2}
+          }
+        ]
+      }
+    }
+  ]
+}

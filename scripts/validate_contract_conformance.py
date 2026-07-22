@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from validate_configuration_contract import ContractValidationError, validate_document
+
 
 class ContractError(ValueError):
     """Raised when a normalized contract does not satisfy the comparison schema."""
@@ -20,16 +22,10 @@ def load_contract(path: Path) -> dict[str, Any]:
         raise ContractError(f"cannot read {path}: {exc}") from exc
     except json.JSONDecodeError as exc:
         raise ContractError(f"invalid JSON in {path}: {exc}") from exc
-    if not isinstance(value, dict):
-        raise ContractError(f"{path}: top-level value must be an object")
-    if "scope" not in value:
-        raise ContractError(f"{path}: missing top-level scope")
-    if not isinstance(value["scope"], dict):
-        raise ContractError(f"{path}: scope must be an object")
-    if "requirements" not in value:
-        raise ContractError(f"{path}: missing top-level requirements")
-    if not isinstance(value["requirements"], list):
-        raise ContractError(f"{path}: requirements must be an array")
+    try:
+        validate_document(value, allow_legacy=True)
+    except ContractValidationError as exc:
+        raise ContractError(f"{path}: {exc}") from exc
     return value
 
 

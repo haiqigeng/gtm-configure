@@ -40,9 +40,9 @@ Derive or request only what the selected feature needs:
 
 Do not create a tag from an informal label such as "purchase pixel" or "lead conversion" alone. Establish the destination identity and official event contract first.
 
-Discover installed destination IDs, templates, source variables, triggers, CMP objects, and existing
-initialization before asking. Ask only for a missing feature-specific value that cannot be derived
-and blocks the actual configuration. Do not require the media team to produce an analytics-style
+Discover installed destination IDs, templates, source variables, triggers, CMP objects, routing,
+and existing initialization before asking. Finish safe discovery and batch all missing feature-
+specific blockers in one request. Do not require the media team to produce an analytics-style
 tracking plan.
 
 ## Use a four-authority model
@@ -102,6 +102,9 @@ Prefer a direct DLV, constant, lookup table, or regex table when it yields the e
 
 Make each Custom JavaScript variable deterministic, null-safe, narrowly scoped, free of invented fallbacks, and tested with representative source data. Name it for the vendor and output, for example `CJS - Meta - contents`.
 
+Load `transformation-patterns.md` for repeated ecommerce projections or scalar validation. Record
+the input/output contract and missing, empty, zero, one, many, and invalid vectors before mutation.
+
 Do not transform merely because the source uses GA4-style names. Transform only when the terminal
 source shape is incompatible with the exact current media schema or installed-template field. Do
 not silently coerce types or add a documented optional field that the media brief does not need.
@@ -141,6 +144,9 @@ Do not enable enhanced conversions, advanced matching, automatic matching, DOM s
 
 Use strict/basic CMP gating by default for both base and event tags. Use the smallest reusable block set that expresses the complete approved predicate. Configure a native advanced consent mode only when the media team/analyst explicitly requests it, the vendor officially supports it, and its denied-state transmission is understood and approved.
 
+For multiple pixels, datasets, accounts, brands, regions, or environments, load the multi-
+destination routing playbook. Never use a production media identity as a no-match fallback.
+
 ## Record external platform dependencies
 
 For every browser tag, record current work required outside GTM, including when applicable:
@@ -164,6 +170,11 @@ If no dedicated playbook exists:
 4. Block any critical field or behavior that official documentation does not establish.
 
 Lack of a dedicated skill file never permits memory-based configuration.
+
+Use first-class playbooks for Google Ads, Floodlight, Microsoft Advertising, Meta, TikTok, Snap,
+LinkedIn, Pinterest, X, Reddit, and Criteo when applicable. A dedicated playbook supplies the
+decision procedure; current official documentation and installed-template fields still establish
+the actual event and parameter schema.
 
 ## Verify the saved media setup
 

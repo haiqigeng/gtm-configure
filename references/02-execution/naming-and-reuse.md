@@ -93,6 +93,10 @@ event families, product groups, or other real inputs map deterministically. Crea
 
 Apply the same rule to analytics and media. Do not use a table for a single mapping or force unrelated scenarios together.
 
+Never use a production analytics or media destination as the table's default/no-match result. Load
+the multi-destination routing playbook when destination identity, environment, brand, region, or
+consent varies; separate tags when a table would hide incompatible ownership or behavior.
+
 ## Organize folders clearly
 
 Follow an existing folder model only when it is coherent and compatible with the selected

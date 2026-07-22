@@ -1,14 +1,14 @@
 ---
 name: configure-gtm
-description: "Operationally configure client-side Google Tag Manager web containers for expert web analysts. Convert approved analytics tracking plans, exact direct analytics requirements, and explicit media implementation briefs into clean, well-organized, technically correct, best-practice, consent-controlled saved GTM setups by creating, updating, or reusing the required tags, triggers, variables, folders, templates, settings, and transformations. Use current official documentation and installed-template capabilities, preserve approved analytics semantics exactly, apply basic CMP blocking by default, and use advanced consent only when explicitly requested. Use for actual GTM configuration through an MCP, API, export/import path, or signed-in UI. Do not use for tracking-plan design, general container audit or cleanup, site/dataLayer development, legal decisions, runtime recette, publication, or runtime certification. Server-side GTM and browser/server deduplication are future extensions."
+description: "Operationally configure complete client-side Google Tag Manager web containers for expert web analysts. Convert approved analytics plans, exact analytics requirements, and explicit media briefs into clean, technically correct, consent-controlled saved GTM object graphs across applicable tags, triggers, variables, folders, templates, Google tag configuration/destinations, workspaces, Zones, environments, and settings. Use current official documentation and installed-template capabilities, preserve approved analytics semantics, apply basic CMP blocking by default, and use advanced consent only when explicitly requested. Use for actual GTM mutation through an MCP, API, export/import path, or signed-in UI. Do not use for tracking-plan design, general audit/cleanup, site/dataLayer work, legal decisions, runtime recette/certification, publication, or server-side GTM; server-side GTM and browser/server deduplication are future extensions."
 ---
 
 # Configure Google Tag Manager
 
-Operationally implement an approved analytics tracking plan and, when requested, an explicit media
-implementation brief inside a client-side GTM workspace as a clean, well-organized, technically
-correct, best-practice, and consent-controlled setup. Create, update, or reuse every required GTM
-object, verify every saved change, and never publish.
+Operationally implement an approved analytics tracking plan and, when requested, an explicit media implementation brief
+inside a client-side GTM workspace as a clean, well-organized, technically
+correct, best-practice, and consent-controlled setup. Cover every applicable web-container object.
+Create, update, or reuse every required GTM object, verify every saved change, and never publish.
 
 Treat the saved, verified GTM object graph as the unit of success. A plan, recommendation, or
 object-level specification is not a substitute for configuration. Keep the mandatory loop short and
@@ -33,19 +33,32 @@ Load only the applicable detailed playbooks:
 
 | Configuration requirement | Read |
 | --- | --- |
+| Any configuration involving object-family coverage, built-in variables, Google tag configuration, destinations, Zones, environments, or container settings | [client-side-object-surface.md](references/02-execution/client-side-object-surface.md) |
 | Approved analytics tracking plan, exact direct analytics requirement, workbook scope, or exact conformance | [tracking-plan-fidelity-and-conformance.md](references/02-execution/tracking-plan-fidelity-and-conformance.md) |
 | Google tag or GA4 analytics | [analytics-tags.md](references/02-execution/analytics-tags.md) |
+| GA4 validity, limits, reserved names, parameter counts, PII, or property-health consequences | [ga4-collection-safety.md](references/02-execution/ga4-collection-safety.md) |
+| Non-GA4 browser analytics destination | [analytics-vendors.md](references/02-execution/analytics-vendors.md) |
+| Multiple streams, properties, accounts, pixels, brands, regions, hostnames, or environments | [multi-destination-routing.md](references/02-execution/multi-destination-routing.md) |
 | Any browser media implementation | [media-tags.md](references/02-execution/media-tags.md) |
 | Google Ads | [media-google-ads.md](references/02-execution/media-google-ads.md) |
+| Floodlight or Campaign Manager 360 | [media-floodlight.md](references/02-execution/media-floodlight.md) |
 | Microsoft Advertising or Bing Ads | [media-microsoft-ads.md](references/02-execution/media-microsoft-ads.md) |
 | Meta Pixel | [media-meta.md](references/02-execution/media-meta.md) |
 | TikTok Pixel | [media-tiktok.md](references/02-execution/media-tiktok.md) |
 | Snap Pixel | [media-snapchat.md](references/02-execution/media-snapchat.md) |
+| LinkedIn Insight Tag | [media-linkedin.md](references/02-execution/media-linkedin.md) |
+| Pinterest Tag | [media-pinterest.md](references/02-execution/media-pinterest.md) |
+| X Pixel | [media-x.md](references/02-execution/media-x.md) |
+| Reddit Pixel | [media-reddit.md](references/02-execution/media-reddit.md) |
+| Criteo OneTag | [media-criteo.md](references/02-execution/media-criteo.md) |
 | CMP blocking or consent lifecycle | [cmp-consent.md](references/02-execution/cmp-consent.md) |
+| OneTrust, Cookiebot, Didomi, or another identified CMP implementation | [cmp-platform-patterns.md](references/02-execution/cmp-platform-patterns.md) |
 | Advanced, native, cookieless, anonymous, or limited-data consent | [vendor-consent-modes.md](references/02-execution/vendor-consent-modes.md) |
 | Google basic or advanced Consent Mode | [google-consent-mode.md](references/02-execution/google-consent-mode.md) |
 | First-party user data, enhanced conversions, or advanced matching | [first-party-data.md](references/02-execution/first-party-data.md) |
 | dataLayer values, ecommerce arrays, eligibility, or transformations | [data-contract-and-transformations.md](references/02-execution/data-contract-and-transformations.md) |
+| Repeated source-to-destination array projection, scalar validation, or transformation vectors | [transformation-patterns.md](references/02-execution/transformation-patterns.md) |
+| Conversion Linker, click attribution, or cross-domain Google measurement | [conversion-linker-cross-domain.md](references/02-execution/conversion-linker-cross-domain.md) |
 | Triggers, variables, SPA, firing settings, or sequencing | [triggers-and-variables.md](references/02-execution/triggers-and-variables.md) |
 | Native, official, community, or custom templates | [template-governance.md](references/02-execution/template-governance.md) |
 | MCP, API, export/import, or UI mutation | [tool-adapters.md](references/02-execution/tool-adapters.md) |
@@ -63,9 +76,9 @@ narrowest accurate status: `Partial`, `Blocked`, or `Deferred`.
   reuse the in-scope GTM objects in a dedicated workspace. Do not ask the user to choose a planning
   or read-only mode. Do not infer authority to delete unrelated objects, clean the container,
   publish, create a version, or change another system.
-- Discover container, template, destination, CMP, and source facts before asking questions. Ask only
-  for a critical input that cannot be established safely and blocks an actual configuration
-  decision.
+- Discover container, object-surface, template, destination, CMP, and source facts before asking
+  questions. Finish safe discovery, then batch all remaining critical blockers in one request. Ask
+  only for facts that cannot be established safely and block an actual configuration decision.
 - Implement approved analytics event names, payload fields, literals, source mappings, filters, and
   business timing exactly. Do not optimize or redesign the tracking plan. Report current official
   documentation differences before mutation; preserve valid advisories and stop invalid, reserved,
@@ -75,6 +88,9 @@ narrowest accurate status: `Partial`, `Blocked`, or `Deferred`.
   events and values. Never translate a media tag by analogy with GA4 or another vendor.
 - Research the exact client-side product and inspect the installed template version, fields,
   permissions, defaults, and automatic behavior before designing its tags or transformations.
+- Classify the target as a web container and discover adapter capability per applicable object
+  family. Configure built-in variables, Google tag configuration/destinations, Zones, environments,
+  templates, or container settings only under their documented authority and risk boundary.
 - Select the best-practice architecture from current official documentation, the applicable
   playbook, the installed template, the approved source values, and the consent requirement. Treat
   existing container state only as evidence for integration, consumers, conflicts, destinations,
@@ -95,6 +111,11 @@ narrowest accurate status: `Partial`, `Blocked`, or `Deferred`.
 - Keep base/configuration tags from sending an automatic page view by default. Reconcile current
   automatic, partner, hard-coded, Enhanced Measurement, Event Builder, and SPA behavior before
   adding a manual page view or business event.
+- Run the current official GA4 safety gate for names, requirements, limits, types, outgoing field
+  counts, and PII. Report advisories, stop invalid requirements, and never silently truncate,
+  coerce, remove, or enrich approved analytics fields.
+- Resolve multi-destination and environment routing explicitly. Never make production a lookup
+  default or let test traffic, first-party data, or incompatible consent leak to another destination.
 - Preserve every required ecommerce item and exact vendor shape. Never assume the analytics item ID
   is the media catalog ID, silently drop an invalid item, invent a fallback, or treat an empty
   transformation as a firing gate. When required data is invalid, make the affected tag fail closed

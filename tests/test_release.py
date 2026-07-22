@@ -21,7 +21,7 @@ class ReleaseChecksTest(unittest.TestCase):
                 sys.executable,
                 str(ROOT / "scripts" / "check_release.py"),
                 "--tag",
-                "v3.0.0",
+                "v4.0.0",
                 "--release-notes",
                 str(ROOT / "CHANGELOG.md"),
             ],
@@ -66,7 +66,7 @@ class ReleaseChecksTest(unittest.TestCase):
             notes = Path(temporary) / "CHANGELOG.md"
             notes.write_text(
                 "# Changelog\n\n"
-                "## 3.0.0\n\n"
+                "## 4.0.0\n\n"
                 "### Why This Release Matters\n\n"
                 "### What Changed\n\n"
                 "### What Users Should Do\n\n"
@@ -109,6 +109,8 @@ class ReleaseChecksTest(unittest.TestCase):
             ROOT / "SKILL.md",
             ROOT / "agents" / "openai.yaml",
             ROOT / "LICENSE",
+            ROOT / "scripts" / "diff_object_graph.py",
+            ROOT / "scripts" / "validate_configuration_contract.py",
             ROOT / "scripts" / "validate_contract_conformance.py",
         ]
         expected_sources.extend(sorted((ROOT / "references").rglob("*.md")))

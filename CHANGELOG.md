@@ -1,5 +1,83 @@
 # Changelog
 
+## 4.0.0
+
+### Why This Release Matters
+
+- Completes the skill's client-side north star in one release: configure the full applicable GTM
+  web-container object graph for analytics and media work, not only the most common tag families.
+- Expands practical expert coverage while retaining the v3 safety model: approved analytics
+  semantics remain immutable, media intent still requires a human brief, strict/basic CMP blocking
+  remains the default, all work stays in a saved workspace, and publication remains prohibited.
+- Adds deterministic controls only where they prevent authority drift, silent payload enrichment,
+  cross-destination leakage, unsafe high-impact changes, or false saved-state claims.
+
+### What Changed
+
+- Cover tags, normal and blocking triggers, user-defined and built-in variables, folders, templates,
+  Google tag configuration/destinations, workspace controls, and relevant Zones, environments, and
+  container settings. Zone/environment/destination movement, container-setting changes, and custom
+  template code require separate explicit authority.
+- Add a live-official-source GA4 safety gate for current names, reserved terms, collection limits,
+  required types/shapes, automatic-event overlap, and PII/sensitive-data risk. Invalid requirements
+  block without silent truncation, coercion, enrichment, removal, or substitution.
+- Add first-class client-side playbooks for Floodlight, LinkedIn, Pinterest, X, Reddit, and Criteo,
+  plus a generic official-first route for Matomo, Piwik PRO, Adobe, and other supported non-GA4
+  analytics destinations.
+- Add CMP-specific discovery and lifecycle patterns for OneTrust, Cookiebot, and Didomi while
+  preserving product-level consent classification and fail-closed unknown/uninitialized handling.
+- Add Conversion Linker/cross-domain ownership, multi-stream/account/pixel/brand/region/environment
+  routing, safe no-match behavior, and shared-Google-destination reconciliation. Unknown routing
+  can never default to a production destination.
+- Add destination-isolated first-party-data ownership, deterministic source-to-destination
+  transformation patterns, complete ecommerce item preservation, and required zero/one/many/
+  invalid static vectors.
+- Batch all unresolved critical questions after safe discovery instead of interrupting the run one
+  field at a time. Record an official-source manifest and field-level authority/provenance.
+- Introduce the strict `schema_version: "4.0"` configuration contract validator. It rejects
+  implementation fields in business requirements, unapproved analytics fields, missing provenance,
+  undocumented updates, destructive actions without authorization, and high-impact mutations
+  without explicit authority.
+- Add a read-only normalized object-graph comparator that ignores defined server metadata, retains
+  material nested configuration, reports missing/extra/mismatched objects, and supports deterministic
+  readback and no-op rerun proof.
+- Package both new runtime controls with the existing analytics conformance comparator. Add golden
+  object-graph cases and forward cases covering GA4 PII/enrichment, environment routing, Pinterest,
+  Floodlight, OneTrust, Zones, Matomo, and cross-domain ownership.
+
+### What Users Should Do
+
+- Provide the target web container and approved analytics tracking plan or exact direct analytics
+  requirements; add an explicit platform, business action, destination use, and identity for media.
+- Provide high-impact authority only when the requested setup genuinely requires a Zone,
+  environment, destination-link/movement, container setting, or custom-template-code change.
+- Expect one consolidated blocker request after the skill has exhausted safe container, template,
+  CMP, and official-documentation discovery.
+- Preserve the v4 configuration contract, official-source manifest, object change journal,
+  deterministic saved-state diff, and external-dependency list with the handoff.
+
+### Validation
+
+- Dependency-free unit tests protect v4 schema authority, field provenance, update pre-state,
+  high-impact authorization, legacy opt-in, normalized metadata handling, duplicate identity
+  rejection, semantic object equality, and deterministic archives.
+- Contract tests protect the expanded object surface, GA4 safety, non-GA4 analytics, CMP platforms,
+  cross-domain behavior, multi-destination isolation, the eleven first-class media families, and
+  runtime packaging of all deterministic controls.
+- Forward and golden fixtures exercise realistic source artifacts and expected controls without
+  claiming browser, network, CMP, or vendor-platform runtime certification.
+
+### Known Limits
+
+- Static saved-state verification does not replace GTM Preview, Tag Assistant, browser/network/CMP
+  recette, or vendor-platform receipt and attribution validation.
+- Vendor schemas, collection limits, CMP signals, and template capabilities remain current official
+  lookups; the skill intentionally does not freeze volatile catalogues.
+- External GA4 Admin, ad-platform conversion/action creation, catalog/feed administration, and CMP
+  policy decisions remain dependencies rather than GTM configuration claims.
+- Publication, GTM version creation, deletion/general cleanup, site/dataLayer development,
+  server-side GTM, CAPI, event-ID architecture, and browser/server deduplication remain outside v4.
+
 ## 3.0.0
 
 ### Why This Release Matters

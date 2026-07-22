@@ -15,7 +15,9 @@ consent-controlled client-side Google Tag Manager workspaces.
 
 Operationally implement an approved analytics tracking plan and, when requested, an explicit media
 implementation brief inside a client-side GTM workspace. Create, update, or reuse every required
-tag, trigger, variable, template, folder, setting, and transformation; use current official
+applicable client-side web-container object: tags, normal and blocking triggers, user-defined and
+built-in variables, templates, folders, Google tag configuration/destinations, workspace controls,
+and explicitly authorized Zones, environments, or container settings. Use current official
 documentation and installed-template capabilities; preserve approved analytics semantics exactly;
 support platform-specific media and consent requirements; verify every saved change; and never
 publish.
@@ -41,15 +43,24 @@ Use these meanings:
 
 - Configure Google tag and GA4 events from an approved tracking plan or exact direct analytics
   decision.
-- Configure Google Ads conversion/remarketing, Microsoft Advertising UET, Meta Pixel, TikTok Pixel,
-  Snap Pixel, and another officially documented browser media product from a human brief.
+- Configure a documented non-GA4 browser analytics destination, including Matomo, Piwik PRO, Adobe,
+  or another supported destination, from an approved analytics contract.
+- Configure Google Ads, Floodlight, Microsoft Advertising, Meta, TikTok, Snap, LinkedIn, Pinterest,
+  X, Reddit, Criteo, and another officially documented browser media product from a human brief.
 - Create or update tags, normal and blocking triggers, DLVs, constants, settings variables, LUTs,
-  RLTs, narrow transformations, folders, templates, and advanced tag settings.
+  RLTs, narrow transformations, folders, templates, built-in variables, Google tag configuration,
+  destinations, and advanced tag settings.
+- Inspect applicable Zones, environments, and container settings, and change them only with explicit
+  high-impact authority.
 - Implement basic CMP gating by default and explicitly requested Google, Microsoft, or
   vendor-native advanced/cookieless/anonymous consent behavior.
+- Implement current OneTrust, Cookiebot, Didomi, or another documented CMP state/lifecycle pattern
+  without borrowing signal semantics from a different CMP.
 - Configure explicitly requested first-party user-data features with controlled sources and consent.
 - Handle ecommerce arrays, catalog/feed identifiers, source-to-destination shape conversion, and
   fail-closed event eligibility.
+- Reconcile multi-destination, brand, region, hostname, and environment routing with a safe no-match
+  path that never defaults unknown traffic to production.
 - Reuse compatible objects and reconcile relevant duplicate/conflict risks without auditing or
   cleaning unrelated container content.
 
@@ -80,8 +91,9 @@ A successful run returns:
 - saved source variables, template fields, event eligibility, normal triggers, consent route, firing
   settings, naming, and folders;
 - installed-template version and relevant permissions/defaults;
+- an official-source manifest plus approved-input and implementation-decision provenance;
 - authoritative object readback, resolved references, fingerprints, workspace conflict state, and
-  idempotent rerun result;
+  deterministic object-graph diff and idempotent rerun result;
 - concise documentation discrepancies, partial state, blockers, and external dependencies;
 - confirmation that runtime recette and publication did not occur.
 
@@ -106,6 +118,9 @@ lives in conditional configuration requirements and implementation traps.
 
 - Preserve every approved analytics event, outgoing field, literal, source, filter, and success
   moment. Report documented alternatives without silently changing them.
+- Validate GA4 event/field names, reserved names, current collection limits, required types, and PII
+  exposure against live official sources; block an invalid affected requirement without silently
+  truncating, coercing, removing, or enriching it.
 - Use an explicit media brief for media business intent and current official browser documentation
   for each platform's schema.
 - Inspect the installed template version before designing its fields or transformations.
@@ -128,6 +143,8 @@ lives in conditional configuration requirements and implementation traps.
   proof.
 - Create/reuse a dedicated workspace, preserve pre-existing changes, mutate dependencies first,
   re-read every save, and make the identical rerun a no-op.
+- Batch unresolved critical inputs after safe discovery, validate the versioned configuration
+  contract before mutation, and compare intended versus saved object graphs deterministically.
 - Never publish or create a GTM version.
 
 ## Official Documentation Policy
@@ -171,7 +188,9 @@ analytics tag-configuration routes.
 - `references/01-orientation/`: north star, intake, authority, boundaries, and official sources.
 - `references/02-execution/`: operational workflow and detailed configuration playbooks.
 - `references/03-judgement/`: saved-state acceptance and concise handoff.
+- `scripts/validate_configuration_contract.py`: strict v4 authority and provenance validation.
 - `scripts/validate_contract_conformance.py`: deterministic analytics contract comparator.
+- `scripts/diff_object_graph.py`: normalized intended-versus-saved object-graph comparison.
 - `scripts/check_release.py`: dependency-free structure/content/release checks.
 - `scripts/build_skill_package.py`: deterministic runtime archive.
 - `tests/`: code and configuration-trap regression checks.
@@ -184,8 +203,8 @@ analytics tag-configuration routes.
 
 ## Install The Skill
 
-Copy `SKILL.md`, `agents/`, `references/`, `scripts/validate_contract_conformance.py`, and `LICENSE`
-into the target agent's skill directory. Repository tests and release tooling are not runtime files.
+Copy `SKILL.md`, `agents/`, `references/`, the three runtime scripts in `scripts/`, and `LICENSE` into
+the target agent's skill directory. Repository tests and release tooling are not runtime files.
 
 ## Release Checks
 
@@ -195,10 +214,10 @@ Run:
 python -m pip install -e ".[dev]"
 python -m ruff format --no-cache --check scripts tests
 python -m ruff check --no-cache scripts tests
-python scripts/check_release.py --tag v3.0.0 --release-notes CHANGELOG.md
+python scripts/check_release.py --tag v4.0.0 --release-notes CHANGELOG.md
 python -m unittest discover -s tests -v
 python -m compileall -q scripts
-python scripts/build_skill_package.py --output dist/configure-gtm-v3.0.0.zip
+python scripts/build_skill_package.py --output dist/configure-gtm-v4.0.0.zip
 git diff --check
 ~~~
 

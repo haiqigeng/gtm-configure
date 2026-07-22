@@ -5,6 +5,7 @@
 - [Default to strict/basic gating](#default-to-strictbasic-gating)
 - [Distinguish observation from gating](#distinguish-observation-from-gating)
 - [Research the installed CMP](#research-the-installed-cmp)
+- [Route identified CMP platforms](#route-identified-cmp-platforms)
 - [Build a safe vendor block](#build-a-safe-vendor-block)
 - [Select advanced/native consent only explicitly](#select-advancednative-consent-only-explicitly)
 - [Handle page-view timing](#handle-page-view-timing)
@@ -52,6 +53,13 @@ Before creating a condition:
 6. Prove from GTM filter semantics that undefined state is expected to remain blocked. Treat a supplied value outside the CMP's documented format as an integration defect and block the affected design until the source contract is corrected or authoritatively clarified.
 
 Do not infer that similarly named CMP events and variables have the same role. For Didomi, for example, establish readiness/change events independently from enabled-vendor state. Use the exact category/purpose and vendor identities documented and supplied for the site. Do not append a delimiter by convention; when the CMP serializes a delimited list, match the exact token format established by official documentation and the approved representative value.
+
+## Route identified CMP platforms
+
+When the CMP is OneTrust, Cookiebot, Didomi, or another identifiable platform, load
+`cmp-platform-patterns.md` after this general contract. Use its discovery route but keep the exact
+installed template, site deployment, vendor/category/purpose IDs, and current official lifecycle as
+the authority. Never copy one client's category IDs or another CMP's event names.
 
 ## Build a safe vendor block
 

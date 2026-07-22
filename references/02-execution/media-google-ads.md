@@ -96,6 +96,11 @@ For dynamic remarketing:
 
 Inspect existing Google tags, Google Ads/Floodlight tags, cross-domain needs, and current Google guidance before creating a Conversion Linker. Reuse a compatible linker when one exists. Do not add a duplicate simply because older implementations always used one.
 
+Load `conversion-linker-cross-domain.md` whenever click attribution, incoming linker parameters,
+form decoration, multiple domains, or shared Ads/Floodlight consumers are involved. Keep GA4 Admin
+cross-domain configuration external unless an exact approved GTM override is required. Require an
+approved domain list and never derive it from arbitrary outbound links.
+
 If a linker is needed, configure only the documented options required by the site and apply the selected consent architecture.
 
 ## Configure enhanced conversions only explicitly

@@ -23,6 +23,8 @@ applicable condition:
    event fields, transformations, consent, or automatic behavior.
 4. Inspect only relevant existing tags, triggers, variables, templates, folders, consumers,
    destinations, consent paths, automatic behavior, and duplicate/conflict risks.
+   Include required built-ins, Google tag configurations, and any relevant Zone, environment, or
+   container-setting restriction.
 5. Select the best-practice architecture before considering container reuse. Reuse only a
    semantically compatible object; do not copy legacy architecture or add a known duplicate.
 6. Resolve every outgoing field from approved source to GTM variable to installed-template field to
@@ -37,7 +39,8 @@ applicable condition:
     destination conflicts.
 11. Re-read every created, updated, and reused object; compare intended and saved fields,
     references, consumers, template version, folder, consent, and fingerprints.
-12. Prove exact analytics approved-to-saved conformance and media brief/official-schema mapping.
+12. Prove the v4 authority boundary, current official-source manifest, exact analytics approved-to-
+    saved conformance, and media brief/official-schema mapping.
 13. Recompute the object graph so an identical rerun is entirely `reuse` or `untouched`.
 14. Distinguish pre-existing workspace changes from current-run writes and final workspace totals.
 15. Record external dependencies and confirm that no runtime recette, publication, Submit, or GTM
@@ -72,6 +75,8 @@ Use every applicable row; load the detailed playbook for the selected requiremen
 | Recommended/optional field absent from plan | Keep it absent; documentation is not payload authorization. |
 | Multi-part tracking plan | Resolve only relevant included/reference/excluded/ambiguous parts; hidden and visible status alone decides nothing. |
 | GA4 configuration | Measurement ID reference, connected destinations, settings variables, consent, and explicit page-view behavior are correct. |
+| GA4 collection safety | Current official name, reserved, required, type, limit, final outgoing-count, item-scope, and PII checks pass with no silent truncation, coercion, or enrichment. |
+| Non-GA4 analytics | Approved semantics, current official browser schema, installed template, base/event behavior, consent, and external property work remain distinct. |
 | Manual page view or SPA | Reconcile Google tag, Enhanced Measurement, initial/history/application events, retained values, consent timing, and duplicate paths. |
 | GA4 external administration | Keep custom definitions, key events, data-stream, cross-domain, and other property settings outside the GTM completion claim. |
 | Media brief | Platform, business action/use, destination identity, official browser event/schema, installed template, and source mapping are explicit. |
@@ -81,10 +86,13 @@ Use every applicable row; load the detailed playbook for the selected requiremen
 | Google Ads conversion | Conversion ID/label, direct-versus-imported architecture, value/currency, transaction ID, action dependency, trigger, and consent are explicit. |
 | Google Ads remarketing | Current business vertical/feed contract and every required item replace any unmodified GA4-array assumption. |
 | Conversion Linker | Create/reuse only after current Google tag architecture, consumers, cross-domain need, and existing helpers are checked. |
+| Multi-destination routing | Every selector and no-match case routes to the approved identity; production is not the fallback and test traffic cannot leak. |
+| Floodlight | Configuration/activity identities, counter/sales contract, custom variables, Google tag/linker, consent, and external platform dependencies are explicit. |
 | Microsoft UET | Base/page-load behavior, custom-event fields, goal dependency, SPA option, and UET consent route remain distinct. |
 | Meta ecommerce | Current `content_ids`/`contents` contracts, catalog ID, value/currency, every item, installed template, and eligibility are explicit. |
 | TikTok event | Current standard/custom event, objective fields, catalog, Event Builder/automatic overlap, template, and consent are explicit. |
 | Snap event | Current browser Pixel/template documentation—not CAPI or another vendor—establishes fields, items, matching, and consent. |
+| LinkedIn, Pinterest, X, Reddit, or Criteo | Exact current browser product, destination identity, base/event or page-type architecture, installed template, source mapping, consent, and platform dependencies are explicit. |
 | Unlisted media vendor | Current official browser event, field, template, consent, and matching documentation establishes every critical decision. |
 | Required media value missing | The tag is ineligible; no empty, zero, guessed, or partial payload is sent unless explicitly and officially allowed. |
 | Multi-item transformation | Missing/empty/one/many/zero/invalid cases preserve exact shape and all required items; invalid required items fail closed. |
@@ -104,6 +112,7 @@ Use every applicable row; load the detailed playbook for the selected requiremen
 | Shared Google execution unit | Every destination has a compatible route or an approved officially supported separation; incompatible policies are blocked. |
 | First-party user data | Explicit request, controlled source, accepted fields, normalization/hash ownership, consent, destination isolation, and no PII leakage are proven. |
 | Template | Identity/version, publisher, permissions, fields/defaults, consumers, automatic behavior, and any approved update are verified before and after mutation. |
+| Complete web object surface | Every relevant tag, trigger, user-defined/built-in variable, folder, template, Google tag config/destination, Zone, environment, and container setting is configured, reused, intentionally untouched, or blocked under the correct authority. |
 | Naming and folder | Default or approved convention is clear; related objects are grouped shallowly where useful and unrelated objects remain untouched. |
 | Existing-object reuse | Output, ownership, source, shape, timing, consent, consumers, template, environment, and future change path are compatible. |
 | Known conflicting implementation | Reconcile within in-scope authority or block; never add a parallel duplicate or silently disable unrelated collection. |
@@ -140,6 +149,19 @@ user-data restrictions, and absence of a conflicting block. Label it accurately 
 `advanced consent-aware`, `native stop/hold`, `native cookie-control`, or
 `adaptive/anonymous analytics`; do not collapse all behavior into “consent gated.”
 
+Complete this static truth table for every consent route; add rows only when the actual CMP/product
+has another material configured state:
+
+| State | Expected saved eligibility/behavior | Controlling GTM mechanism | Evidence |
+| --- | --- | --- | --- |
+| CMP uninitialized/undefined | Basic route blocked; advanced route follows its explicit documented default. | Exact default, block, or additional-consent setting | Saved CMP/tag/trigger fields and official source |
+| Required grant denied | Basic route blocked; advanced/native route uses only approved documented denied-state behavior. | Predicate or product consent setting | Saved fields and source manifest |
+| Unrelated vendor/category granted | Still blocked when another required grant is missing. | OR-denial block set | Saved predicates and consumers |
+| Complete grant before event | Normal event is eligible once. | Normal trigger plus consent route | Saved trigger graph |
+| Grant after an earlier blocked event | Only the approved late-grant initialization/event policy is eligible. | Readiness/change trigger and firing option | Saved lifecycle fields |
+| Repeated readiness/change | No duplicate initialization or business event beyond approved repeatability. | Trigger/firing option | Saved trigger graph |
+| Revocation | Future basic events block; no unsupported unload guarantee. | Updated CMP state and blocks | Saved predicates and documented limitation |
+
 These are saved-configuration expectations, never runtime observations.
 
 ## Concise handoff
@@ -151,8 +173,12 @@ Return only what the analyst needs to operate the workspace:
 - created, updated, reused, untouched, partial, blocked, and deferred in-scope objects;
 - pre-existing workspace changes, current-run writes, and final totals;
 - exact analytics conformance result or media brief/official-schema mapping result;
+- approved-input versus implementation-decision provenance and the concise official-source manifest;
 - material documentation advisories and blocking errors;
 - selected consent route and any important configured limitation;
+- completed consent truth table and multi-destination routing result when applicable;
+- applicable client-side object families, including intentionally untouched or separately
+  authorized high-impact objects;
 - exact partial recovery boundary or access blocker;
 - external site, CMP, GA4-property, advertising-platform, catalog/feed, and publication dependencies;
 - confirmation that an identical rerun is a no-op for configured work;

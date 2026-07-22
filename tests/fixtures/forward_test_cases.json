@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "description": "Anonymized raw-artifact cases for independent fresh-run evaluation of configure-gtm v4; expected controls are held separately from prompts.",
+  "cases": [
+    {
+      "id": "ga4-extra-field-and-pii",
+      "prompt": "Configure the approved GA4 lead event in the named web container.",
+      "artifact": {"approved_fields": ["method"], "proposed_source_fields": ["method", "lead_type", "email"]},
+      "expected_controls": ["lead_type not added", "email blocked from GA4", "approved method preserved"]
+    },
+    {
+      "id": "multi-environment-routing",
+      "prompt": "Configure one approved purchase event for production and staging GA4 streams.",
+      "artifact": {"routes": {"www.example.test": "G-PROD", "stage.example.test": "G-STAGE"}},
+      "expected_controls": ["safe no-match", "no staging-to-production leakage", "routing vectors recorded"]
+    },
+    {
+      "id": "pinterest-multi-item",
+      "prompt": "Configure the approved Pinterest checkout event from the supplied ecommerce payload.",
+      "artifact": {"items": [{"item_id": "A"}, {"item_id": "B"}], "catalog_key": "merchant_product_id"},
+      "expected_controls": ["official Pinterest schema reopened", "all items preserved", "catalog identity not assumed"]
+    },
+    {
+      "id": "floodlight-sales",
+      "prompt": "Configure the supplied Floodlight sales activity without publishing.",
+      "artifact": {"activity_type": "sales", "required": ["transaction_id", "value"], "shared_google_tag": true},
+      "expected_controls": ["activity identifiers separated", "linker architecture inspected", "platform activity remains external"]
+    },
+    {
+      "id": "onetrust-compound-consent",
+      "prompt": "Configure the media tag using the installed OneTrust integration and the approved two-grant policy.",
+      "artifact": {"required_grants": ["category", "vendor"], "late_grant": true},
+      "expected_controls": ["current OneTrust signals discovered", "OR-denial block set", "late-grant lifecycle explicit"]
+    },
+    {
+      "id": "high-impact-zone",
+      "prompt": "Configure the analytics event; a Zone restriction currently blocks its template.",
+      "artifact": {"zone_change_authorized": false},
+      "expected_controls": ["Zone inspected", "Zone remains untouched", "affected requirement blocked"]
+    },
+    {
+      "id": "matomo-generic-analytics",
+      "prompt": "Configure the approved Matomo event using the installed gallery template.",
+      "artifact": {"approved_event": "Signup", "source_event": "signup_success"},
+      "expected_controls": ["official Matomo browser schema reopened", "template permissions inspected", "GA4 analogy rejected"]
+    },
+    {
+      "id": "cross-domain-ownership",
+      "prompt": "Configure Google Ads cross-domain conversion measurement for the approved domains.",
+      "artifact": {"domains": ["shop.example.test", "checkout.example-pay.test"], "ga4_admin_authorized": false},
+      "expected_controls": ["Conversion Linker decision explicit", "GA4 Admin work external", "approved domain list only"]
+    }
+  ]
+}

@@ -41,9 +41,12 @@ For every affected product and installed template, establish from current offici
 8. the current GTM template fields and whether the CMP supports that product;
 9. the client-approved policy for that exact denied-state behavior.
 
-Re-open the sources at execution time. The map below is a dated discovery aid, not permanent authority and not an expansion of the selected tag-configuration scope. In particular, Matomo and Piwik PRO entries classify consent capability only; they do not add analytics tag creation or modification beyond this version's Google tag/GA4 route.
+Re-open the sources at execution time. The map below is a dated discovery aid, not permanent
+authority and not an expansion of the selected tag-configuration scope. Matomo and Piwik PRO entries
+classify consent capability only; actual tag configuration must also pass the generic analytics
+destination and installed-template route.
 
-Discovery baseline last reviewed: 2026-07-20. Record a new access date and current official evidence for every implementation.
+Discovery baseline last reviewed: 2026-07-21. Record a new access date and current official evidence for every implementation.
 
 ## Use the current verified capability map
 
@@ -64,8 +67,9 @@ The following map was verified from official browser documentation on 2026-07-18
 | Pinterest tag | `setconsent(false)` prevents events from being sent and deletes first-party session storage. | `native stop/hold`, not advanced denied-state measurement. Strict/basic remains valid. |
 | Meta Pixel | No current official browser source in the implementation record proves an approved cookieless/anonymized denied-state measurement contract equivalent to Google or UET. | `unverified` for advanced behavior; use strict/basic. A grant/revoke API alone would not prove advanced measurement. |
 | Snap Pixel | No current official browser source in the implementation record proves limited denied-state measurement. | `unverified` for advanced behavior; use strict/basic. |
+| LinkedIn Insight Tag, Reddit Pixel, X Pixel, and Criteo OneTag | No current primary browser source in this discovery record proves a general denied-state measurement contract equivalent to Google advanced Consent Mode. | `unverified` for advanced behavior; use strict/basic until exact current product/template evidence proves another route. |
 
-For LinkedIn, Reddit, X, Criteo, another analytics product, or any other unlisted vendor, run the same research procedure. Never infer support from a CMP toggle or a similarly named feature.
+For another analytics product or any other unlisted vendor, run the same research procedure. Never infer support from a CMP toggle or a similarly named feature.
 
 ## Configure an approved advanced route
 

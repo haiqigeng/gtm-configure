@@ -5,6 +5,7 @@
 - [Use a capability-first execution order](#use-a-capability-first-execution-order)
 - [Establish tool capabilities before mutation](#establish-tool-capabilities-before-mutation)
 - [Discover exact actions and pagination](#discover-exact-actions-and-pagination)
+- [Build an object-family capability profile](#build-an-object-family-capability-profile)
 - [Translate the change manifest deterministically](#translate-the-change-manifest-deterministically)
 - [Apply read-before-write discipline](#apply-read-before-write-discipline)
 - [Maintain a current-operation journal](#maintain-a-current-operation-journal)
@@ -34,6 +35,9 @@ Confirm whether the selected adapter can:
 - list accounts, containers, workspaces, versions, and permissions;
 - create/reuse a dedicated workspace;
 - read, create, and modify tags, triggers, variables, folders, and templates;
+- list or enable required built-in variables;
+- inspect Google tag configuration/settings objects and linked destinations;
+- inspect applicable Zones, environments, container settings, and their restrictions;
 - expose built-in/additional consent settings and blocking triggers;
 - inspect references/consumers and workspace conflicts;
 - inspect or synchronize workspace state and report merge conflicts without resolving them implicitly;
@@ -59,6 +63,17 @@ Cache the capability profile for the current run and re-check it after an adapte
 schema drift, unsupported fields, authentication changes, or a different endpoint/version. Never
 expose credentials while diagnosing compatibility.
 
+## Build an object-family capability profile
+
+Record `list/read/create/update/revert/readback/pagination` capability independently for workspace,
+tag, trigger, user-defined variable, built-in variable, folder, template, Google tag configuration,
+destination, Zone, environment, and applicable container settings. Also record whether the action is
+valid for a client-side web container and whether it is routine or high-impact.
+
+Do not infer write support from list support. Do not treat a deprecated or absent destination-link
+action as authorization to use another endpoint. Do not route server-client or server
+Transformation resources into a web-container configuration.
+
 ## Translate the change manifest deterministically
 
 Use the operational configuration map as the adapter input. For each object row, resolve:
@@ -74,9 +89,10 @@ Do not mutate from an informal prose summary. If the adapter cannot represent a 
 preserve the intended type/shape, stop that object and use another authorized adapter or mark the
 affected configuration `Blocked`.
 
-For analytics, use the normalized collection contract and zero-difference conformance result as an
-additional adapter precondition. Keep technical infrastructure fields separate so the adapter does
-not mistake a required GTM reference for an approved outgoing parameter.
+For analytics, use the strict v4 configuration-contract validation, normalized collection contract,
+and zero-difference conformance result as adapter preconditions. Keep technical infrastructure fields
+separate so the adapter does not mistake a required GTM reference for an approved outgoing
+parameter.
 
 ## Apply read-before-write discipline
 
@@ -89,6 +105,14 @@ For every adapter:
 5. Re-read every mutation and compare intended versus stored fields.
 6. Record returned IDs and fingerprints/version identifiers where available.
 7. Stop on a conflict or unexpected consumer rather than overwriting silently.
+
+When complete JSON is available, use `scripts/diff_object_graph.py` as a read-only comparison aid.
+Annotate every normalized record with its GTM resource family in `object_type`; do not reuse the raw
+GTM `type` field for that annotation because tag, trigger, and variable type codes are material
+configuration and must remain comparable.
+Normalize only documented server metadata such as top-level fingerprints, paths, generated IDs, and
+timestamps. Never ignore nested tag fields, trigger references, consent, template fields, routing,
+or configuration values.
 
 Never use a guessed template type code or API parameter. Derive it from the existing object, API schema, official template, or tool response.
 
@@ -181,4 +205,5 @@ required outcome.
 - https://developers.google.com/tag-platform/tag-manager/api/v2
 - https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces/sync
 - https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces.tags
+- https://developers.google.com/tag-platform/tag-manager/api/reference/rest
 - https://support.google.com/tagmanager/answer/6106997

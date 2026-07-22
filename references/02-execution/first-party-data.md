@@ -1,8 +1,23 @@
 # First-party user data
 
+## Contents
+
+- [Treat matching features as opt-in scope](#treat-matching-features-as-opt-in-scope)
+- [Prefer controlled sources](#prefer-controlled-sources)
+- [Follow the vendor's field contract](#follow-the-vendors-field-contract)
+- [Resolve feature ownership per destination](#resolve-feature-ownership-per-destination)
+- [Separate analytics identifiers from advertising matching](#separate-analytics-identifiers-from-advertising-matching)
+- [Design safe GTM objects](#design-safe-gtm-objects)
+- [Apply consent before collection and transmission](#apply-consent-before-collection-and-transmission)
+- [Validate without leaking data](#validate-without-leaking-data)
+- [Current client-side boundary](#current-client-side-boundary)
+
 ## Treat matching features as opt-in scope
 
-Apply this reference to Google Ads enhanced conversions, Meta Advanced Matching, TikTok Advanced Matching, Snap matching, Microsoft user-data features, or another vendor feature that uses email, phone, name, address, external/customer ID, or similar identifiers.
+Apply this reference to Google Ads enhanced conversions, Meta Advanced Matching, TikTok Advanced
+Matching, Snap matching, Microsoft user-data features, Pinterest enhanced match, X user parameters,
+LinkedIn/Reddit/Criteo matching, or another vendor feature that uses email, phone, name, address,
+external/customer ID, or similar identifiers.
 
 Do not enable automatic or manual collection by default. Require:
 
@@ -41,6 +56,22 @@ For every identifier, record:
 
 Normalize and hash only as current official documentation requires. Do not double-hash a value when the selected template performs hashing. Do not send a raw value where pre-hashing is required.
 
+## Resolve feature ownership per destination
+
+Treat every destination feature independently even when it reads the same source:
+
+| Decision | Required proof |
+| --- | --- |
+| Google enhanced conversions | Exact conversion product, current Google tag/template field, raw/pre-hashed mode, account-side activation, and applicable Google consent types. |
+| Meta advanced matching | Exact Pixel/template capability, accepted browser fields, automatic/manual mode, normalization/hash ownership, and Meta consent route. |
+| Microsoft user-data feature | Exact UET product/template, current accepted fields and mode, account dependency, and Microsoft consent route. |
+| Other media matching | Current official browser documentation, installed template, explicit accepted field set, source approval, and product-specific consent. |
+
+Do not create one shared “hashed user data” object for several vendors unless current schemas,
+normalization, hash representation, consent, lifetime, consumers, and ownership are all proven
+identical. Prefer vendor-owned variables so a later policy or schema change cannot silently affect
+another destination.
+
 ## Separate analytics identifiers from advertising matching
 
 Do not send email, phone, name, postal address, or other personally identifiable information to GA4 event parameters, user properties, URLs, titles, or debug fields.
@@ -55,6 +86,8 @@ Do not reuse an advertising matching variable in an analytics tag without indepe
 - Avoid exposing resolved personal data in handoff screenshots or reports.
 - Do not broaden an existing shared variable's consumers without checking its data-handling contract.
 - Use template-native user-data variables when current official documentation requires them.
+- Record whether the template receives raw values, normalized values, or final hashes and verify the
+  saved mode explicitly.
 
 ## Apply consent before collection and transmission
 

@@ -12,6 +12,8 @@ INCLUDED = (
     "SKILL.md",
     "agents/openai.yaml",
     "references",
+    "scripts/diff_object_graph.py",
+    "scripts/validate_configuration_contract.py",
     "scripts/validate_contract_conformance.py",
     "LICENSE",
 )

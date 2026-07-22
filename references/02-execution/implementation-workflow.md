@@ -27,9 +27,11 @@ Confirm the target account and web container, then derive or request the applica
 - For consent, default to strict/basic CMP blocking. Detect the installed CMP and its documented
   state where possible. Require an explicit request for advanced/native behavior.
 
-Discover destination IDs, installed templates, CMP objects, source variables, folders, and other
-safe container facts before asking. Ask only for a critical fact that cannot be established and
-changes the configuration. Do not ask for a read-only, planning, or test mode.
+Discover destination IDs, applicable object families, adapter capabilities, installed templates,
+CMP objects, source variables, folders, and other safe container facts before asking. Continue safe
+discovery after finding the first blocker, then present one consolidated request containing every
+known critical missing input. Do not create a question-by-question ping-pong and do not ask for a
+read-only, planning, or test mode.
 
 Limit the source artifact to its relevant configuration scope. Resolve an ambiguous sheet, row,
 event, media objective, or consent identity before mutating the dependent object; do not turn the
@@ -46,6 +48,8 @@ For the requested configuration:
 3. Use the Default Workspace only after the analyst explicitly accepts why a dedicated workspace is
    unavailable.
 4. Keep the same account, container, and workspace across MCP, API, export/import, and UI tools.
+5. Classify the container as client-side web and discover read/write/readback support for every
+   applicable object family before design.
 
 Never publish, Submit, or create a GTM version.
 
@@ -84,6 +88,8 @@ configuration:
 - installed template consumers, versions, and permissions;
 - known automatic, Enhanced Measurement, Event Builder, SPA, partner, plugin, or hard-coded paths;
 - workspace conflicts, stable IDs, fingerprints, and pre-existing changes.
+- required built-in variables, Google tag configuration objects, linked destinations, and any
+  relevant Zone, environment, template, or container-setting restriction.
 
 Use the applicable playbook and current official documentation to select the target architecture
 before evaluating local reuse. Reuse only a semantically compatible object. Do not reproduce a
@@ -108,6 +114,8 @@ business action and destination, establish:
 - object action (`create`, `update`, `reuse`, or `untouched`), dependencies, folder, and intended
   saved fields;
 - relevant external dependency or blocker.
+- provenance for approved semantics versus implementation resolutions and a concise official-source
+  manifest entry for every material schema, consent, template, or capability decision.
 
 Do not demand a separate source-contract document when approved inputs establish these facts. When
 a required value is absent or incompatible, record the precise dataLayer obligation and block the
@@ -137,14 +145,28 @@ condition or narrow validity guard when the tag could otherwise send an invalid 
 Follow the default naming convention unless the analyst supplied another clear convention. An
 existing coherent convention may be retained for presentation, never for architecture.
 
-Before the first write:
+Before the first write, pass this consolidated pre-mutation gate:
 
+- prove the authorized account, web container, dedicated workspace, environment, synchronization,
+  and conflict state by stable ID;
+- prove that every required object family is supported for mutation and authoritative readback;
 - report analytics documentation discrepancies concisely;
+- run the current GA4 name, required-field, limit, type, outgoing-count, and PII gate when applicable;
 - surface advanced consent, first-party data, new template permissions, Default Workspace use,
-  non-dataLayer fallbacks, and unresolved duplicate architecture for the required decision;
+  non-dataLayer fallbacks, high-impact Zone/environment/destination/container-setting changes, and
+  unresolved duplicate architecture for the required decision;
 - compare the approved analytics contract with the intended event and field set and require zero
   unauthorized additions, removals, substitutions, or timing changes;
+- prove every tag has a normal trigger, consent route, supported template fields, compatible
+  automatic behavior, and explicit eligibility for invalid required data;
+- prove zero/one/many transformation vectors, routing no-match behavior, and environment isolation;
+- prove that no existing in-scope object will be silently overwritten and every shared consumer
+  remains compatible;
 - capture stable IDs, fingerprints, pre-change state for updates, and mutation dependencies.
+
+When normalized JSON is available, run `scripts/validate_configuration_contract.py` before the
+first write. A failed gate blocks only the dependent requirement; do not downgrade the check to a
+warning in order to finish.
 
 ## 7. Mutate in dependency order
 
@@ -155,11 +177,15 @@ and conflict behavior before mutation.
 Apply only the requested configuration in this order:
 
 1. approved templates and folders;
-2. constants, DLVs, settings variables, LUTs/RLTs, transformations, and validity variables;
+2. required built-in variables, constants, DLVs, settings variables, LUTs/RLTs, transformations,
+   and validity variables;
 3. normal and blocking triggers;
-4. base/configuration tags;
+4. authorized Google tag configuration/settings and base/configuration tags;
 5. event, conversion, and remarketing tags;
 6. sequencing, firing settings, and consent settings.
+
+Treat destination linking, Zones, environments, container settings, and custom-template code as
+separately authorized high-impact actions. Do not insert them into the routine dependency order.
 
 After each logical save, re-read the object and compare its stored fields and references. Stop
 dependent writes on an unexpected fingerprint, consumer, normalized field, template change,
@@ -171,6 +197,9 @@ read back by stable parent, identity, and semantics to avoid a duplicate.
 Before `Configured`:
 
 - re-read every created, updated, and reused object from the target workspace;
+- compare the normalized intended and saved object graph with `scripts/diff_object_graph.py` when
+  complete JSON representations are available; ignore only documented server metadata, never
+  configuration fields;
 - prove analytics approved-to-saved event, timing, field, source, and literal equality;
 - prove media brief-to-official-schema and source-to-template mappings;
 - confirm normal triggers, consent blocks/settings, firing options, sequencing, folders, naming, and
@@ -178,6 +207,8 @@ Before `Configured`:
 - resolve every GTM reference and known in-scope duplicate/conflict;
 - distinguish pre-existing workspace changes from current-run writes and final totals;
 - recompute the intended actions so an identical rerun is entirely `reuse` or `untouched`.
+- preserve the official-source manifest, approved-input/implementation provenance, consent truth
+  table, and exact current-operation journal needed for review or recovery.
 
 Correct safe current-operation differences before finishing. Use `Partial` for an exact saved partial
 state and stop its dependent writes. Use `Blocked` when a critical input or mutation path prevents

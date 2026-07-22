@@ -7,7 +7,9 @@
 - [Model trigger Boolean logic](#model-trigger-boolean-logic)
 - [Handle initial page views and SPA navigation separately](#handle-initial-page-views-and-spa-navigation-separately)
 - [Use blocking triggers as vendor policy objects](#use-blocking-triggers-as-vendor-policy-objects)
+- [Cover every applicable web trigger](#cover-every-applicable-web-trigger)
 - [Select variables by purpose](#select-variables-by-purpose)
+- [Cover built-in and user-defined variables](#cover-built-in-and-user-defined-variables)
 - [Use lookup tables selectively](#use-lookup-tables-selectively)
 - [Inspect advanced tag execution settings](#inspect-advanced-tag-execution-settings)
 - [Use tag sequencing only when required](#use-tag-sequencing-only-when-required)
@@ -76,6 +78,25 @@ Make the blocking trigger's event matcher cover every normal event used by its c
 
 Do not label a normal Custom Event trigger as a blocking trigger. Do not append `CE` to a block name. Inspect all consumers before changing a shared block.
 
+## Cover every applicable web trigger
+
+Use the current GTM UI/API to identify the complete web trigger surface. Apply these stable decision
+families:
+
+| Trigger family | Required judgement |
+| --- | --- |
+| Consent Initialization / Initialization | Use only for documented consent/default or earliest initialization work; do not send business events here. |
+| Page View / DOM Ready / Window Loaded | Choose the earliest event that has every required value and DOM dependency; prevent automatic/manual overlap. |
+| Custom Event | Preferred for approved application success events and vendor-neutral dataLayer timing. |
+| Click / Form Submission | Use only as an approved fallback with stable selectors and honest success semantics; waiting/check-validation settings require current proof. |
+| Element Visibility / Scroll / Timer | Define observation threshold, repetition, page scope, and analysis meaning explicitly; never proxy a conversion by convenience. |
+| History Change | Use for an approved SPA fallback and reconcile application and Enhanced Measurement routes. |
+| Video / JavaScript Error / other web trigger | Use only when the tracking plan explicitly measures that interaction and current built-ins expose the required source. |
+| Trigger Group | Prove lifecycle and reset/repetition behavior; do not use it to simulate consent revocation or a mutually exclusive predicate. |
+
+For every trigger, record event type, all-versus-some selection, row-level AND filters, regex intent,
+repeatability, required built-ins, and positive/negative static examples.
+
 ## Select variables by purpose
 
 | Need | Preferred variable |
@@ -92,6 +113,24 @@ Do not label a normal Custom Event trigger as a blocking trigger. Do not append 
 Prefer dataLayer values over DOM extraction. Do not use a JavaScript Variable to access a value already exposed cleanly through a DLV.
 
 For every DLV, record whether Version 1 literal-dot or Version 2 nested-path semantics match the actual source key. Do not change a reused DLV version without inspecting every consumer.
+
+## Cover built-in and user-defined variables
+
+Enable only the built-in variables required by an approved mapping or trigger and record each
+consumer. Inspect page, click, form, history, video, scroll, visibility, error, and utility built-ins
+from the current web-container surface; do not enable an entire family speculatively.
+
+For user-defined variables, choose from the current native surface by semantics:
+
+- Data Layer, constant, URL, referrer, first-party cookie, JavaScript variable, DOM element, auto-
+  event, lookup table, regex table, random/undefined utility, and Google settings variables where
+  applicable;
+- narrow Custom JavaScript only when native variables cannot express the required pure output;
+- installed variable templates only after the same publisher/version/permission gate as tag
+  templates.
+
+Record return type, event/state lifetime, missing behavior, dependencies, and every consumer. Avoid
+DOM, cookie, global-JavaScript, random, or auto-event sources when an approved dataLayer value exists.
 
 ## Use lookup tables selectively
 

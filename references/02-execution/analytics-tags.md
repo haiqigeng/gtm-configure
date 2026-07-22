@@ -4,6 +4,7 @@
 
 - [Use the analytics requirement as the business contract](#use-the-analytics-requirement-as-the-business-contract)
 - [Configure the Google tag deliberately](#configure-the-google-tag-deliberately)
+- [Apply the GA4 safety gate](#apply-the-ga4-safety-gate)
 - [Keep page view separate by default](#keep-page-view-separate-by-default)
 - [Configure events from the official schema](#configure-events-from-the-official-schema)
 - [Govern user properties and identifiers](#govern-user-properties-and-identifiers)
@@ -72,6 +73,29 @@ Use a Configuration Settings variable only for a coherent set of configuration-l
 
 Inspect consumers before changing either settings variable because one edit may affect many tags and destinations.
 
+Use this semantic decision matrix; do not apply a fixed numerical threshold:
+
+| Decision | Keep directly on tag | Use shared settings variable |
+| --- | --- | --- |
+| Ownership | Event-specific or independently owned | Same owner and change lifecycle across every consumer |
+| Value/source | Transaction, item, form, search, or other event-specific value | Identical source or literal with identical type and missing behavior |
+| Consent/destination | Different route or destination behavior | Compatible consent route and destination behavior |
+| Change risk | A change should affect one event | A change intentionally should affect every enumerated consumer |
+
+For multiple streams, properties, regions, or environments, load the multi-destination routing
+playbook. Never place a production measurement ID as a lookup default.
+
+## Apply the GA4 safety gate
+
+Load `ga4-collection-safety.md` for every Google tag or GA4 event. Before mutation, validate current
+official names, reserved prefixes, required fields, types, limits, final outgoing parameter/user-
+property counts, item scope, and PII risk. Count inherited Event Settings fields as part of each
+event's outgoing payload.
+
+Classify a valid recommendation difference as advisory and preserve the approved contract. Stop an
+invalid or unsafe requirement. Never silently truncate a value, coerce a type, delete a parameter,
+or add a field to remain within a limit.
+
 ## Keep page view separate by default
 
 When page-view configuration is in the approved scope, keep the Google tag from sending an automatic page view by default. Verify the current `send_page_view` behavior and set it to `false` only where a separately managed page-view event is required. Do not alter an existing compatible page-view architecture merely to impose this preference during an unrelated event change.
@@ -100,6 +124,7 @@ For each GA4 event:
 6. Map each approved destination parameter to a named GTM variable or documented transformation.
 7. Validate a representative resolved event, including all ecommerce items.
 8. Prove exact approved-to-intended and approved-to-saved event/parameter equality.
+9. Retain the current official-source manifest and approved locator for every outgoing field.
 
 When a source key is misspelled, verify that the approved source contract uses that exact key. Name the DLV for the actual source key, then map it to the correctly spelled official GA4 parameter. Do not propagate source typos into destination fields.
 

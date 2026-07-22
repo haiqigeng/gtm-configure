@@ -27,6 +27,18 @@ Record:
 
 Do not add or update a template as an incidental side effect. Obtain approval when installation, update, or new permissions materially expand execution or data access.
 
+Treat template lifecycle actions separately:
+
+- `inspect/use`: routine when an already installed compatible template supports the requirement;
+- `import`: explicit installation authority plus publisher/repository and permission review;
+- `update`: explicit update authority, consumer inventory, field/permission diff, and saved rollback
+  evidence;
+- `author/change code`: explicit custom-template development authority and security review; do not
+  infer this from an ordinary tag-configuration request.
+
+When an adapter cannot read template code or permissions authoritatively, do not claim that a
+custom/community template is safe merely because tags already use it.
+
 ## Map documentation to the installed fields
 
 Keep the official destination parameter separate from the template UI label. Confirm that the installed template actually supports every required field and current schema.

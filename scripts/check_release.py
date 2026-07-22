@@ -11,7 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SEMVER = re.compile(r"^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$")
-CURRENT_RELEASE = "3.0.0"
+CURRENT_RELEASE = "4.0.0"
 REFERENCE_LAYERS = {
     "01-orientation": {
         "official-source-policy.md",
@@ -19,22 +19,35 @@ REFERENCE_LAYERS = {
     },
     "02-execution": {
         "analytics-tags.md",
+        "analytics-vendors.md",
+        "client-side-object-surface.md",
         "cmp-consent.md",
+        "cmp-platform-patterns.md",
         "configuration-contract.md",
+        "conversion-linker-cross-domain.md",
         "data-contract-and-transformations.md",
         "first-party-data.md",
+        "ga4-collection-safety.md",
         "google-consent-mode.md",
         "implementation-workflow.md",
+        "media-criteo.md",
+        "media-floodlight.md",
         "media-google-ads.md",
+        "media-linkedin.md",
         "media-meta.md",
         "media-microsoft-ads.md",
+        "media-pinterest.md",
+        "media-reddit.md",
         "media-snapchat.md",
         "media-tags.md",
         "media-tiktok.md",
+        "media-x.md",
+        "multi-destination-routing.md",
         "naming-and-reuse.md",
         "template-governance.md",
         "tool-adapters.md",
         "tracking-plan-fidelity-and-conformance.md",
+        "transformation-patterns.md",
         "triggers-and-variables.md",
         "vendor-consent-modes.md",
     },
@@ -49,17 +62,30 @@ REQUIRED_FILES = (
     "references/02-execution/tracking-plan-fidelity-and-conformance.md",
     "references/02-execution/implementation-workflow.md",
     "references/02-execution/analytics-tags.md",
+    "references/02-execution/analytics-vendors.md",
+    "references/02-execution/client-side-object-surface.md",
     "references/02-execution/media-tags.md",
+    "references/02-execution/media-criteo.md",
+    "references/02-execution/media-floodlight.md",
     "references/02-execution/media-google-ads.md",
+    "references/02-execution/media-linkedin.md",
     "references/02-execution/media-microsoft-ads.md",
     "references/02-execution/media-meta.md",
+    "references/02-execution/media-pinterest.md",
+    "references/02-execution/media-reddit.md",
     "references/02-execution/media-tiktok.md",
     "references/02-execution/media-snapchat.md",
+    "references/02-execution/media-x.md",
     "references/02-execution/cmp-consent.md",
+    "references/02-execution/cmp-platform-patterns.md",
     "references/02-execution/vendor-consent-modes.md",
     "references/02-execution/google-consent-mode.md",
+    "references/02-execution/conversion-linker-cross-domain.md",
     "references/02-execution/first-party-data.md",
+    "references/02-execution/ga4-collection-safety.md",
     "references/02-execution/data-contract-and-transformations.md",
+    "references/02-execution/transformation-patterns.md",
+    "references/02-execution/multi-destination-routing.md",
     "references/02-execution/triggers-and-variables.md",
     "references/02-execution/template-governance.md",
     "references/02-execution/tool-adapters.md",
@@ -77,12 +103,19 @@ REQUIRED_FILES = (
     ".github/workflows/release.yml",
     "scripts/check_release.py",
     "scripts/build_skill_package.py",
+    "scripts/diff_object_graph.py",
+    "scripts/validate_configuration_contract.py",
     "scripts/validate_contract_conformance.py",
+    "tests/test_configuration_contract_schema.py",
     "tests/test_release.py",
+    "tests/test_forward_test_cases.py",
+    "tests/test_object_graph_diff.py",
     "tests/test_skill_contract.py",
     "tests/test_configuration_scenarios.py",
     "tests/test_contract_conformance.py",
     "tests/fixtures/configuration_scenarios.json",
+    "tests/fixtures/forward_test_cases.json",
+    "tests/fixtures/golden_object_graphs.json",
 )
 STALE_FILES = (
     "references/execution-contract.md",
@@ -216,10 +249,23 @@ def check_content() -> list[str]:
     fidelity = read("references/02-execution/tracking-plan-fidelity-and-conformance.md")
     workflow = read("references/02-execution/implementation-workflow.md")
     analytics = read("references/02-execution/analytics-tags.md")
+    analytics_vendors = read("references/02-execution/analytics-vendors.md")
+    object_surface = read("references/02-execution/client-side-object-surface.md")
     media = read("references/02-execution/media-tags.md")
+    media_criteo = read("references/02-execution/media-criteo.md")
+    media_floodlight = read("references/02-execution/media-floodlight.md")
+    media_linkedin = read("references/02-execution/media-linkedin.md")
+    media_pinterest = read("references/02-execution/media-pinterest.md")
+    media_reddit = read("references/02-execution/media-reddit.md")
+    media_x = read("references/02-execution/media-x.md")
     consent = read("references/02-execution/cmp-consent.md")
+    cmp_platforms = read("references/02-execution/cmp-platform-patterns.md")
+    cross_domain = read("references/02-execution/conversion-linker-cross-domain.md")
+    ga4_safety = read("references/02-execution/ga4-collection-safety.md")
     google_consent = read("references/02-execution/google-consent-mode.md")
     vendor_consent = read("references/02-execution/vendor-consent-modes.md")
+    routing = read("references/02-execution/multi-destination-routing.md")
+    transformations = read("references/02-execution/transformation-patterns.md")
     triggers = read("references/02-execution/triggers-and-variables.md")
     data_contract = read("references/02-execution/data-contract-and-transformations.md")
     naming = read("references/02-execution/naming-and-reuse.md")
@@ -232,6 +278,8 @@ def check_content() -> list[str]:
     pyproject = read("pyproject.toml")
     ci_workflow = read(".github/workflows/ci.yml")
     release_workflow = read(".github/workflows/release.yml")
+    schema_validator = read("scripts/validate_configuration_contract.py")
+    graph_diff = read("scripts/diff_object_graph.py")
     required_terms = (
         "01 - Orientation",
         "02 - Execution",
@@ -331,6 +379,67 @@ def check_content() -> list[str]:
     errors.extend(
         f"workflow missing contract: {term}" for term in workflow_terms if term not in workflow
     )
+    capability_contracts = {
+        "complete client-side object surface": (
+            object_surface,
+            (
+                "Built-in variables",
+                "Google destinations",
+                "Zones",
+                "Environments",
+                "explicit authority",
+            ),
+        ),
+        "GA4 collection safety": (
+            ga4_safety,
+            ("reserved name", "PII", "hard collection limit", "blocking-error"),
+        ),
+        "multi-destination routing": (
+            routing,
+            (
+                "safe no-match behavior",
+                "Never use a default production destination",
+                "static vectors",
+            ),
+        ),
+        "non-GA4 analytics": (
+            analytics_vendors,
+            ("Matomo", "Piwik PRO", "Adobe", "approved client-side analytics requirement"),
+        ),
+        "CMP platforms": (
+            cmp_platforms,
+            ("OneTrust", "Cookiebot", "Didomi", "Common state contract"),
+        ),
+        "cross-domain architecture": (
+            cross_domain,
+            ("Conversion Linker", "GA4 Admin", "approved domain"),
+        ),
+        "transformations": (
+            transformations,
+            ("Required static vectors", "Preserve original item order", "Forbidden behavior"),
+        ),
+        "Floodlight": (media_floodlight, ("Floodlight", "Counter", "Sales", "Conversion Linker")),
+        "LinkedIn": (media_linkedin, ("LinkedIn Insight Tag", "partner ID", "strict/basic CMP")),
+        "Pinterest": (media_pinterest, ("Pinterest Tag", "Tag ID", "strict/basic CMP")),
+        "X": (media_x, ("X Pixel", "pixel identity", "strict/basic CMP")),
+        "Reddit": (media_reddit, ("Reddit Pixel", "pixel identity", "strict/basic CMP")),
+        "Criteo": (media_criteo, ("Criteo OneTag", "page-type", "strict/basic CMP")),
+    }
+    for label, (text, terms) in capability_contracts.items():
+        errors.extend(
+            f"{label} reference missing contract: {term}" for term in terms if term not in text
+        )
+    deterministic_contracts = (
+        ("configuration schema validator", 'SCHEMA_VERSION = "4.0"', schema_validator),
+        ("configuration schema validator", "validate_document", schema_validator),
+        ("configuration schema validator", "approved-input", schema_validator),
+        ("object graph comparator", "normalize_graph", graph_diff),
+        ("object graph comparator", "compare_graphs", graph_diff),
+        ("object graph comparator", "extra_objects", graph_diff),
+    )
+    for label, term, text in deterministic_contracts:
+        if term not in text:
+            errors.append(f"{label} missing contract: {term}")
     analytics_terms = (
         "GA4 - Config",
         "GA4 - Event Setting",

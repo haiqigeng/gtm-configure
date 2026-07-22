@@ -162,3 +162,7 @@ when a required output is invalid. Do not claim that these static vectors prove 
 ## Defer event-ID architecture
 
 Do not create a browser/server event ID, transaction-based deduplication map, or `gtm.start`/`gtm.uniqueEventId` Custom JavaScript variable in the current client-side-only scope. Add that architecture when server-side/deduplication support is intentionally introduced.
+Load `transformation-patterns.md` when the same source-to-destination projection pattern recurs,
+especially ecommerce item arrays, destination identifier arrays, scalar validation, or explicit
+eligibility vectors. The pattern reference standardizes the function contract but current official
+destination documentation still establishes every output field.

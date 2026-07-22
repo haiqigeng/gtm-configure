@@ -47,8 +47,9 @@ For each platform, product, and CMP involved:
 6. Inspect the installed GTM template and map documentation concepts to its visible fields.
 7. Establish source values, timing, state lifetime, and CMP signals from approved inputs and any
    representative payload required by the mapping.
-8. Retain critical provenance from the configuration map and record the source URL, page title,
-   access date, discrepancy class, decision, and unresolved contradiction.
+8. Retain critical provenance from the configuration map and create one concise per-run source
+   manifest containing source URL, page title, access date, exact client-side product/template,
+   affected requirement or object, discrepancy class, decision, and unresolved contradiction.
 
 Do not copy an event catalogue into the skill and treat it as permanent. Re-open the live catalogue for every implementation because vendors change standard events, parameters, requirements, templates, and consent features.
 
@@ -89,16 +90,21 @@ Use these as search entry points, then follow the current page for the exact req
 | GTM firing triggers, exceptions, and sequencing | https://support.google.com/tagmanager/answer/7679318 and https://support.google.com/tagmanager/answer/6238868 |
 | GTM priority, schedule, live-only behavior, and tag firing options | https://support.google.com/tagmanager/answer/2772421 and https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces.tags |
 | GTM API workspaces, synchronization, fingerprints, and mutations | https://developers.google.com/tag-platform/tag-manager/api/v2 and https://developers.google.com/tag-platform/tag-manager/api/reference/rest/v2/accounts.containers.workspaces/sync |
+| Complete GTM API object surface, built-ins, Google tag configs, destinations, templates, Zones, and environments | https://developers.google.com/tag-platform/tag-manager/api/reference/rest |
+| GTM Zones and Environments | https://support.google.com/tagmanager/answer/7647043 and https://support.google.com/tagmanager/answer/6311518 |
 | GTM container export/import | https://support.google.com/tagmanager/answer/6106997 |
 | GTM Community Template Gallery | https://support.google.com/tagmanager/answer/9454109 |
 | GA4 events and ecommerce | https://developers.google.com/analytics/devguides/collection/ga4/reference/events and https://developers.google.com/analytics/devguides/collection/ga4/ecommerce |
 | GA4 configuration fields and page views | https://developers.google.com/analytics/devguides/collection/ga4/reference/config and https://developers.google.com/analytics/devguides/collection/ga4/views |
 | GA4 custom dimensions and metrics | https://support.google.com/analytics/answer/14240153 |
+| GA4 collection limits, reserved names, and PII safety | https://support.google.com/analytics/answer/9267744, https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference, and https://support.google.com/analytics/answer/6366371 |
 | Google tag settings variables | https://support.google.com/tagmanager/answer/13438166 and https://support.google.com/tagmanager/answer/13438771 |
 | Google Consent Mode | https://developers.google.com/tag-platform/security/concepts/consent-mode and https://developers.google.com/tag-platform/security/guides/consent |
 | Google Ads conversion and remarketing | https://support.google.com/google-ads/answer/7521212 and https://support.google.com/tagmanager/answer/6106009 |
 | Google Ads dynamic remarketing schema | https://support.google.com/google-ads/answer/7305793 |
 | Google Ads enhanced conversions | https://support.google.com/google-ads/answer/13262500 |
+| Google/Floodlight cross-domain measurement and Conversion Linker | https://developers.google.com/tag-platform/devguides/cross-domain |
+| Floodlight and Campaign Manager 360 | https://support.google.com/campaignmanager/answer/7554821, https://support.google.com/campaignmanager/answer/3183388, and https://support.google.com/campaignmanager/answer/4599566 |
 | Microsoft Advertising UET | https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_conc_uetv2customevent and https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_conc_uet_parameters_table |
 | Microsoft UET Consent Mode and GTM template | https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_conc_uet_consent and https://learn.microsoft.com/en-us/advertising/msa-help/hlp_ba_conc_uet_dynamicconsentgtm |
 | Microsoft Clarity Consent Mode | https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-mode and https://learn.microsoft.com/en-us/clarity/setup-and-installation/cmp-integration-guide |
@@ -106,9 +112,17 @@ Use these as search entry points, then follow the current page for the exact req
 | TikTok Pixel standard events, parameters, and GTM | https://ads.tiktok.com/help/article/standard-events-parameters and https://ads.tiktok.com/help/article/how-to-create-tiktok-event-tags-with-google-tag-manager |
 | TikTok Pixel cookie-consent behavior | https://ads.tiktok.com/help/article/how-to-use-cookies-with-tiktok-pixel |
 | Snap Pixel and GTM | https://developers.snap.com/marketing-api/Ads-API/snap-pixel and https://businesshelp.snapchat.com/articles/en_US/Knowledge/formatting-pixel |
+| LinkedIn Insight Tag | https://www.linkedin.com/help/lms/answer/a418880 |
+| Pinterest Tag and GTM | https://help.pinterest.com/en/business/article/google-tag-manager-and-pinterest-tag |
+| X Pixel and GTM | https://business.x.com/en/help/campaign-measurement-and-analytics/conversion-tracking-for-websites |
+| Reddit Pixel | https://business.reddithelp.com/ |
+| Criteo OneTag | https://help.criteo.com/ |
+| Matomo analytics in GTM | https://matomo.org/faq/new-to-piwik/how-do-i-use-matomo-analytics-within-gtm-google-tag-manager/ |
 | Matomo tracking versus cookie consent | https://developer.matomo.org/guides/tracking-consent |
 | Piwik PRO anonymous consent mode | https://help.piwik.pro/support/privacy/setting-consent-manager/ |
 | Didomi GTM events, variables, and integration | https://developers.didomi.io/cmp/web-sdk/third-parties/tags-management/events-and-variables and https://developers.didomi.io/cmp/web-sdk/third-parties/tags-management/tag-managers/google-tag-manager/configure-the-didomi-gtm-integration |
+| OneTrust GTM and Google Consent Mode | https://my.onetrust.com/articles/en_US/Knowledge/UUID-301b21c8-a73a-05e8-175a-36c9036728dc and https://my.onetrust.com/articles/en_US/Knowledge/UUID-d81787f6-685c-2262-36c3-5f1f3369e2a7 |
+| Cookiebot GTM and Google Consent Mode | https://support.cookiebot.com/hc/en-us/articles/360003793854-Google-Tag-Manager-deployment and https://support.cookiebot.com/hc/en-us/articles/360016047000-Cookiebot-and-Google-Consent-Mode |
 
 For any unlisted media platform, CMP, template, or supported feature, locate and cite its current official documentation before configuring it. Lack of a dedicated playbook never permits inference.
 
